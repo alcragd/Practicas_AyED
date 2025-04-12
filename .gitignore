@@ -3,6 +3,8 @@
 *.out
 *.a
 *.bat
+#imagenes
+
 *.bmp
 # Archivos de respaldo o temporales
 *~
@@ -14,6 +16,6 @@
 # Carpetas 
 Entregar/
 old/
-
+imagenes/
 #outputs
 *_out.txt

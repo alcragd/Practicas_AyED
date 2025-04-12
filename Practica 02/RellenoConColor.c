@@ -14,15 +14,10 @@ void RellenoConColorRGB(unsigned char** R, unsigned char** G, unsigned char** B,
     int r_nuevo, int g_nuevo, int b_nuevo, int ancho, int alto);
 
 
-    
-
 int main (int argc, char* argv[]) {	
     BMP img;
     char IMAGEN[45];
-    int r_o;
-    int g_o;
-    int b_o;
-    int x, y, r_n, g_n, b_n;
+    int r_o, g_o, b_o, x, y, r_n, g_n, b_n;
     clock_t t_inicio, t_final;
     double t_intervalo;
 
