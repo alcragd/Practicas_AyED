@@ -1,0 +1,19 @@
+# Archivos ejecutables
+*.exe
+*.out
+*.a
+*.bat
+*.bmp
+# Archivos de respaldo o temporales
+*~
+*.swp
+
+# Archivos generados por el compilador
+*.d
+
+# Carpetas 
+Entregar/
+old/
+
+#outputs
+*_out.txt
