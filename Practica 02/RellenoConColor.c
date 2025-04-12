@@ -19,6 +19,13 @@ void RellenoConColorRGB(unsigned char** R, unsigned char** G, unsigned char** B,
 int main (int argc, char* argv[]) {	
     BMP img;
     char IMAGEN[45];
+    int r_o;
+    int g_o;
+    int b_o;
+    int x, y, r_n, g_n, b_n;
+    clock_t t_inicio, t_final;
+    double t_intervalo;
+
     if (argc != 2) {
         printf("\nUso: %s imagen.bmp\n", argv[0]);
         exit(1);
@@ -28,18 +35,18 @@ int main (int argc, char* argv[]) {
     abrir_imagen(&img, IMAGEN);
     printf("Dimensiones: Alto=%d, Ancho=%d\n", img.alto, img.ancho);
     
-    int x, y, r_n, g_n, b_n;
+    
     printf("Coordenadas de inicio (x y): ");
     scanf("%d %d", &x, &y);
     
     printf("Color nuevo RGB (r g b): ");
     scanf("%d %d %d", &r_n, &g_n, &b_n);
     
-    int r_o = img.pixelR[y][x];
-    int g_o = img.pixelG[y][x];
-    int b_o = img.pixelB[y][x];
+    r_o = img.pixelR[y][x];
+    g_o = img.pixelG[y][x];
+    b_o = img.pixelB[y][x];
     
-    clock_t t_inicio = clock();
+    t_inicio = clock();
     if (r_o != r_n || g_o != g_n || b_o != b_n) {
         RellenoConColorRGB(img.pixelR, img.pixelG, img.pixelB,
             x, y,
@@ -47,9 +54,9 @@ int main (int argc, char* argv[]) {
             r_n, g_n, b_n,
             img.ancho, img.alto);
         }
-    clock_t t_final = clock();
+    t_final = clock();
     
-    double t_intervalo = (double)(t_final - t_inicio) / CLOCKS_PER_SEC;
+    t_intervalo = (double)(t_final - t_inicio) / CLOCKS_PER_SEC;
     printf("Tiempo medido: %.8f segundos.\n", t_intervalo);
     
     crear_imagen(&img, IMAGEN_TRATADA);
