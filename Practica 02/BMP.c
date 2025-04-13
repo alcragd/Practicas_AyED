@@ -70,11 +70,12 @@ void abrir_imagen(BMP *imagen, char *ruta)
 		exit(1);
 	}
 	
+	
 	//*********************************************************************************************************
 	//Padding (Bytes necesarios para que el Pad row alcance a ser multiplo de 4 Bytes)
 	//*********************************************************************************************************
 	imagen->padding = (4 - (imagen->ancho * 3) % 4) % 4;
-
+	
 	//*********************************************************************************************************
 	//Reservar memoria para el arreglo que tendra los planos RGB de la imagen (Arreglo de tamaño "img.ancho X img.alto")
 	//*********************************************************************************************************
@@ -179,7 +180,7 @@ void crear_imagen(BMP *imagen, char ruta[])
 		
 		//Padding (Bytes necesarios para que el Pad row alcance a ser multiplo de 4 Bytes)		
 		for (k=1;k<=imagen->padding;k++)
-			fwrite(&var,sizeof(char),1, archivo);  //Escribir los pixeles de relleno		
+			fwrite(&var,sizeof(char),1, archivo);  //Escribir los pixeles de relleno
 	}
 	//Cerrrar el archivo
 	fclose(archivo);

@@ -21,21 +21,34 @@ int main (int argc, char* argv[]) {
     clock_t t_inicio, t_final;
     double t_intervalo;
 
-    if (argc != 2) {
-        printf("\nUso: %s imagen.bmp\n", argv[0]);
+    if (argc != 7) {
+        printf("\n[!]--- Error: Numero incorrecto de argumentos.\n");
+        printf("Uso: %s (x,y) (R,G,B) imagen.bmp\n", argv[0]);
+        printf("Ejemplo: %s 10 20 255 0 0 imagen.bmp\n", argv[0]);
+        printf("Donde:\n");
+        printf("  (x,y) son las coordenadas de la imagen a cambiar\n");
+        printf("  (R,G,B) son los valores del nuevo color\n");
+        printf("  imagen.bmp es el nombre de la imagen a procesar\n");
         exit(1);
     }
-    strcpy(IMAGEN, argv[1]);
+
+    x = atoi(argv[1]);
+    y = atoi(argv[2]);
+    r_n = atoi(argv[3]);
+    g_n = atoi(argv[4]);
+    b_n = atoi(argv[5]);
+    strcpy(IMAGEN, argv[6]);
+   
 
     abrir_imagen(&img, IMAGEN);
     printf("Dimensiones: Alto=%d, Ancho=%d\n", img.alto, img.ancho);
     
     
-    printf("Coordenadas de inicio (x y): ");
-    scanf("%d %d", &x, &y);
+    // printf("Coordenadas de inicio (x y): ");
+    // scanf("%d %d", &x, &y);
     
-    printf("Color nuevo RGB (r g b): ");
-    scanf("%d %d %d", &r_n, &g_n, &b_n);
+    // printf("Color nuevo RGB (r g b): ");
+    // scanf("%d %d %d", &r_n, &g_n, &b_n);
     
     r_o = img.pixelR[y][x];
     g_o = img.pixelG[y][x];
@@ -65,6 +78,7 @@ void RellenoConColorRGB(unsigned char** R, unsigned char** G, unsigned char** B,
     int r_orig, int g_orig, int b_orig, 
     int r_nuevo, int g_nuevo, int b_nuevo, int ancho, int alto)
 {
+    
 if(x < 0 || x >= ancho || y < 0 || y >= alto)
 return;
 
