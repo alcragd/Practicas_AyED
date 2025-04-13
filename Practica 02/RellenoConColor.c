@@ -82,7 +82,6 @@ int main (int argc, char* argv[]) {
     if (argc != 7) {
         printf("\n[!]--- Error: Numero incorrecto de argumentos.\n");
         printf("Uso: %s x y R G B imagen.bmp\n", argv[0]);
-        printf("Ejemplo: %s 10 20 255 0 0 imagen.bmp\n", argv[0]);
         printf("Donde:\n");
         printf("  (x,y) son las coordenadas de la imagen a cambiar\n");
         printf("  (R,G,B) son los valores del nuevo color\n");
