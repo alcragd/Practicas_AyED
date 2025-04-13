@@ -1,7 +1,7 @@
 /*
 ================================================================================
 RellenoConColor.c
-Versión: 1.0
+Versión: 2.0
 Fecha: Abril 2025
 Autores: Coyol Moreno Angel Zoe | Ramirez Hernandez Christian Isaac | Ramos Mendoza Miguel Angel
 
