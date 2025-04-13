@@ -1,5 +1,47 @@
-//RellenoConColor.c
-//Compilacion: gcc -o Relleno.exe RellenoConColor.c BMP.c
+/*
+================================================================================
+RellenoConColor.c
+Versión: 1.0
+Fecha: Abril 2025
+Autores: Coyol Moreno Angel Zoe | Ramirez Hernandez Christian Isaac | Ramos Mendoza Miguel Angel
+
+Descripción:
+-----------
+Este programa implementa un algoritmo de relleno de color en imágenes BMP 
+utilizando dos enfoques: recursivo y iterativo. El objetivo es cambiar el color 
+de una región conectada de píxeles que comparten un color similar al inicial.
+
+El programa utiliza una matriz de píxeles RGB para representar la imagen y 
+permite al usuario especificar las coordenadas iniciales y el nuevo color.
+
+Compilación:
+------------
+Windows: gcc -o Relleno.exe RellenoConColor.c BMP.c
+Linux/Mac: gcc -o Relleno RellenoConColor.c BMP.c
+
+Uso:
+----
+./Relleno.exe <x> <y> <R> <G> <B> <imagen.bmp>
+
+Donde:
+  - <x> y <y> son las coordenadas iniciales del píxel a cambiar.
+  - <R>, <G>, <B> son los valores del nuevo color.
+  - <imagen.bmp> es el nombre de la imagen BMP a procesar.
+
+Salida:
+-------
+El programa genera una nueva imagen BMP con el nombre `tratada.bmp`, donde 
+la región conectada al píxel inicial ha sido rellenada con el nuevo color.
+
+Observaciones:
+--------------
+- El algoritmo recursivo desborda la pila con imagenes grandes.
+- Se implementó un algoritmo iterativo que utiliza una cola para evitar el desbordamiento de pila.
+- Se define una tolerancia de color de la imagen en la función EsColorSimilar()
+    lo que permite pintar colores similares
+
+================================================================================
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,6 +59,7 @@ typedef struct {
     int x;
     int y;
 } Punto;
+
 
 void RellenoConColorRGB(unsigned char** R, unsigned char** G, unsigned char** B, int x, int y, 
     int r_orig, int g_orig, int b_orig, 
@@ -38,7 +81,7 @@ int main (int argc, char* argv[]) {
 
     if (argc != 7) {
         printf("\n[!]--- Error: Numero incorrecto de argumentos.\n");
-        printf("Uso: %s (x,y) (R,G,B) imagen.bmp\n", argv[0]);
+        printf("Uso: %s x y R G B imagen.bmp\n", argv[0]);
         printf("Ejemplo: %s 10 20 255 0 0 imagen.bmp\n", argv[0]);
         printf("Donde:\n");
         printf("  (x,y) son las coordenadas de la imagen a cambiar\n");
@@ -95,6 +138,35 @@ int main (int argc, char* argv[]) {
     return 0;
 }
 
+
+
+/*
+--------------------------------------------------------------------------------
+void RellenoConColorRGB_Iterativo(unsigned char** R, unsigned char** G, 
+                                  unsigned char** B, int x, int y,
+                                  int r_orig, int g_orig, int b_orig,
+                                  int r_nuevo, int g_nuevo, int b_nuevo, 
+                                  int ancho, int alto)
+--------------------------------------------------------------------------------
+Descripción:
+  Implementa un algoritmo de relleno de color iterativo utilizando una cola 
+  para procesar los píxeles. Cambia el color de una región conectada de píxeles 
+  que comparten un color similar al inicial.
+
+Recibe:
+  - `R`, `G`, `B`: Matrices de los canales de color de la imagen.
+  - `x`, `y`: Coordenadas iniciales del píxel a cambiar.
+  - `r_orig`, `g_orig`, `b_orig`: Color original de la región.
+  - `r_nuevo`, `g_nuevo`, `b_nuevo`: Nuevo color para la región.
+  - `ancho`, `alto`: Dimensiones de la imagen.
+
+Devuelve:
+  - Nada. Modifica directamente las matrices de la imagen.
+
+Observaciones:
+  - Utiliza una matriz auxiliar para evitar procesar píxeles repetidos.
+  
+*/
 void RellenoConColorRGB_Iterativo(unsigned char** R, unsigned char** G, unsigned char** B, int x, int y,
     int r_orig, int g_orig, int b_orig,
     int r_nuevo, int g_nuevo, int b_nuevo, int ancho, int alto)
@@ -165,6 +237,33 @@ void RellenoConColorRGB_Iterativo(unsigned char** R, unsigned char** G, unsigned
     free(memoria);
 }
 
+
+/*
+--------------------------------------------------------------------------------
+void RellenoConColorRGB(unsigned char** R, unsigned char** G, 
+                        unsigned char** B, int x, int y,
+                        int r_orig, int g_orig, int b_orig,
+                        int r_nuevo, int g_nuevo, int b_nuevo, 
+                        int ancho, int alto)
+--------------------------------------------------------------------------------
+Descripción:
+  Implementa un algoritmo de relleno de color recursivo. Cambia el color de una 
+  región conectada de píxeles que comparten un color similar al inicial.
+
+Recibe:
+  - `R`, `G`, `B`: Matrices de los canales de color de la imagen.
+  - `x`, `y`: Coordenadas iniciales del píxel a cambiar.
+  - `r_orig`, `g_orig`, `b_orig`: Color original de la región.
+  - `r_nuevo`, `g_nuevo`, `b_nuevo`: Nuevo color para la región.
+  - `ancho`, `alto`: Dimensiones de la imagen.
+
+Devuelve:
+  - Nada. Modifica directamente las matrices de la imagen.
+
+Observaciones:
+  - Puede causar desbordamiento de pila si la región a rellenar es grande.
+
+*/
 void RellenoConColorRGB(unsigned char** R, unsigned char** G, unsigned char** B, int x, int y, 
     int r_orig, int g_orig, int b_orig, 
     int r_nuevo, int g_nuevo, int b_nuevo, int ancho, int alto)
@@ -190,6 +289,25 @@ void RellenoConColorRGB(unsigned char** R, unsigned char** G, unsigned char** B,
     }
 
 
+/*
+--------------------------------------------------------------------------------
+booleano EsColorSimilar(int r1, int g1, int b1, int r2, int g2, int b2)
+--------------------------------------------------------------------------------
+Descripción:
+  Compara dos colores RGB y determina si son similares dentro de una tolerancia 
+  predefinida.
+
+Recibe:
+  - `r1`, `g1`, `b1`: Primer color a comparar.
+  - `r2`, `g2`, `b2`: Segundo color a comparar.
+
+Devuelve:
+  - `true` si los colores son similares, `false` en caso contrario.
+
+Observaciones:
+  - La tolerancia está definida por defecto como 20 unidades por canal.
+
+*/
 booleano EsColorSimilar(int r1, int g1, int b1, int r2, int g2, int b2) {
     int tolerancia = 20;  
 
