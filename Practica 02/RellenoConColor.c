@@ -31,7 +31,7 @@ int main (int argc, char* argv[]) {
         printf("  imagen.bmp es el nombre de la imagen a procesar\n");
         exit(1);
     }
-
+    
     x = atoi(argv[1]);
     y = atoi(argv[2]);
     r_n = atoi(argv[3]);
@@ -52,9 +52,9 @@ int main (int argc, char* argv[]) {
     
     r_o = img.pixelR[y][x];
     g_o = img.pixelG[y][x];
-    b_o = img.pixelB[y][x];
-    
+    b_o = img.pixelB[y][x];            
     t_inicio = clock();
+
     if (r_o != r_n || g_o != g_n || b_o != b_n) {
         RellenoConColorRGB(img.pixelR, img.pixelG, img.pixelB,
             x, y,
@@ -82,12 +82,13 @@ void RellenoConColorRGB(unsigned char** R, unsigned char** G, unsigned char** B,
 if(x < 0 || x >= ancho || y < 0 || y >= alto)
 return;
 
-if(R[y][x] != r_orig || G[y][x] != g_orig || B[y][x] != b_orig)
+
+if(R[x][y] != r_orig || G[x][y] != g_orig || B[x][y] != b_orig)
 return;
 
-R[y][x] = r_nuevo;
-G[y][x] = g_nuevo;
-B[y][x] = b_nuevo;
+R[x][y] = r_nuevo;
+G[x][y] = g_nuevo;
+B[x][y] = b_nuevo;
 
 RellenoConColorRGB(R, G, B, x+1, y, r_orig, g_orig, b_orig, r_nuevo, g_nuevo, b_nuevo, ancho, alto);
 RellenoConColorRGB(R, G, B, x-1, y, r_orig, g_orig, b_orig, r_nuevo, g_nuevo, b_nuevo, ancho, alto);
