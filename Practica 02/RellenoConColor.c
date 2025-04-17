@@ -54,7 +54,7 @@ Observaciones:
 #define IMAGEN_TRATADA "tratada.bmp"
 #define TOLERANCIA 20
 
-typedef int booleano;  
+typedef char booleano;  
 #define true 1
 #define false 0
 
