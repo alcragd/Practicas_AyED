@@ -16,8 +16,8 @@ permite al usuario especificar las coordenadas iniciales y el nuevo color.
 
 Compilación:
 ------------
-Windows: gcc -o Relleno.exe RellenoConColor.c BMP.c
-Linux/Mac: gcc -o Relleno RellenoConColor.c BMP.c
+Windows: gcc -o Relleno.exe RellenoConColor.c BMP.c pila_din.c
+Linux/Mac: gcc -o Relleno RellenoConColor.c BMP.c pila_din.c
 
 Uso:
 ----
@@ -48,6 +48,7 @@ Observaciones:
 #include <time.h>
 
 #include "BMP.h"
+#include "pila_din.h"
 
 #define IMAGEN_TRATADA "tratada.bmp"
 
@@ -55,11 +56,7 @@ typedef int booleano;
 #define true 1
 #define false 0
 
-typedef struct {
-    int x;
-    int y;
-} Punto;
-
+typedef elemento coordenada;
 
 void RellenoConColorRGB(unsigned char** R, unsigned char** G, unsigned char** B, int x, int y, 
     int r_orig, int g_orig, int b_orig, 
@@ -89,8 +86,8 @@ int main (int argc, char* argv[]) {
         exit(1);
     }
     
-    x = atoi(argv[1]);
-    y = atoi(argv[2]);
+    y = atoi(argv[1]);
+    x = atoi(argv[2]);
     r_n = atoi(argv[3]);
     g_n = atoi(argv[4]);
     b_n = atoi(argv[5]);
@@ -107,9 +104,9 @@ int main (int argc, char* argv[]) {
     // printf("Color nuevo RGB (r g b): ");
     // scanf("%d %d %d", &r_n, &g_n, &b_n);
     
-    r_o = img.pixelR[y][x];
-    g_o = img.pixelG[y][x];
-    b_o = img.pixelB[y][x];            
+    r_o = img.pixelR[x][y];
+    g_o = img.pixelG[x][y];
+    b_o = img.pixelB[x][y];            
     t_inicio = clock();
 
     // if (r_o != r_n || g_o != g_n || b_o != b_n) {
@@ -148,7 +145,7 @@ void RellenoConColorRGB_Iterativo(unsigned char** R, unsigned char** G,
                                   int ancho, int alto)
 --------------------------------------------------------------------------------
 Descripción:
-  Implementa un algoritmo de relleno de color iterativo utilizando una cola 
+  Implementa un algoritmo de relleno de color iterativo utilizando una pila 
   para procesar los píxeles. Cambia el color de una región conectada de píxeles 
   que comparten un color similar al inicial.
 
@@ -163,77 +160,82 @@ Devuelve:
   - Nada. Modifica directamente las matrices de la imagen.
 
 Observaciones:
-  - Utiliza una matriz auxiliar para evitar procesar píxeles repetidos.
+  
   
 */
 void RellenoConColorRGB_Iterativo(unsigned char** R, unsigned char** G, unsigned char** B, int x, int y,
-    int r_orig, int g_orig, int b_orig,
-    int r_nuevo, int g_nuevo, int b_nuevo, int ancho, int alto)
+  int r_orig, int g_orig, int b_orig,
+  int r_nuevo, int g_nuevo, int b_nuevo, int ancho, int alto)
 {
-    if (x < 0 || x >= ancho || y < 0 || y >= alto)
-        return;
+  if (x < 0 || x >= alto || y < 0 || y >= ancho)
+      return;
 
-    if (R[x][y] == r_nuevo && G[x][y] == g_nuevo && B[x][y] == b_nuevo)
-        return;
+  if (R[x][y] == r_nuevo && G[x][y] == g_nuevo && B[x][y] == b_nuevo)
+      return;
 
-    Punto* cola = malloc(ancho * alto * sizeof(Punto));
+  // Crear matriz auxiliar para marcar píxeles visitados
+  booleano** visitado = malloc(alto * sizeof(booleano*));
+  for (int i = 0; i < alto; i++) {
+      visitado[i] = calloc(ancho, sizeof(booleano));
+  }
 
-    // Crear matriz auxiliar para marcar píxeles ya procesados
-    booleano** memoria = malloc(alto * sizeof(booleano*));
-    for (int i = 0; i < alto; i++) {
-        memoria[i] = calloc(ancho, sizeof(booleano));
-    }
+  pila rastro; 
+  Initialize(&rastro);
 
-    int inicio = 0, fin = 0;
-    cola[fin++] = (Punto){x, y};  // añadir el punto inicial (x, y) a la cola
-    memoria[y][x] = true;        // Guardar en la memoria
+  // Pintar el píxel inicial y marcarlo como visitado
+  R[x][y] = r_nuevo;
+  G[x][y] = g_nuevo;
+  B[x][y] = b_nuevo;
+  visitado[x][y] = true;
 
-    
-    while (inicio < fin) {
-        Punto p = cola[inicio++];
-        int px = p.x;
-        int py = p.y;
+  Push(&rastro, (coordenada){x, y});
 
-        
-        R[py][px] = r_nuevo;
-        G[py][px] = g_nuevo;
-        B[py][px] = b_nuevo;
+  while (!Empty(&rastro)) {
+      coordenada coord = Pop(&rastro);
+      int cx = coord.x;
+      int cy = coord.y;
 
-        // Agregar vecinos a la cola y a la memoria de procesados (derecha, izquierda, abajo, arriba)
-        if (px + 1 < ancho && !memoria[py][px + 1] &&
-        EsColorSimilar(R[py][px + 1], G[py][px + 1], B[py][px + 1], r_orig, g_orig, b_orig)) 
-            {
-            cola[fin++] = (Punto){px + 1, py};
-            memoria[py][px + 1] = true;
-        }
-        if (px - 1 >= 0 && !memoria[py][px - 1] &&
-        EsColorSimilar(R[py][px - 1], G[py][px - 1], B[py][px - 1], r_orig, g_orig, b_orig)) 
-            {
-            cola[fin++] = (Punto){px - 1, py};
-            memoria[py][px - 1] = true;
-        }
-        if (py + 1 < alto && !memoria[py + 1][px] &&
-        EsColorSimilar(R[py + 1][px], G[py + 1][px], B[py + 1][px], r_orig, g_orig, b_orig)) 
-            {
-            cola[fin++] = (Punto){px, py + 1};
-            memoria[py + 1][px] = true;
-        }
-        if (py - 1 >= 0 && !memoria[py - 1][px] &&
-        EsColorSimilar(R[py - 1][px], G[py - 1][px], B[py - 1][px], r_orig, g_orig, b_orig)) 
-            {
-            cola[fin++] = (Punto){px, py - 1};
-            memoria[py - 1][px] = true;
-        }
+      // Procesar vecinos
+      if (cx + 1 < alto && !visitado[cx + 1][cy] &&
+          EsColorSimilar(R[cx + 1][cy], G[cx + 1][cy], B[cx + 1][cy], r_orig, g_orig, b_orig)) {
+          R[cx + 1][cy] = r_nuevo;
+          G[cx + 1][cy] = g_nuevo;
+          B[cx + 1][cy] = b_nuevo;
+          visitado[cx + 1][cy] = true;
+          Push(&rastro, (coordenada){cx + 1, cy});
+      }
+      if (cx - 1 >= 0 && !visitado[cx - 1][cy] &&
+          EsColorSimilar(R[cx - 1][cy], G[cx - 1][cy], B[cx - 1][cy], r_orig, g_orig, b_orig)) {
+          R[cx - 1][cy] = r_nuevo;
+          G[cx - 1][cy] = g_nuevo;
+          B[cx - 1][cy] = b_nuevo;
+          visitado[cx - 1][cy] = true;
+          Push(&rastro, (coordenada){cx - 1, cy});
+      }
+      if (cy + 1 < ancho && !visitado[cx][cy + 1] &&
+          EsColorSimilar(R[cx][cy + 1], G[cx][cy + 1], B[cx][cy + 1], r_orig, g_orig, b_orig)) {
+          R[cx][cy + 1] = r_nuevo;
+          G[cx][cy + 1] = g_nuevo;
+          B[cx][cy + 1] = b_nuevo;
+          visitado[cx][cy + 1] = true;
+          Push(&rastro, (coordenada){cx, cy + 1});
+      }
+      if (cy - 1 >= 0 && !visitado[cx][cy - 1] &&
+          EsColorSimilar(R[cx][cy - 1], G[cx][cy - 1], B[cx][cy - 1], r_orig, g_orig, b_orig)) {
+          R[cx][cy - 1] = r_nuevo;
+          G[cx][cy - 1] = g_nuevo;
+          B[cx][cy - 1] = b_nuevo;
+          visitado[cx][cy - 1] = true;
+          Push(&rastro, (coordenada){cx, cy - 1});
+      }
+  }
 
-        
-    }
-
-    // Liberar memoria
-    free(cola);
-    for (int i = 0; i < alto; i++) {
-        free(memoria[i]);
-    }
-    free(memoria);
+  // Liberar memoria
+  Destroy(&rastro);
+  for (int i = 0; i < alto; i++) {
+      free(visitado[i]);
+  }
+  free(visitado);
 }
 
 
@@ -268,7 +270,7 @@ void RellenoConColorRGB(unsigned char** R, unsigned char** G, unsigned char** B,
     int r_nuevo, int g_nuevo, int b_nuevo, int ancho, int alto)
 {
     double aproxR,aproxG,aproxB;
-    if(x < 0 || x >= ancho || y < 0 || y >= alto)
+    if(x < 0 || x >= alto || y < 0 || y >= ancho)
     return;
 
     if(!EsColorSimilar(R[x][y], G[x][y], B[x][y], r_orig, g_orig, b_orig))
