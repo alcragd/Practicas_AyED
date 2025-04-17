@@ -291,8 +291,8 @@ Descripción:
   predefinida.
 
 Recibe:
-  - `r_o`, `g_o`, `b_o`: Primer color a comparar.
-  - `r_n`, `g_n`, `b_n`: Segundo color a comparar.
+  - `r_1`, `g_1`, `b_1`: Primer color a comparar.
+  - `r_2`, `g_2`, `b_2`: Segundo color a comparar.
 
 Devuelve:
   - `true` si los colores son similares, `false` en caso contrario.
