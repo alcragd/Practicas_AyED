@@ -39,7 +39,8 @@ Observaciones:
 - Se implementó un algoritmo iterativo que utiliza una cola para evitar el desbordamiento de pila.
 - Se define una tolerancia de color de la imagen en la función EsColorSimilar()
     lo que permite pintar colores similares
-
+- Pueden haber problemas en imagenes rectangulares debido a limitaciones de BMP.c/BMP.h
+- Funciona perfectamente en imagenes cuadradas
 ================================================================================
 */
 #include <stdio.h>
