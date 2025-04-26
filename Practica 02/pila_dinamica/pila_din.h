@@ -12,28 +12,28 @@ typedef struct elemento
 typedef struct nodo
 {
 	elemento e;
-	struct nodo *abajo;	
+	struct nodo *abajo;
 } nodo;
 
 typedef struct pila
 {
 	int size;
-	nodo * tope;
+	nodo *tope;
 } pila;
 
 /*
-Inicializar pila (Initialize): recibe<- pila (S); 
+Inicializar pila (Initialize): recibe<- pila (S);
 Initialize(S);
 Efecto: Recibe una pila y la inicializa para su trabajo normal.
 */
 void Initialize(pila *S);
 
 /*
-Empilar (Push): recibe<- pila (S); recibe<- elemento (e) 
+Empilar (Push): recibe<- pila (S); recibe<- elemento (e)
 Push(S,e);
 Efecto: Recibe la pila y aumenta su tamaño, poniendo el elemento en la cima de la pila.
 */
-void Push(pila *S,elemento e);
+void Push(pila *S, elemento e);
 
 /*
 Desempilar (Pop): recibe<- pila (S); retorna -> elemento
@@ -50,7 +50,6 @@ Efecto: Recibe una pila y devuelve true si esta vacía y false en caso contrario
 */
 boolean Empty(pila *S);
 
-
 /*
 Tope pila (Top): recibe<- pila (S); retorna -> elemento
 e=Top(S);
@@ -58,7 +57,6 @@ Efecto: Devuelve el elemento cima de la pila.
 Excepción: Si la pila esta vacía produce error
 */
 elemento Top(pila *S);
-
 
 /*
 Tamaño pila (Size): recibe<- pila (S); retorna -> tamaño de la pila (entero)
