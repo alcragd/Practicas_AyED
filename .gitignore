@@ -4,8 +4,7 @@
 *.a
 *.bat
 #imagenes
-
-*.bmp
+tratada.bmp
 # Archivos de respaldo o temporales
 *~
 *.swp
