@@ -48,8 +48,8 @@ Observaciones:
 #include <string.h>
 #include <time.h>
 
-#include "BMP.h"
-#include "pila_din.h"
+#include "BMP/BMP.h"
+#include "pila_dinamica/pila_din.h"
 
 #define IMAGEN_TRATADA "tratada.bmp"
 #define TOLERANCIA 20
