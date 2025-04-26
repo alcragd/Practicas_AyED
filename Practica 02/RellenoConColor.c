@@ -109,11 +109,11 @@ int main(int argc, char *argv[])
   t_inicio = clock();
 
   // Llamar al algoritmo
-  RellenoConColorRGB(img.pixelR, img.pixelG, img.pixelB,
-                     x, y,
-                     r_o, g_o, b_o,
-                     r_n, g_n, b_n,
-                     img.ancho, img.alto);
+  RellenoConColorRGB_Iterativo(img.pixelR, img.pixelG, img.pixelB,
+                               x, y,
+                               r_o, g_o, b_o,
+                               r_n, g_n, b_n,
+                               img.ancho, img.alto);
   // Termina la medición de tiempo.
   t_final = clock();
 
