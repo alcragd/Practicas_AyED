@@ -73,7 +73,7 @@ booleano EsColorSimilar(int r_1, int g_1, int b_1, int r_2, int g_2, int b_2);
 int main(int argc, char *argv[])
 {
   BMP img;
-  char IMAGEN[45];
+  char *IMAGEN;
   int r_o, g_o, b_o, x, y, r_n, g_n, b_n;
   clock_t t_inicio, t_final;
   double t_intervalo;
@@ -94,34 +94,27 @@ int main(int argc, char *argv[])
   r_n = atoi(argv[3]);
   g_n = atoi(argv[4]);
   b_n = atoi(argv[5]);
+
+  IMAGEN = malloc(strlen(argv[6]) * sizeof(char));
   strcpy(IMAGEN, argv[6]);
 
   abrir_imagen(&img, IMAGEN);
   printf("Dimensiones: Alto=%d, Ancho=%d\n", img.alto, img.ancho);
 
-  // printf("Coordenadas de inicio (x y): ");
-  // scanf("%d %d", &x, &y);
-
-  // printf("Color nuevo RGB (r g b): ");
-  // scanf("%d %d %d", &r_n, &g_n, &b_n);
-
   r_o = img.pixelR[x][y];
   g_o = img.pixelG[x][y];
   b_o = img.pixelB[x][y];
+
+  // Inicia la medición de tiempo.
   t_inicio = clock();
 
-  // RellenoConColorRGB(img.pixelR, img.pixelG, img.pixelB,
-  //   x, y,
-  //   r_o, g_o, b_o,
-  //   r_n, g_n, b_n,
-  //   img.ancho, img.alto);
-
-  RellenoConColorRGB_Iterativo(img.pixelR, img.pixelG, img.pixelB,
-                               x, y,
-                               r_o, g_o, b_o,
-                               r_n, g_n, b_n,
-                               img.ancho, img.alto);
-
+  // Llamar al algoritmo
+  RellenoConColorRGB(img.pixelR, img.pixelG, img.pixelB,
+                     x, y,
+                     r_o, g_o, b_o,
+                     r_n, g_n, b_n,
+                     img.ancho, img.alto);
+  // Termina la medición de tiempo.
   t_final = clock();
 
   t_intervalo = (double)(t_final - t_inicio) / CLOCKS_PER_SEC;
@@ -179,6 +172,8 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
   G[x][y] = g_nuevo;
   B[x][y] = b_nuevo;
 
+  printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", x, y);
+
   Push(&rastro, (coordenada){x, y});
 
   while (!Empty(&rastro))
@@ -195,6 +190,8 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
       B[cx + 1][cy] = b_nuevo;
 
       Push(&rastro, (coordenada){cx + 1, cy});
+
+      printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx + 1, cy);
     }
     if (cx - 1 >= 0 && EsColorSimilar(R[cx - 1][cy], G[cx - 1][cy], B[cx - 1][cy], r_orig, g_orig, b_orig))
     {
@@ -203,6 +200,8 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
       B[cx - 1][cy] = b_nuevo;
 
       Push(&rastro, (coordenada){cx - 1, cy});
+
+      printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx - 1, cy);
     }
     if (cy + 1 < ancho && EsColorSimilar(R[cx][cy + 1], G[cx][cy + 1], B[cx][cy + 1], r_orig, g_orig, b_orig))
     {
@@ -211,6 +210,8 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
       B[cx][cy + 1] = b_nuevo;
 
       Push(&rastro, (coordenada){cx, cy + 1});
+
+      printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx, cy + 1);
     }
     if (cy - 1 >= 0 && EsColorSimilar(R[cx][cy - 1], G[cx][cy - 1], B[cx][cy - 1], r_orig, g_orig, b_orig))
     {
@@ -219,6 +220,8 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
       B[cx][cy - 1] = b_nuevo;
 
       Push(&rastro, (coordenada){cx, cy - 1});
+
+      printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx, cy - 1);
     }
   }
 
@@ -258,6 +261,7 @@ void RellenoConColorRGB(unsigned char **R, unsigned char **G, unsigned char **B,
 {
   if (x < 0 || x >= alto || y < 0 || y >= ancho)
     return;
+
   if (R[x][y] == r_nuevo && G[x][y] == g_nuevo && B[x][y] == b_nuevo)
     return;
 
@@ -269,6 +273,7 @@ void RellenoConColorRGB(unsigned char **R, unsigned char **G, unsigned char **B,
   R[x][y] = r_nuevo;
   G[x][y] = g_nuevo;
   B[x][y] = b_nuevo;
+  printf("\nRellenoConColorRGB(): Pinté: %d, %d", x, y);
 
   RellenoConColorRGB(R, G, B, x + 1, y, r_orig, g_orig, b_orig, r_nuevo, g_nuevo, b_nuevo, ancho, alto);
   RellenoConColorRGB(R, G, B, x - 1, y, r_orig, g_orig, b_orig, r_nuevo, g_nuevo, b_nuevo, ancho, alto);
