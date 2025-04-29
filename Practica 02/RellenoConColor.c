@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
   g_n = atoi(argv[4]);
   b_n = atoi(argv[5]);
 
-  IMAGEN = malloc(strlen(argv[6]) * sizeof(char));
+  IMAGEN = malloc((strlen(argv[6]) + 1) * sizeof(char));
   strcpy(IMAGEN, argv[6]);
 
   abrir_imagen(&img, IMAGEN);
@@ -123,6 +123,7 @@ int main(int argc, char *argv[])
   crear_imagen(&img, IMAGEN_TRATADA);
   printf("Imagen tratada guardada en: %s\n", IMAGEN_TRATADA);
 
+  free(IMAGEN);
   return 0;
 }
 
