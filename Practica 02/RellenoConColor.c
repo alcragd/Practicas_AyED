@@ -52,7 +52,7 @@ Observaciones:
 #include "pila_dinamica/pila_din.h"
 
 #define IMAGEN_TRATADA "tratada.bmp"
-#define TOLERANCIA 255
+#define TOLERANCIA 20
 
 typedef char booleano;
 #define true 1
