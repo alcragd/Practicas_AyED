@@ -52,7 +52,7 @@ Observaciones:
 #include "pila_dinamica/pila_din.h"
 
 #define IMAGEN_TRATADA "tratada.bmp"
-#define TOLERANCIA 20
+#define TOLERANCIA 255
 
 typedef char booleano;
 #define true 1
@@ -172,7 +172,7 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
   G[x][y] = g_nuevo;
   B[x][y] = b_nuevo;
 
-  printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", x, y);
+  // printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", x, y);
 
   Push(&rastro, (coordenada){x, y});
 
@@ -191,7 +191,7 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
 
       Push(&rastro, (coordenada){cx + 1, cy});
 
-      printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx + 1, cy);
+      // printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx + 1, cy);
     }
     if (cx - 1 >= 0 && EsColorSimilar(R[cx - 1][cy], G[cx - 1][cy], B[cx - 1][cy], r_orig, g_orig, b_orig))
     {
@@ -201,7 +201,7 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
 
       Push(&rastro, (coordenada){cx - 1, cy});
 
-      printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx - 1, cy);
+      // printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx - 1, cy);
     }
     if (cy + 1 < ancho && EsColorSimilar(R[cx][cy + 1], G[cx][cy + 1], B[cx][cy + 1], r_orig, g_orig, b_orig))
     {
@@ -211,7 +211,7 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
 
       Push(&rastro, (coordenada){cx, cy + 1});
 
-      printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx, cy + 1);
+      // printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx, cy + 1);
     }
     if (cy - 1 >= 0 && EsColorSimilar(R[cx][cy - 1], G[cx][cy - 1], B[cx][cy - 1], r_orig, g_orig, b_orig))
     {
@@ -221,7 +221,7 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
 
       Push(&rastro, (coordenada){cx, cy - 1});
 
-      printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx, cy - 1);
+      // printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx, cy - 1);
     }
   }
 
@@ -273,7 +273,7 @@ void RellenoConColorRGB(unsigned char **R, unsigned char **G, unsigned char **B,
   R[x][y] = r_nuevo;
   G[x][y] = g_nuevo;
   B[x][y] = b_nuevo;
-  printf("\nRellenoConColorRGB(): Pinté: %d, %d", x, y);
+  // printf("\nRellenoConColorRGB(): Pinté: %d, %d", x, y);
 
   RellenoConColorRGB(R, G, B, x + 1, y, r_orig, g_orig, b_orig, r_nuevo, g_nuevo, b_nuevo, ancho, alto);
   RellenoConColorRGB(R, G, B, x - 1, y, r_orig, g_orig, b_orig, r_nuevo, g_nuevo, b_nuevo, ancho, alto);
