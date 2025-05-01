@@ -69,6 +69,7 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
                                   int r_nuevo, int g_nuevo, int b_nuevo, int ancho, int alto);
 
 booleano EsColorSimilar(int r_1, int g_1, int b_1, int r_2, int g_2, int b_2);
+booleano SePuedePintar(int x, int y, int alto, int ancho);
 
 int main(int argc, char *argv[])
 {
@@ -166,6 +167,8 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
     return;
 
   pila rastro;
+  coordenada movimientos[4] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+  int i;
   Initialize(&rastro);
 
   // Pintar el píxel inicial y marcarlo como visitado
@@ -184,47 +187,22 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
     int cy = coord.y;
 
     // Procesar vecinos
-    if (cx + 1 < alto && EsColorSimilar(R[cx + 1][cy], G[cx + 1][cy], B[cx + 1][cy], r_orig, g_orig, b_orig))
+    for (i = 0; i < 4; i++)
     {
-      R[cx + 1][cy] = r_nuevo;
-      G[cx + 1][cy] = g_nuevo;
-      B[cx + 1][cy] = b_nuevo;
+      if (SePuedePintar(cx + movimientos[i].x, cy + movimientos[i].y, alto, ancho) &&
+          EsColorSimilar(R[cx + movimientos[i].x][cy + movimientos[i].y],
+                         G[cx + movimientos[i].x][cy + movimientos[i].y],
+                         B[cx + movimientos[i].x][cy + movimientos[i].y],
+                         r_orig, g_orig, b_orig))
+      {
+        R[cx + movimientos[i].x][cy + movimientos[i].y] = r_nuevo;
+        G[cx + movimientos[i].x][cy + movimientos[i].y] = g_nuevo;
+        B[cx + movimientos[i].x][cy + movimientos[i].y] = b_nuevo;
 
-      Push(&rastro, (coordenada){cx + 1, cy});
-
-      // printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx + 1, cy);
+        Push(&rastro, (coordenada){cx + movimientos[i].x, cy + movimientos[i].y});
+      }
     }
-    if (cx - 1 >= 0 && EsColorSimilar(R[cx - 1][cy], G[cx - 1][cy], B[cx - 1][cy], r_orig, g_orig, b_orig))
-    {
-      R[cx - 1][cy] = r_nuevo;
-      G[cx - 1][cy] = g_nuevo;
-      B[cx - 1][cy] = b_nuevo;
-
-      Push(&rastro, (coordenada){cx - 1, cy});
-
-      // printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx - 1, cy);
     }
-    if (cy + 1 < ancho && EsColorSimilar(R[cx][cy + 1], G[cx][cy + 1], B[cx][cy + 1], r_orig, g_orig, b_orig))
-    {
-      R[cx][cy + 1] = r_nuevo;
-      G[cx][cy + 1] = g_nuevo;
-      B[cx][cy + 1] = b_nuevo;
-
-      Push(&rastro, (coordenada){cx, cy + 1});
-
-      // printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx, cy + 1);
-    }
-    if (cy - 1 >= 0 && EsColorSimilar(R[cx][cy - 1], G[cx][cy - 1], B[cx][cy - 1], r_orig, g_orig, b_orig))
-    {
-      R[cx][cy - 1] = r_nuevo;
-      G[cx][cy - 1] = g_nuevo;
-      B[cx][cy - 1] = b_nuevo;
-
-      Push(&rastro, (coordenada){cx, cy - 1});
-
-      // printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx, cy - 1);
-    }
-  }
 
   // Liberar memoria
   Destroy(&rastro);
@@ -305,7 +283,17 @@ Observaciones:
 booleano EsColorSimilar(int r_1, int g_1, int b_1, int r_2, int g_2, int b_2)
 {
   if (abs(r_1 - r_2) <= TOLERANCIA && abs(g_1 - g_2) <= TOLERANCIA && abs(b_1 - b_2) <= TOLERANCIA)
+  {
+    // if (r_1 == r_2 && g_1 == g_2 && b_1 == b_2)
+    //   return false;
     return true;
-  else
+  }
+  return false;
+}
+
+booleano SePuedePintar(int x, int y, int alto, int ancho)
+{
+  if (x >= alto || x < 0 || y >= ancho || y < 0)
     return false;
+  return true;
 }
