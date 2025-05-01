@@ -166,45 +166,61 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
   if (R[x][y] == r_nuevo && G[x][y] == g_nuevo && B[x][y] == b_nuevo)
     return;
 
+  if (!EsColorSimilar(R[x][y], G[x][y], B[x][y], r_orig, g_orig, b_orig))
+    return;
+
   pila rastro;
-  coordenada movimientos[4] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+  coordenada movimientos[8] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
   int i;
+  booleano **memoria;
+
   Initialize(&rastro);
+
+  // Asignar memoria para la matriz
+  memoria = calloc(alto, sizeof(booleano *));
+  for (i = 0; i < alto; i++)
+  {
+    memoria[i] = calloc(ancho, sizeof(booleano));
+  }
 
   // Pintar el píxel inicial y marcarlo como visitado
   R[x][y] = r_nuevo;
   G[x][y] = g_nuevo;
   B[x][y] = b_nuevo;
+  memoria[x][y] = true;
+  Push(&rastro, (coordenada){x, y});
 
   // printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", x, y);
 
-  Push(&rastro, (coordenada){x, y});
-
+  // Procesar vecinos
   while (!Empty(&rastro))
   {
     coordenada coord = Pop(&rastro);
-    int cx = coord.x;
-    int cy = coord.y;
 
-    // Procesar vecinos
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 8; i++)
     {
-      if (SePuedePintar(cx + movimientos[i].x, cy + movimientos[i].y, alto, ancho) &&
-          EsColorSimilar(R[cx + movimientos[i].x][cy + movimientos[i].y],
-                         G[cx + movimientos[i].x][cy + movimientos[i].y],
-                         B[cx + movimientos[i].x][cy + movimientos[i].y],
-                         r_orig, g_orig, b_orig))
-      {
-        R[cx + movimientos[i].x][cy + movimientos[i].y] = r_nuevo;
-        G[cx + movimientos[i].x][cy + movimientos[i].y] = g_nuevo;
-        B[cx + movimientos[i].x][cy + movimientos[i].y] = b_nuevo;
+      int cx = coord.x + movimientos[i].x;
+      int cy = coord.y + movimientos[i].y;
 
-        Push(&rastro, (coordenada){cx + movimientos[i].x, cy + movimientos[i].y});
+      if (SePuedePintar(cx, cy, alto, ancho) &&
+          !memoria[cx][cy] &&
+          EsColorSimilar(R[cx][cy], G[cx][cy], B[cx][cy], r_orig, g_orig, b_orig))
+      {
+        R[cx][cy] = r_nuevo;
+        G[cx][cy] = g_nuevo;
+        B[cx][cy] = b_nuevo;
+        memoria[cx][cy] = true;
+        Push(&rastro, (coordenada){cx, cy});
       }
     }
-    }
+  }
 
   // Liberar memoria
+  for (i = 0; i < alto; i++)
+  {
+    free(memoria[i]);
+  }
+  free(memoria);
   Destroy(&rastro);
 }
 
@@ -283,11 +299,7 @@ Observaciones:
 booleano EsColorSimilar(int r_1, int g_1, int b_1, int r_2, int g_2, int b_2)
 {
   if (abs(r_1 - r_2) <= TOLERANCIA && abs(g_1 - g_2) <= TOLERANCIA && abs(b_1 - b_2) <= TOLERANCIA)
-  {
-    // if (r_1 == r_2 && g_1 == g_2 && b_1 == b_2)
-    //   return false;
     return true;
-  }
   return false;
 }
 
