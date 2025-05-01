@@ -1,7 +1,7 @@
 /*
 ================================================================================
 RellenoConColor.c
-Versión: 2.1
+Versión: 2.2
 Fecha: Abril 2025
 Autores: Coyol Moreno Angel Zoe | Ramirez Hernandez Christian Isaac | Ramos Mendoza Miguel Angel
 
@@ -16,8 +16,8 @@ permite al usuario especificar las coordenadas iniciales y el nuevo color.
 
 Compilación:
 ------------
-Windows: gcc -o Relleno.exe RellenoConColor.c BMP.c pila_din.c
-Linux/Mac: gcc -o Relleno RellenoConColor.c BMP.c pila_din.c
+Windows: gcc -o Relleno.exe RellenoConColor.c ./BMP/BMP.c ./pila_dinamica/pila_din.c
+Linux/Mac: gcc -o Relleno RellenoConColor.c ./BMP/BMP.c ./pila_dinamica/pila_din.c
 
 Uso:
 ----
@@ -39,8 +39,6 @@ Observaciones:
 - Se implementó un algoritmo iterativo que utiliza una pila para evitar el desbordamiento de pila del sistema.
 - Se define una tolerancia de color de la imagen en la función EsColorSimilar()
     lo que permite pintar colores similares
-- Pueden haber problemas en imagenes rectangulares debido a limitaciones de BMP.c/BMP.h
-- Funciona perfectamente en imagenes cuadradas
 ================================================================================
 */
 #include <stdio.h>
@@ -59,6 +57,8 @@ typedef char booleano;
 #define false 0
 
 typedef elemento coordenada;
+
+int cont;
 
 void RellenoConColorRGB(unsigned char **R, unsigned char **G, unsigned char **B, int x, int y,
                         int r_orig, int g_orig, int b_orig,
@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
   r_n = atoi(argv[3]);
   g_n = atoi(argv[4]);
   b_n = atoi(argv[5]);
+  cont = 0;
 
   IMAGEN = malloc((strlen(argv[6]) + 1) * sizeof(char));
   strcpy(IMAGEN, argv[6]);
@@ -119,7 +120,8 @@ int main(int argc, char *argv[])
   t_final = clock();
 
   t_intervalo = (double)(t_final - t_inicio) / CLOCKS_PER_SEC;
-  printf("Tiempo medido: %.8f segundos.\n", t_intervalo);
+  printf("\nTiempo medido: %.8f segundos.\n", t_intervalo);
+  printf("Pixeles pintados: %d\n", cont);
 
   crear_imagen(&img, IMAGEN_TRATADA);
   printf("Imagen tratada guardada en: %s\n", IMAGEN_TRATADA);
@@ -153,14 +155,14 @@ Devuelve:
 
 Observaciones:
   - Utiliza una pila dinámica para evitar desbordamientos de la pila del sistema.
-
+  - Usa una matriz memoria[][] para registrar píxeles ya visitados.
 
 */
 void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned char **B, int x, int y,
                                   int r_orig, int g_orig, int b_orig,
                                   int r_nuevo, int g_nuevo, int b_nuevo, int ancho, int alto)
 {
-  if (x < 0 || x >= alto || y < 0 || y >= ancho)
+  if (!SePuedePintar(x, y, alto, ancho))
     return;
 
   if (R[x][y] == r_nuevo && G[x][y] == g_nuevo && B[x][y] == b_nuevo)
@@ -179,9 +181,7 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
   // Asignar memoria para la matriz
   memoria = calloc(alto, sizeof(booleano *));
   for (i = 0; i < alto; i++)
-  {
     memoria[i] = calloc(ancho, sizeof(booleano));
-  }
 
   // Pintar el píxel inicial y marcarlo como visitado
   R[x][y] = r_nuevo;
@@ -189,7 +189,7 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
   B[x][y] = b_nuevo;
   memoria[x][y] = true;
   Push(&rastro, (coordenada){x, y});
-
+  cont++;
   // printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", x, y);
 
   // Procesar vecinos
@@ -211,15 +211,16 @@ void RellenoConColorRGB_Iterativo(unsigned char **R, unsigned char **G, unsigned
         B[cx][cy] = b_nuevo;
         memoria[cx][cy] = true;
         Push(&rastro, (coordenada){cx, cy});
+        cont++;
+        // printf("\nRellenoConColorRGB_Iterativo(): Pinté: %d, %d", cx, cy);
       }
     }
   }
 
   // Liberar memoria
   for (i = 0; i < alto; i++)
-  {
     free(memoria[i]);
-  }
+
   free(memoria);
   Destroy(&rastro);
 }
@@ -254,7 +255,7 @@ void RellenoConColorRGB(unsigned char **R, unsigned char **G, unsigned char **B,
                         int r_orig, int g_orig, int b_orig,
                         int r_nuevo, int g_nuevo, int b_nuevo, int ancho, int alto)
 {
-  if (x < 0 || x >= alto || y < 0 || y >= ancho)
+  if (!SePuedePintar(x, y, alto, ancho))
     return;
 
   if (R[x][y] == r_nuevo && G[x][y] == g_nuevo && B[x][y] == b_nuevo)
@@ -268,6 +269,7 @@ void RellenoConColorRGB(unsigned char **R, unsigned char **G, unsigned char **B,
   R[x][y] = r_nuevo;
   G[x][y] = g_nuevo;
   B[x][y] = b_nuevo;
+  cont++;
   // printf("\nRellenoConColorRGB(): Pinté: %d, %d", x, y);
 
   RellenoConColorRGB(R, G, B, x + 1, y, r_orig, g_orig, b_orig, r_nuevo, g_nuevo, b_nuevo, ancho, alto);
@@ -303,6 +305,20 @@ booleano EsColorSimilar(int r_1, int g_1, int b_1, int r_2, int g_2, int b_2)
   return false;
 }
 
+/*
+----------------------------------------------------------------
+booleano SePuedePintar(int x, int y, int alto, int ancho)
+----------------------------------------------------------------
+Descripción:
+  Verifica si una coordenada está dentro de los límites válidos de la imagen.
+Recibe:
+  -`x`, `y`: Coordenadas a verificar.
+  -`alto`, `ancho`: Dimensiones de la imagen.
+Devuelve:
+  -`true` si `(x, y)` está dentro de la imagen.
+  -`false` si está fuera de límites.
+
+*/
 booleano SePuedePintar(int x, int y, int alto, int ancho)
 {
   if (x >= alto || x < 0 || y >= ancho || y < 0)
