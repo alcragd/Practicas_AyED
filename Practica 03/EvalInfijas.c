@@ -1,7 +1,7 @@
 /*
 ================================================================================
 EvalInfijas.c
-Versión: 1.0
+Versión: 1.2
 Fecha: Mayo 2025
 Autores: Coyol Moreno Angel Zoe | Ramirez Hernandez Christian Isaac | Ramos Mendoza Miguel Angel
 
