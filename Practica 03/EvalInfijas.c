@@ -1,6 +1,50 @@
+/*
+================================================================================
+EvalInfijas.c
+Versión: 1.0
+Fecha: Mayo 2025
+Autores: Coyol Moreno Angel Zoe | Ramirez Hernandez Christian Isaac | Ramos Mendoza Miguel Angel
+
+Descripción:
+-----------
+Este programa evalúa expresiones matemáticas en notación infija. Convierte la
+expresión infija a postfija, solicita valores para las variables y evalúa el
+resultado de la expresión postfija.
+
+El programa utiliza una pila dinámica para manejar operadores y operandos,
+y valida la correcta apertura y cierre de paréntesis en la expresión.
+
+Compilación:
+------------
+Pila Estatica:
+    Windows: gcc -o EvalInfijas.exe EvalInfijas.c ./pila_estatica/pila_est.c
+    Linux/Mac: gcc -o EvalInfijas EvalInfijas.c ./pila_estatica/pila_est.c
+Pila Dinamica:
+    Windows: gcc -o EvalInfijas.exe EvalInfijas.c ./pila_dinamica/pila_din.c
+    Linux/Mac: gcc -o EvalInfijas EvalInfijas.c ./pila_dinamica/pila_din.c
+Uso:
+----
+./EvalInfijas.exe "EXPRESION"
+
+Donde:
+  - EXPRESION es la expresión matemática en notación infija.
+  - Las variables deben estar en el rango de A-Z.
+  - La expresión debe estar entre comillas si contiene paréntesis.
+
+Salida:
+-------
+El programa imprime la expresión en notación postfija y el resultado de su evaluación.
+
+Observaciones:
+--------------
+- La expresión debe ser válida y no contener espacios.
+- Las operaciones soportadas son: +, -, *, /, ^ y paréntesis.
+================================================================================
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 #include <math.h>
 
 // #define double long double
@@ -43,7 +87,7 @@ int main(int argc, char *argv[])
         printf("\nError al validar parentesis.");
         exit(1);
     }
-    // printf("\n%s", expr);
+
     infijoAPostfijo(expr, postfijo);
 
     printf("\nExpresión Postfija: %s", postfijo);
@@ -64,6 +108,22 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+/*
+--------------------------------------------------------------------------------
+void infijoAPostfijo(char *expr, char *postfijo)
+--------------------------------------------------------------------------------
+Descripción:
+  Convierte una expresión en notación infija a notación postfija utilizando una
+  pila para manejar operadores y paréntesis.
+
+Recibe:
+  - `expr`: Cadena con la expresión en notación infija.
+  - `postfijo`: Cadena donde se almacenará la expresión en notación postfija.
+
+Devuelve:
+  - Nada. Modifica directamente la cadena `postfijo`.
+--------------------------------------------------------------------------------
+*/
 void infijoAPostfijo(char *expr, char *postfijo)
 {
     pila operadores;
@@ -146,6 +206,22 @@ void infijoAPostfijo(char *expr, char *postfijo)
     return;
 }
 
+/*
+--------------------------------------------------------------------------------
+void pedirValores(char *expr, double *valores)
+--------------------------------------------------------------------------------
+Descripción:
+  Solicita al usuario los valores de las variables presentes en la expresión
+  postfija.
+
+Recibe:
+  - `expr`: Cadena con la expresión en notación postfija.
+  - `valores`: Arreglo donde se almacenarán los valores de las variables.
+
+Devuelve:
+  - Nada. Modifica directamente el arreglo `valores`.
+--------------------------------------------------------------------------------
+*/
 void pedirValores(char *expr, double *valores)
 {
     if (expr[0] == '\0')
@@ -167,6 +243,22 @@ void pedirValores(char *expr, double *valores)
     }
 }
 
+/*
+--------------------------------------------------------------------------------
+double EvalPostfija(char *expr, double *valores)
+--------------------------------------------------------------------------------
+Descripción:
+  Evalúa una expresión en notación postfija utilizando una pila para manejar
+  los operandos.
+
+Recibe:
+  - `expr`: Cadena con la expresión en notación postfija.
+  - `valores`: Arreglo con los valores de las variables.
+
+Devuelve:
+  - El resultado de la evaluación de la expresión.
+--------------------------------------------------------------------------------
+*/
 double EvalPostfija(char *expr, double *valores)
 {
     if (expr[0] == '\0')
@@ -241,6 +333,21 @@ double EvalPostfija(char *expr, double *valores)
     return result;
 }
 
+/*
+--------------------------------------------------------------------------------
+boolean ValidaParentesis(char *expr)
+--------------------------------------------------------------------------------
+Descripción:
+  Valida que los paréntesis en la expresión estén correctamente balanceados.
+
+Recibe:
+  - `expr`: Cadena con la expresión en notación infija.
+
+Devuelve:
+  - `TRUE` si los paréntesis están balanceados.
+  - `FALSE` en caso contrario.
+--------------------------------------------------------------------------------
+*/
 boolean ValidaParentesis(char *expr)
 {
     pila parentesis;
