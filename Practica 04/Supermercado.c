@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <windows.h>
 #include "Cola Dinámica/TADColaDin.h"
+#include "Presentacion/presentacion.h"
+#include <time.h>
+
 #define TIEMPO_BASE 1000
 // #include "Cola Estática/TADColaEst.h"
 
@@ -18,6 +21,8 @@ int main()
     cola *cajas;
     int repetir = 1;
     elemento e;
+
+    srand(time(NULL));
 
     printf("Ingrese el nombre del supermercado: ");
     scanf("%s", nombreSuper);
@@ -46,8 +51,8 @@ int main()
 
     while (repetir)
     {
-        Sleep(TIEMPO_BASE); // Esperar el tiempo base
-        tiempo++;           // Incrementar el contador de tiempo
+        EsperarMiliSeg(TIEMPO_BASE); // Esperar el tiempo base
+        tiempo++;                    // Incrementar el contador de tiempo
         for (i = 0; i < numCajas; i++)
         {
             if (tiempo * 10 % tiempoAtencion[i] == 0)
