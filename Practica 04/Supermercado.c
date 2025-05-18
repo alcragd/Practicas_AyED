@@ -22,6 +22,8 @@ int main()
     int repetir = 1;
     elemento e;
 
+    BorrarPantalla();
+
     srand(time(NULL));
 
     printf("Ingrese el nombre del supermercado: ");
