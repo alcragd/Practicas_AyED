@@ -115,7 +115,7 @@ void PintadoInicial(int cantCajas)
     int i, separacion;
     int anchoCaja, altoCaja;
 
-    anchoCaja = 6;
+    anchoCaja = 5;
     altoCaja = 8;
 
     BorrarPantalla();
@@ -138,6 +138,6 @@ void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
         }
     }
 
-    MoverCursor(num * (ancho + separacion) + 1, 2);
+    MoverCursor(num * (ancho + separacion) + (ancho / 2) - 2 + (ancho % 2), 2);
     printf("A:%d", cliente);
 }
