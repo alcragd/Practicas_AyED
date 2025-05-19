@@ -115,7 +115,7 @@ void PintadoInicial(int cantCajas)
     int i, separacion;
     int anchoCaja, altoCaja;
 
-    anchoCaja = 5;
+    anchoCaja = 6;
     altoCaja = 8;
 
     BorrarPantalla();
