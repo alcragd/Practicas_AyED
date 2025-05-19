@@ -4,9 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "Cola Dinámica/TADColaDin.h"
-#include "Presentacion/presentacion.h"
 #include <time.h>
+
+#include "Cola Dinamica/TADColaDin.h"
+// #include "Cola Estatica/TADColaEst.h"
+
+#include "Presentacion/presentacion.h"
 
 #define TIEMPO_BASE 1000
 
