@@ -9,7 +9,14 @@
 #include <time.h>
 
 #define TIEMPO_BASE 1000
+
+#define ANCHO 120 //
+#define ALTO 30   // ANCHO y AlTO de la consola*
+
 // #include "Cola Estática/TADColaEst.h"
+
+void PintadoInicial(int cantCajas);
+void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion);
 
 int main()
 {
@@ -18,11 +25,10 @@ int main()
     int caja;
     int *tiempoAtencion;
     int tiempoLlegada;
+
     cola *cajas;
     int repetir = 1;
     elemento e;
-
-    BorrarPantalla();
 
     srand(time(NULL));
 
@@ -35,6 +41,11 @@ int main()
         printf("\nError: El numero de cajas debe ser entre 1 y 10");
         exit(1);
     }
+
+    PintadoInicial(numCajas);
+    MoverCursor(1, 26);
+    system("pause");
+
     tiempoAtencion = malloc(numCajas * sizeof(int));
     cajas = malloc(numCajas * sizeof(cola));
     if (tiempoAtencion == NULL || cajas == NULL)
@@ -97,4 +108,36 @@ int main()
     free(tiempoAtencion);
     free(cajas);
     return 0;
+}
+
+void PintadoInicial(int cantCajas)
+{
+    int i, separacion;
+    int anchoCaja, altoCaja;
+
+    anchoCaja = 6;
+    altoCaja = 8;
+
+    BorrarPantalla();
+    separacion = (ANCHO - anchoCaja * cantCajas) / (cantCajas + 1);
+    for (i = 1; i <= cantCajas; i++)
+        DibujaCaja(i, i, anchoCaja, altoCaja, separacion);
+}
+
+void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
+{
+    int columna, fila, i;
+    columna = num * (ancho + separacion);
+
+    for (i = 0; i < ancho; columna++, i++)
+    {
+        for (fila = 1; fila < alto; fila++)
+        {
+            MoverCursor(columna, fila);
+            printf("*");
+        }
+    }
+
+    MoverCursor(num * (ancho + separacion) + 1, 2);
+    printf("A:%d", cliente);
 }
