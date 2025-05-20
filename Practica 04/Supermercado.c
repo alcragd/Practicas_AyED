@@ -14,11 +14,13 @@
 #define ALTO 30   // ANCHO y AlTO de la consola*
 #define anchoCaja 6
 #define altoCaja 8
+#define DISTANCIA 2
 
 // #include "Cola Estática/TADColaEst.h"
 
-void PintadoInicial(int cantCajas);
 void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion);
+void AtenderCliente(cola *c, int numcola);
+void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion);
 
 int main()
 {
@@ -83,29 +85,31 @@ int main()
     {
         EsperarMiliSeg(TIEMPO_BASE); // Esperar el tiempo base
         tiempo++;                    // Incrementar el contador de tiempo
-        for (i = 0; i < numCajas; i++)
-        {
-            if (tiempo * 10 % tiempoAtencion[i] == 0)
-            {
-                if (!Empty(&cajas[i]))
-                {
-                    e = Dequeue(&cajas[i]);
-                    clientesAtendidos++;
-                    printf("\n\nAtendi a: %d en caja %d", e.i, i + 1);
-                }
-                else
-                {
-                    printf("\n\nNo hay alguien por atender en caja %d", i + 1);
-                }
-            }
-        }
+        // for (i = 0; i < numCajas; i++)
+        // {
+        //     if (tiempo * 10 % tiempoAtencion[i] == 0)
+        //     {
+        //         if (!Empty(&cajas[i]))
+        //         {
+        //             e = Dequeue(&cajas[i]);
+        //             clientesAtendidos++;
+        //             // printf("\n\nAtendi a: %d en caja %d", e.i, i + 1);
+        //         }
+        //         else
+        //         {
+        //             // printf("\n\nNo hay alguien por atender en caja %d", i + 1);
+        //         }
+        //     }
+        // }
         if (tiempo * 10 % tiempoLlegada == 0)
         {
             clientes++;
-            e.i = clientes;
+            // e.i = clientes;
             caja = rand() % numCajas;
-            Queue(&cajas[caja], e);
-            printf("\n\nLlego el cliente: %d a la cola de la caja %d", e.i, caja + 1);
+
+            LlegadaCliente(clientes, caja, &cajas[caja], separacionCajas);
+            // Queue(&cajas[caja], e);
+            // printf("\n\nLlego el cliente: %d a la cola de la caja %d", e.i, caja + 1);
         }
 
         if (clientesAtendidos > 20)
@@ -149,6 +153,36 @@ void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
         printf("_");
     }
 
-    MoverCursor(columna + ancho / 2 - 1, 7);
-    printf("C%d", cliente);
+    // MoverCursor(columna + ancho / 2 - 1, 7);
+    // printf("C%d", cliente);
+}
+
+void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
+{
+    int columna, posX, posY;
+    elemento e;
+
+    columna = separacion + (numcola) * (anchoCaja + separacion);
+    posX = columna + anchoCaja + 1;
+    // Calcula la posición vertical según la cantidad de clientes en la cola
+    if (Size(c) < 7)
+    {
+        if (Empty(c))
+            posY = 7;
+        else if (Size(c) == 1)
+            posY = 7 + 4;
+        else
+            posY = 9 + (Size(c) * DISTANCIA);
+        MoverCursor(posX, posY);
+        printf("C%d", numcliente);
+    }
+    else
+    {
+        posY = 9 + 7 * DISTANCIA;
+        MoverCursor(posX, posY);
+        printf("+ %d", Size(c) - 6);
+    }
+
+    e.i = numcliente;
+    Queue(c, e);
 }
