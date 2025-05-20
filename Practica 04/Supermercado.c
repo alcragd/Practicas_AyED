@@ -8,7 +8,7 @@
 #include "Presentacion/presentacion.h"
 #include <time.h>
 
-#define TIEMPO_BASE 1000
+#define TIEMPO_BASE 10
 
 #define ANCHO 120 //
 #define ALTO 30   // ANCHO y AlTO de la consola*
@@ -71,15 +71,30 @@ int main()
         printf("\nError: El tiempo de llegada debe ser un multiplo de 10");
         exit(1);
     }
+
     separacionCajas = (ANCHO - anchoCaja * numCajas) / (numCajas + 1);
+
+    if (separacionCajas < 6)
+    {
+        separacionCajas = 6; // Asegurar una separación minima
+        printf("\n[!]-- Separación minima alcanzada, se recomienda ampliar el tamaño de la consola.");
+    }
+
+    printf("\n");
+    system("pause");
+
+    separacionCajas = (ANCHO - anchoCaja * numCajas) / (numCajas + 1);
+
+    if (separacionCajas < 6) // Asegurar una separación minima
+        separacionCajas = 6;
+
     BorrarPantalla();
-    MoverCursor(ANCHO / 2, 0);
+    MoverCursor((ANCHO - strlen(nombreSuper) - 12) / 2, 0);
     printf("Supermercado %s", nombreSuper);
     // Espacio entre cajas
     for (i = 1; i <= numCajas; i++)
         DibujaCaja(i, i, anchoCaja, altoCaja, separacionCajas);
     MoverCursor(1, 26);
-    system("pause");
 
     while (repetir)
     {
@@ -125,6 +140,7 @@ int main()
             }
         }
     }
+    MoverCursor(0, ALTO);
     printf("\n\n\nClientes atendidos: %d", clientesAtendidos);
     printf("\nTienda %s cerrada", nombreSuper);
     free(tiempoAtencion);
@@ -181,7 +197,7 @@ void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
     {
         posY = 9 + 7 * DISTANCIA;
         MoverCursor(posX, posY);
-        printf("+ %d", Size(c) - 6);
+        printf("+%d", Size(c) - 6);
     }
 
     e.i = numcliente;
@@ -193,32 +209,37 @@ void AtenderCliente(cola *c, int numcola, int separacion)
     int columna, posX, posY, i;
     columna = separacion + (numcola) * (anchoCaja + separacion);
     posX = columna + anchoCaja + 1;
-    MoverCursor(posX, 7);
     Dequeue(c);
 
+    // Limpiar la cola de clientes
+    for (i = 0; i < 9; i++)
+    {
+        MoverCursor(posX, 7 + i * DISTANCIA);
+        printf("     ");
+    }
+
+    // Dibujar los clientes restantes en la cola
     for (i = 1; i <= Size(c); i++)
     {
-        if (Size(c) < 7)
+        if (i <= 7)
         {
-            if (Empty(c))
+            if (i == 1)
                 posY = 7;
-            else if (Size(c) == 1)
+            else if (i == 2)
                 posY = 7 + 4;
             else
-                posY = 9 + (Size(c) * DISTANCIA);
+                posY = 9 + (i - 1) * DISTANCIA;
 
             MoverCursor(posX, posY);
-            printf("    ");
-            MoverCursor(posX, posY);
-            printf("C%d ", Element(c, i).i);
+            printf("C%d", Element(c, i).i);
         }
+
         else
         {
             posY = 9 + 7 * DISTANCIA;
             MoverCursor(posX, posY);
-            printf("    ");
-            MoverCursor(posX, posY);
-            printf("+ %d", Size(c) - 6);
+            printf("+%d", Size(c) - 6);
+            break;
         }
     }
 }
