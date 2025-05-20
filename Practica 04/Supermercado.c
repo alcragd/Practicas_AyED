@@ -8,7 +8,7 @@
 #include "Presentacion/presentacion.h"
 #include <time.h>
 
-#define TIEMPO_BASE 10
+#define TIEMPO_BASE 1000
 
 #define ANCHO 120 //
 #define ALTO 30   // ANCHO y AlTO de la consola*
@@ -117,6 +117,8 @@ int main()
         if (tiempo * 10 % tiempoLlegada == 0)
         {
             clientes++;
+            if (clientes == 9999)
+                break;
             // e.i = clientes;
             caja = rand() % numCajas;
 
@@ -136,8 +138,6 @@ int main()
                 }
             }
         }
-        if (clientesAtendidos == 9999)
-            break;
     }
     MoverCursor(0, ALTO);
     printf("\n\n\nClientes atendidos: %d", clientesAtendidos);
