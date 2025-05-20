@@ -149,6 +149,6 @@ void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
         printf("_");
     }
 
-    MoverCursor(separacion + (num - 1) * (ancho + separacion) + (ancho / 2) - 2, 7);
+    MoverCursor(columna + ancho / 2 - 1, 7);
     printf("C%d", cliente);
 }
