@@ -53,7 +53,7 @@ int main()
     }
     for (i = 0; i < numCajas; i++)
     {
-        printf("\n Ingrese el tiempo de atencion de la caja %d en milisegundos: ", i + 1);
+        printf("\nIngrese el tiempo de atencion de la caja %d en milisegundos: ", i + 1);
         scanf("%d", &tiempoAtencion[i]);
         if(tiempoAtencion[i]%10!=0)
         {
