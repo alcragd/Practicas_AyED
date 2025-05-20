@@ -55,7 +55,7 @@ int main()
     {
         printf("\nIngrese el tiempo de atencion de la caja %d en milisegundos: ", i + 1);
         scanf("%d", &tiempoAtencion[i]);
-        if(tiempoAtencion[i]%10!=0)
+        if (tiempoAtencion[i] % 10 != 0)
         {
             printf("\nError: El tiempo de atencion debe ser un multiplo de 10");
             exit(1);
@@ -64,16 +64,16 @@ int main()
     }
     printf("\nIngrese el tiempo de llegada de los clientes en milisegundos: ");
     scanf("%d", &tiempoLlegada);
-    if(tiempoLlegada%10!=0)
+    if (tiempoLlegada % 10 != 0)
     {
         printf("\nError: El tiempo de llegada debe ser un multiplo de 10");
         exit(1);
     }
-separacionCajas = (ANCHO - anchoCaja * numCajas) / (numCajas + 1);
+    separacionCajas = (ANCHO - anchoCaja * numCajas) / (numCajas + 1);
     BorrarPantalla();
-    MoverCursor(ANCHO/2,0);
+    MoverCursor(ANCHO / 2, 0);
     printf("Supermercado %s", nombreSuper);
-     // Espacio entre cajas
+    // Espacio entre cajas
     for (i = 1; i <= numCajas; i++)
         DibujaCaja(i, i, anchoCaja, altoCaja, separacionCajas);
     MoverCursor(1, 26);
@@ -130,25 +130,25 @@ separacionCajas = (ANCHO - anchoCaja * numCajas) / (numCajas + 1);
 void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
 {
     int columna, fila, i;
-    columna = num * (ancho + separacion);
-    
+    columna = separacion + (num - 1) * (ancho + separacion);
+
     MoverCursor(columna, 2);
     printf("Caja %d", num);
-    for(fila=4;fila<alto+3;fila++)
+    for (fila = 4; fila < alto + 3; fila++)
     {
-        MoverCursor(columna,fila);
+        MoverCursor(columna, fila);
         printf("|");
-        MoverCursor(columna+ancho,fila);
+        MoverCursor(columna + ancho, fila);
         printf("|");
     }
-    for(i=1;i<ancho;columna++,i++)
-        {
-            MoverCursor(columna+1,3);
-            printf("_");
-            MoverCursor(columna+1,fila-1);
-            printf("_");
-        }
+    for (i = 1; i < ancho; columna++, i++)
+    {
+        MoverCursor(columna + 1, 3);
+        printf("_");
+        MoverCursor(columna + 1, fila - 1);
+        printf("_");
+    }
 
-    MoverCursor(num * (ancho + separacion) + (ancho / 2) - 2 + (ancho % 2), 7);
-    printf("A:%d", cliente);
+    MoverCursor(separacion + (num - 1) * (ancho + separacion) + (ancho / 2) - 2, 7);
+    printf("C%d", cliente);
 }
