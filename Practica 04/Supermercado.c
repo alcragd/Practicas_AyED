@@ -4,17 +4,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include <time.h>
-
 #include "Cola Dinamica/TADColaDin.h"
-// #include "Cola Estatica/TADColaEst.h"
-
 #include "Presentacion/presentacion.h"
+#include <time.h>
 
 #define TIEMPO_BASE 1000
 
 #define ANCHO 120 //
 #define ALTO 30   // ANCHO y AlTO de la consola*
+#define anchoCaja 6
+#define altoCaja 8
 
 // #include "Cola Estática/TADColaEst.h"
 
@@ -25,7 +24,7 @@ int main()
 {
     char nombreSuper[50];
     int numCajas, i, clientes = 0, tiempo = 0, clientesAtendidos = 0;
-    int caja;
+    int caja, separacionCajas;
     int *tiempoAtencion;
     int tiempoLlegada;
 
@@ -45,10 +44,6 @@ int main()
         exit(1);
     }
 
-    PintadoInicial(numCajas);
-    MoverCursor(1, 26);
-    system("pause");
-
     tiempoAtencion = malloc(numCajas * sizeof(int));
     cajas = malloc(numCajas * sizeof(cola));
     if (tiempoAtencion == NULL || cajas == NULL)
@@ -60,10 +55,29 @@ int main()
     {
         printf("\n Ingrese el tiempo de atencion de la caja %d en milisegundos: ", i + 1);
         scanf("%d", &tiempoAtencion[i]);
+        if(tiempoAtencion[i]%10!=0)
+        {
+            printf("\nError: El tiempo de atencion debe ser un multiplo de 10");
+            exit(1);
+        }
         Initialize(&cajas[i]);
     }
     printf("\nIngrese el tiempo de llegada de los clientes en milisegundos: ");
     scanf("%d", &tiempoLlegada);
+    if(tiempoLlegada%10!=0)
+    {
+        printf("\nError: El tiempo de llegada debe ser un multiplo de 10");
+        exit(1);
+    }
+separacionCajas = (ANCHO - anchoCaja * numCajas) / (numCajas + 1);
+    BorrarPantalla();
+    MoverCursor(ANCHO/2,0);
+    printf("Supermercado %s", nombreSuper);
+     // Espacio entre cajas
+    for (i = 1; i <= numCajas; i++)
+        DibujaCaja(i, i, anchoCaja, altoCaja, separacionCajas);
+    MoverCursor(1, 26);
+    system("pause");
 
     while (repetir)
     {
@@ -113,34 +127,28 @@ int main()
     return 0;
 }
 
-void PintadoInicial(int cantCajas)
-{
-    int i, separacion;
-    int anchoCaja, altoCaja;
-
-    anchoCaja = 6;
-    altoCaja = 8;
-
-    BorrarPantalla();
-    separacion = (ANCHO - anchoCaja * cantCajas) / (cantCajas + 1);
-    for (i = 1; i <= cantCajas; i++)
-        DibujaCaja(i, i, anchoCaja, altoCaja, separacion);
-}
-
 void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
 {
     int columna, fila, i;
     columna = num * (ancho + separacion);
-
-    for (i = 0; i < ancho; columna++, i++)
+    
+    MoverCursor(columna, 2);
+    printf("Caja %d", num);
+    for(fila=4;fila<alto+3;fila++)
     {
-        for (fila = 1; fila < alto; fila++)
-        {
-            MoverCursor(columna, fila);
-            printf("*");
-        }
+        MoverCursor(columna,fila);
+        printf("|");
+        MoverCursor(columna+ancho,fila);
+        printf("|");
     }
+    for(i=1;i<ancho;columna++,i++)
+        {
+            MoverCursor(columna+1,3);
+            printf("_");
+            MoverCursor(columna+1,fila-1);
+            printf("_");
+        }
 
-    MoverCursor(num * (ancho + separacion) + (ancho / 2) - 2 + (ancho % 2), 2);
+    MoverCursor(num * (ancho + separacion) + (ancho / 2) - 2 + (ancho % 2), 7);
     printf("A:%d", cliente);
 }
