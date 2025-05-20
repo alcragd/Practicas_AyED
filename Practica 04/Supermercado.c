@@ -19,7 +19,7 @@
 // #include "Cola Estática/TADColaEst.h"
 
 void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion);
-void AtenderCliente(cola *c, int numcola);
+void AtenderCliente(cola *c, int numcola, int separacion);
 void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion);
 
 int main()
@@ -85,22 +85,23 @@ int main()
     {
         EsperarMiliSeg(TIEMPO_BASE); // Esperar el tiempo base
         tiempo++;                    // Incrementar el contador de tiempo
-        // for (i = 0; i < numCajas; i++)
-        // {
-        //     if (tiempo * 10 % tiempoAtencion[i] == 0)
-        //     {
-        //         if (!Empty(&cajas[i]))
-        //         {
-        //             e = Dequeue(&cajas[i]);
-        //             clientesAtendidos++;
-        //             // printf("\n\nAtendi a: %d en caja %d", e.i, i + 1);
-        //         }
-        //         else
-        //         {
-        //             // printf("\n\nNo hay alguien por atender en caja %d", i + 1);
-        //         }
-        //     }
-        // }
+        for (i = 0; i < numCajas; i++)
+        {
+            if (tiempo * 10 % tiempoAtencion[i] == 0)
+            {
+                if (!Empty(&cajas[i]))
+                {
+                    clientesAtendidos++;
+                    AtenderCliente(&cajas[i], i, separacionCajas);
+                    // e = Dequeue(&cajas[i]);
+                    // printf("\n\nAtendi a: %d en caja %d", e.i, i + 1);
+                }
+                // else
+                // {
+                //     // printf("\n\nNo hay alguien por atender en caja %d", i + 1);
+                // }
+            }
+        }
         if (tiempo * 10 % tiempoLlegada == 0)
         {
             clientes++;
@@ -185,4 +186,39 @@ void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
 
     e.i = numcliente;
     Queue(c, e);
+}
+
+void AtenderCliente(cola *c, int numcola, int separacion)
+{
+    int columna, posX, posY, i;
+    columna = separacion + (numcola) * (anchoCaja + separacion);
+    posX = columna + anchoCaja + 1;
+    MoverCursor(posX, 7);
+    Dequeue(c);
+
+    for (i = 1; i <= Size(c); i++)
+    {
+        if (Size(c) < 7)
+        {
+            if (Empty(c))
+                posY = 7;
+            else if (Size(c) == 1)
+                posY = 7 + 4;
+            else
+                posY = 9 + (Size(c) * DISTANCIA);
+
+            MoverCursor(posX, posY);
+            printf("    ");
+            MoverCursor(posX, posY);
+            printf("C%d ", Element(c, i).i);
+        }
+        else
+        {
+            posY = 9 + 7 * DISTANCIA;
+            MoverCursor(posX, posY);
+            printf("    ");
+            MoverCursor(posX, posY);
+            printf("+ %d", Size(c) - 6);
+        }
+    }
 }
