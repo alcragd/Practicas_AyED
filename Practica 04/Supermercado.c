@@ -14,7 +14,7 @@
 #define ALTO 30   // ANCHO y AlTO de la consola*
 #define anchoCaja 6
 #define altoCaja 8
-#define DISTANCIA 2
+#define DISTANCIA 2 // Distancia entre clientes
 
 // #include "Cola Estática/TADColaEst.h"
 
@@ -35,6 +35,8 @@ int main()
     elemento e;
 
     srand(time(NULL));
+
+    BorrarPantalla();
 
     printf("Ingrese el nombre del supermercado: ");
     scanf("%s", nombreSuper);
@@ -82,11 +84,6 @@ int main()
 
     printf("\n");
     system("pause");
-
-    separacionCajas = (ANCHO - anchoCaja * numCajas) / (numCajas + 1);
-
-    if (separacionCajas < 6) // Asegurar una separación minima
-        separacionCajas = 6;
 
     BorrarPantalla();
     MoverCursor((ANCHO - strlen(nombreSuper) - 12) / 2, 0);
@@ -139,6 +136,8 @@ int main()
                 }
             }
         }
+        if (clientesAtendidos == 9999)
+            break;
     }
     MoverCursor(0, ALTO);
     printf("\n\n\nClientes atendidos: %d", clientesAtendidos);
