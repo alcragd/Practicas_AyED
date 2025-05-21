@@ -28,10 +28,17 @@ typedef struct elemento
 {
 	// Variables de la estructura "elemento" (El usuario puede modificar)
 	int i;
+	char nombre[45];
+	int tiempoEjecucion;
+	int tiempoTotal;
+	char actividad[200];
+	char ID[45];
 	//***
 	//***
 	//***
 } elemento;
+
+
 
 // Definir la estructura de un nodo dinámico
 typedef struct nodo
