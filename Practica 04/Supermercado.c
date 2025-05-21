@@ -18,7 +18,6 @@
 
 // #include "Cola Estática/TADColaEst.h"
 
-
 void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion);
 void AtenderCliente(cola *c, int numcola, int separacion);
 void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion);
