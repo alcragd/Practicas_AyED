@@ -25,9 +25,9 @@ super_est:
 
 
 so_din:
-	$(CC) -o $(OUT1) $(FUENTE1) $(COLA_DIN) $(Presentacion)
+	$(CC) -o $(OUT2) $(FUENTE2) $(COLA_DIN) $(Presentacion)
 so_est:
-	$(CC) -o $(OUT1) $(FUENTE1) $(COLA_EST) $(Presentacion)
+	$(CC) -o $(OUT2) $(FUENTE2) $(COLA_EST) $(Presentacion)
 
 
 clean:
