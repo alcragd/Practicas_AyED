@@ -6,9 +6,10 @@
 #include <windows.h>
 #include "Cola Dinamica/TADColaDin.h"
 #include "Presentacion/presentacion.h"
+#include "Utils\consola_utils.h"
 #include <time.h>
 
-#define TIEMPO_BASE 1000
+#define TIEMPO_BASE 10 // 10ms
 
 #define ANCHO 120 //
 #define ALTO 30   // ANCHO y AlTO de la consola*
@@ -38,14 +39,14 @@ int main()
 
     BorrarPantalla();
 
-    printf("Ingrese el nombre del supermercado: ");
+    printf("Ingrese el nombre del supermercado: \n>> ");
     scanf("%s", nombreSuper);
-    printf("\nIngrese el numero de cajas: ");
+    printf("\nIngrese el numero de cajas:\n>> ");
     scanf("%d", &numCajas);
-    if (numCajas < 1 || numCajas > 10)
+    while (numCajas < 1 || numCajas > 10)
     {
-        printf("\nError: El numero de cajas debe ser entre 1 y 10");
-        exit(1);
+        printf("\nError: El numero de cajas debe ser entre 1 y 10\n>> ");
+        scanf("%d", &numCajas);
     }
 
     tiempoAtencion = malloc(numCajas * sizeof(int));
@@ -57,21 +58,24 @@ int main()
     }
     for (i = 0; i < numCajas; i++)
     {
-        printf("\nIngrese el tiempo de atencion de la caja %d en milisegundos: ", i + 1);
+        printf("\nIngrese el tiempo de atencion de la caja %d en milisegundos: \n>> ", i + 1);
         scanf("%d", &tiempoAtencion[i]);
-        if (tiempoAtencion[i] % 10 != 0)
+
+        while (tiempoAtencion[i] % 10 != 0)
         {
-            printf("\nError: El tiempo de atencion debe ser un multiplo de 10");
-            exit(1);
+            printf("\n[*]-- El tiempo de atencion debe ser un multiplo de 10 \n>> ");
+            scanf("%d", &tiempoAtencion[i]);
         }
+
         Initialize(&cajas[i]);
     }
-    printf("\nIngrese el tiempo de llegada de los clientes en milisegundos: ");
+    printf("\nIngrese el tiempo de llegada de los clientes en milisegundos:\n>>  ");
     scanf("%d", &tiempoLlegada);
-    if (tiempoLlegada % 10 != 0)
+
+    while (tiempoLlegada % 10 != 0)
     {
-        printf("\nError: El tiempo de llegada debe ser un multiplo de 10");
-        exit(1);
+        printf("\n[*]-- El tiempo de llegada debe ser un multiplo de 10\n>> ");
+        scanf("%d", &tiempoLlegada);
     }
 
     separacionCajas = (ANCHO - anchoCaja * numCajas) / (numCajas + 1);
@@ -86,6 +90,8 @@ int main()
     system("pause");
 
     BorrarPantalla();
+    ocultarCursor();
+
     MoverCursor((ANCHO - strlen(nombreSuper) - 12) / 2, 0);
     printf("Supermercado %s", nombreSuper);
     // Espacio entre cajas
@@ -127,7 +133,7 @@ int main()
             // printf("\n\nLlego el cliente: %d a la cola de la caja %d", e.i, caja + 1);
         }
 
-        if (clientesAtendidos > 20)
+        if (clientesAtendidos >= 100)
         {
             repetir = 0;
             for (i = 0; i < numCajas; i++)
@@ -142,6 +148,7 @@ int main()
     MoverCursor(0, ALTO);
     printf("\n\n\nClientes atendidos: %d", clientesAtendidos);
     printf("\nTienda %s cerrada", nombreSuper);
+    mostrarCursor();
     free(tiempoAtencion);
     free(cajas);
     return 0;
@@ -196,7 +203,9 @@ void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
     {
         posY = 9 + 7 * DISTANCIA;
         MoverCursor(posX, posY);
+        cambiarColor(GRIS_CLARO, NEGRO);
         printf("+%d", Size(c) - 6);
+        restaurarColor();
     }
 
     e.i = numcliente;
@@ -237,7 +246,9 @@ void AtenderCliente(cola *c, int numcola, int separacion)
         {
             posY = 9 + 7 * DISTANCIA;
             MoverCursor(posX, posY);
+            cambiarColor(GRIS_CLARO, NEGRO);
             printf("+%d", Size(c) - 6);
+            restaurarColor();
             break;
         }
     }
