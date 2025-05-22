@@ -1,6 +1,7 @@
 #ifndef CONSOLA_UTILS_H
 #define CONSOLA_UTILS_H
 
+#include <stdlib.h>
 // Colores básicos
 enum Color
 {
@@ -29,5 +30,8 @@ void mostrarCursor(void);
 
 // Configura la consola para usar codificación UTF-8(Acentos, emojis, ...)
 void forzarUTF8(void);
+
+// Establece una función que se ejecutará al presionar Ctrl + C
+void cacharCtrlC(void (*funcion)(void));
 
 #endif // CONSOLA_UTILS_H

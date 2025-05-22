@@ -6,14 +6,14 @@
 #include <windows.h>
 #include "Cola Dinamica/TADColaDin.h"
 #include "Presentacion/presentacion.h"
-#include "Utils\consola_utils.h"
+#include "Utils/consola_utils.h"
 #include <time.h>
 
 #define TIEMPO_BASE 10 // 10ms
 
 #define ANCHO 120 //
 #define ALTO 30   // ANCHO y AlTO de la consola*
-#define anchoCaja 6
+#define anchoCaja 5
 #define altoCaja 8
 #define DISTANCIA 2 // Distancia entre clientes
 
@@ -22,6 +22,7 @@
 void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion);
 void AtenderCliente(cola *c, int numcola, int separacion);
 void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion);
+void cuandoCtrlC(void);
 
 int main()
 {
@@ -40,13 +41,15 @@ int main()
     forzarUTF8();
     BorrarPantalla();
 
+    cacharCtrlC(cuandoCtrlC);
+
     printf("Ingrese el nombre del supermercado: \n>> ");
     scanf("%s", nombreSuper);
     printf("\nIngrese el numero de cajas:\n>> ");
     scanf("%d", &numCajas);
     while (numCajas < 1 || numCajas > 10)
     {
-        printf("\nError: El numero de cajas debe ser entre 1 y 10\n>> ");
+        printf("\n[*]-- El numero de cajas debe estar entre 1 y 10\n>> ");
         scanf("%d", &numCajas);
     }
 
@@ -94,7 +97,10 @@ int main()
     ocultarCursor();
 
     MoverCursor((ANCHO - strlen(nombreSuper) - 13) / 2, 0); // Centrar nombre del supermercado
-    printf("Supermercado %s", nombreSuper);
+    printf("Supermercado ");
+    cambiarColor(VERDE, NEGRO);
+    printf("%s", nombreSuper);
+    restaurarColor();
     // Espacio entre cajas
     for (i = 1; i <= numCajas; i++)
         DibujaCaja(i, i, anchoCaja, altoCaja, separacionCajas);
@@ -146,7 +152,7 @@ int main()
             }
         }
     }
-    MoverCursor(0, ALTO);
+    MoverCursor(0, ALTO - 2);
     printf("\n\n\nClientes atendidos: %d", clientesAtendidos);
     printf("\nTienda %s cerrada", nombreSuper);
     mostrarCursor();
@@ -177,6 +183,8 @@ void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
         printf("_");
     }
 
+    MoverCursor(columna - (ancho / 2), 5);
+    printf("🗃️");
     // MoverCursor(columna + ancho / 2 - 1, 7);
     // printf("C%d", cliente);
 }
@@ -198,7 +206,7 @@ void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
         else
             posY = 9 + (Size(c) * DISTANCIA);
         MoverCursor(posX, posY);
-        printf("C%d", numcliente);
+        printf("👤%d", numcliente);
     }
     else
     {
@@ -240,7 +248,7 @@ void AtenderCliente(cola *c, int numcola, int separacion)
                 posY = 9 + (i - 1) * DISTANCIA;
 
             MoverCursor(posX, posY);
-            printf("C%d", Element(c, i).i);
+            printf("👤%d", Element(c, i).i);
         }
 
         else
@@ -253,4 +261,11 @@ void AtenderCliente(cola *c, int numcola, int separacion)
             break;
         }
     }
+}
+
+void cuandoCtrlC(void)
+{
+    restaurarColor();
+    mostrarCursor();
+    MoverCursor(0, ALTO - 2);
 }

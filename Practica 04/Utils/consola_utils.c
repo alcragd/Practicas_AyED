@@ -1,5 +1,6 @@
 #include "consola_utils.h"
 #include <stdio.h>
+#include <signal.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -68,4 +69,21 @@ void forzarUTF8(void)
 #else
     setlocale(LC_ALL, "");
 #endif
+}
+
+static void (*funcionCtrlC)(void) = NULL;
+
+static void CtrlCAux(int sig)
+{
+    if (sig == SIGINT && funcionCtrlC != NULL)
+    {
+        funcionCtrlC();
+    }
+    exit(0);
+}
+
+void cacharCtrlC(void (*funcion)(void))
+{
+    funcionCtrlC = funcion;
+    signal(SIGINT, CtrlCAux);
 }
