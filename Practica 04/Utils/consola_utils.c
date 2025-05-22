@@ -5,6 +5,7 @@
 #include <windows.h>
 #else
 #include <unistd.h>
+#include <locale.h>
 #endif
 
 void cambiarColor(int texto, int fondo)
@@ -56,5 +57,15 @@ void mostrarCursor(void)
 #else
     printf("\033[?25h");
     fflush(stdout);
+#endif
+}
+
+void forzarUTF8(void)
+{
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#else
+    setlocale(LC_ALL, "");
 #endif
 }

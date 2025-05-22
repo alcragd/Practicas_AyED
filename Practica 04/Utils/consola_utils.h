@@ -27,4 +27,7 @@ void ocultarCursor(void);
 // Mostrar cursor de la consola
 void mostrarCursor(void);
 
+// Configura la consola para usar codificación UTF-8(Acentos, emojis, ...)
+void forzarUTF8(void);
+
 #endif // CONSOLA_UTILS_H

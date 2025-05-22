@@ -37,6 +37,7 @@ int main()
 
     srand(time(NULL));
 
+    forzarUTF8();
     BorrarPantalla();
 
     printf("Ingrese el nombre del supermercado: \n>> ");
@@ -92,7 +93,7 @@ int main()
     BorrarPantalla();
     ocultarCursor();
 
-    MoverCursor((ANCHO - strlen(nombreSuper) - 12) / 2, 0);
+    MoverCursor((ANCHO - strlen(nombreSuper) - 13) / 2, 0); // Centrar nombre del supermercado
     printf("Supermercado %s", nombreSuper);
     // Espacio entre cajas
     for (i = 1; i <= numCajas; i++)
