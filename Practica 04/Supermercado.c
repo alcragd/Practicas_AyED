@@ -73,7 +73,7 @@ int main()
 
         Initialize(&cajas[i]);
     }
-    printf("\nIngrese el tiempo de llegada de los clientes en milisegundos:\n>>  ");
+    printf("\nIngrese el tiempo de llegada de los clientes en milisegundos:\n>> ");
     scanf("%d", &tiempoLlegada);
 
     while (tiempoLlegada % 10 != 0)
@@ -130,12 +130,14 @@ int main()
         if (tiempo * 10 % tiempoLlegada == 0)
         {
             clientes++;
-            if (clientes == 9999)
-                break;
-            // e.i = clientes;
+
             caja = rand() % numCajas;
 
             LlegadaCliente(clientes, caja, &cajas[caja], separacionCajas);
+            if (clientes == 9999)
+                break;
+
+            // e.i = clientes;
             // Queue(&cajas[caja], e);
             // printf("\n\nLlego el cliente: %d a la cola de la caja %d", e.i, caja + 1);
         }
