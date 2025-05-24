@@ -24,10 +24,35 @@ void AtenderCliente(cola *c, int numcola, int separacion);
 void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion);
 void cuandoCtrlC(void);
 
+char *Emojis[] = {
+    "👦",            // niño
+    "👧",            // niña
+    "🧑",            // persona
+    "👨",            // hombre
+    "👩",            // mujer
+    "🧔",            // hombre con barba
+    "👱‍♂️", // hombre rubio
+    "👱‍♀️", // mujer rubia
+    "🧓",            // persona mayor
+    "👴",            // abuelo
+    "👵",            // abuela
+    "🧑‍🎓",   // estudiante
+    "🧑‍💼",   // oficinista
+    "🧑‍🔬",   // científico
+    "🧑‍🍳",   // chef
+    "🧑‍🚀",   // astronauta
+    "🧑‍🚒",   // bombero
+    "👮",            // policía
+    "🕵️",            // detective
+    "💂"             // guardia
+};
+
+#define NUM_EMOJIS (sizeof(Emojis) / sizeof(Emojis[0]))
+
 int main()
 {
     char nombreSuper[50];
-    int numCajas, i, clientes = 0, tiempo = 0, clientesAtendidos = 0;
+    int numCajas, i, clientes = 0, tiempo = 0, clientesAtendidos = 0, colAtendidos, colFormados;
     int caja, separacionCajas;
     int *tiempoAtencion;
     int tiempoLlegada;
@@ -44,9 +69,12 @@ int main()
     cacharCtrlC(cuandoCtrlC);
 
     printf("Ingrese el nombre del supermercado: \n>> ");
-    scanf("%s", nombreSuper);
+    fgets(nombreSuper, sizeof(nombreSuper), stdin);
+    nombreSuper[strcspn(nombreSuper, "\n")] = 0;
+
     printf("\nIngrese el numero de cajas:\n>> ");
     scanf("%d", &numCajas);
+
     while (numCajas < 1 || numCajas > 10)
     {
         printf("\n[*]-- El numero de cajas debe estar entre 1 y 10\n>> ");
@@ -84,9 +112,9 @@ int main()
 
     separacionCajas = (ANCHO - anchoCaja * numCajas) / (numCajas + 1);
 
-    if (separacionCajas < 6)
+    if (separacionCajas < 7)
     {
-        separacionCajas = 6; // Asegurar una separación minima
+        separacionCajas = 7; // Asegurar una separación minima
         printf("\n[!]-- Separación minima alcanzada, se recomienda ampliar el tamaño de la consola.");
     }
 
@@ -104,7 +132,11 @@ int main()
     // Espacio entre cajas
     for (i = 1; i <= numCajas; i++)
         DibujaCaja(i, i, anchoCaja, altoCaja, separacionCajas);
-    MoverCursor(1, 26);
+
+    MoverCursor(1, 11 + 7 * DISTANCIA);
+    printf("Clientes Atendidos: 0");
+    MoverCursor(1, 12 + 7 * DISTANCIA);
+    printf("Clientes Formados: 0");
 
     while (repetir)
     {
@@ -118,6 +150,30 @@ int main()
                 {
                     clientesAtendidos++;
                     AtenderCliente(&cajas[i], i, separacionCajas);
+
+                    if (clientesAtendidos >= 100)
+                        colAtendidos = VERDE;
+                    else if (clientesAtendidos >= 50)
+                        colAtendidos = AMARILLO;
+                    else
+                        colAtendidos = ROJO;
+
+                    if (clientes - clientesAtendidos >= clientesAtendidos)
+                        colFormados = ROJO;
+                    else if (clientes - clientesAtendidos >= clientesAtendidos / 2)
+                        colFormados = AMARILLO;
+                    else
+                        colFormados = VERDE;
+
+                    cambiarColor(colAtendidos, NEGRO);
+                    MoverCursor(21, 11 + 7 * DISTANCIA);
+                    printf("%d", clientesAtendidos);
+
+                    cambiarColor(colFormados, NEGRO);
+                    MoverCursor(20, 12 + 7 * DISTANCIA);
+                    printf("%d", clientes - clientesAtendidos);
+
+                    restaurarColor();
                     // e = Dequeue(&cajas[i]);
                     // printf("\n\nAtendi a: %d en caja %d", e.i, i + 1);
                 }
@@ -127,13 +183,28 @@ int main()
                 // }
             }
         }
-        if (tiempo * 10 % tiempoLlegada == 0)
+
+        if ((tiempo * 10 % tiempoLlegada == 0) && repetir)
         {
             clientes++;
 
             caja = rand() % numCajas;
 
             LlegadaCliente(clientes, caja, &cajas[caja], separacionCajas);
+
+            if (clientes - clientesAtendidos >= clientesAtendidos)
+                colFormados = ROJO;
+            else if (clientes - clientesAtendidos >= clientesAtendidos / 2)
+                colFormados = AMARILLO;
+            else
+                colFormados = VERDE;
+
+            cambiarColor(colFormados, NEGRO);
+            MoverCursor(20, 12 + 7 * DISTANCIA);
+            printf("%d", clientes - clientesAtendidos);
+
+            restaurarColor();
+
             if (clientes == 9999)
                 break;
 
@@ -193,11 +264,13 @@ void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
 
 void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
 {
-    int columna, posX, posY;
+    int columna, posX, posY, emoji_indice;
     elemento e;
 
     columna = separacion + (numcola) * (anchoCaja + separacion);
     posX = columna + anchoCaja + 1;
+    emoji_indice = rand() % NUM_EMOJIS;
+
     // Calcula la posición vertical según la cantidad de clientes en la cola
     if (Size(c) < 7)
     {
@@ -208,7 +281,7 @@ void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
         else
             posY = 9 + (Size(c) * DISTANCIA);
         MoverCursor(posX, posY);
-        printf("👤%d", numcliente);
+        printf("%s%d", Emojis[emoji_indice], numcliente);
     }
     else
     {
@@ -220,6 +293,8 @@ void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
     }
 
     e.i = numcliente;
+    e.emoji = emoji_indice;
+
     Queue(c, e);
 }
 
@@ -234,7 +309,7 @@ void AtenderCliente(cola *c, int numcola, int separacion)
     for (i = 0; i < 9; i++)
     {
         MoverCursor(posX, 7 + i * DISTANCIA);
-        printf("     ");
+        printf("      ");
     }
 
     // Dibujar los clientes restantes en la cola
@@ -250,7 +325,8 @@ void AtenderCliente(cola *c, int numcola, int separacion)
                 posY = 9 + (i - 1) * DISTANCIA;
 
             MoverCursor(posX, posY);
-            printf("👤%d", Element(c, i).i);
+
+            printf("%s%d", Emojis[Element(c, i).emoji], Element(c, i).i);
         }
 
         else
@@ -267,7 +343,10 @@ void AtenderCliente(cola *c, int numcola, int separacion)
 
 void cuandoCtrlC(void)
 {
+
     restaurarColor();
     mostrarCursor();
     MoverCursor(0, ALTO - 2);
+
+    exit(0);
 }

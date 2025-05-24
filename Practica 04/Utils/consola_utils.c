@@ -79,7 +79,6 @@ static void CtrlCAux(int sig)
     {
         funcionCtrlC();
     }
-    exit(0);
 }
 
 void cacharCtrlC(void (*funcion)(void))
