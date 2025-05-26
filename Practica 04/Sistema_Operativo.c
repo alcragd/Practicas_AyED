@@ -5,7 +5,7 @@
 
 #include "Cola Dinamica/TADColaDin.h"
 #include "Presentacion/presentacion.h"
-#include "Utiles/consola_utils.h"
+#include "Utils/consola_utils.h"
 
 #define ANCHO 120
 #define ALTO 30
@@ -74,15 +74,19 @@ int main()
     MoverCursor(0, 29);
     while (!Empty(&porEjecutar))
     {
+        Sleep(1000);
         tiempoTotal++;
         sprintf(tiempoStr, "Tiempo: %d", tiempoTotal);
         TextoCajaContador(2, 12, anchoFaltantes, 3, tiempoStr);
-
         e = Dequeue(&porEjecutar);
         if (e.tiempoEjecucion == 0)
         {
             e.tiempoTotal=tiempoTotal;
             Queue(&Finalizados, e);
+            int tamFinalizados= Size(&Finalizados);
+            char FinStr[32];
+            sprintf(FinStr, "Terminados: %d", tamFinalizados);
+            TextoCajaContador(2, 24, anchoFaltantes + 3, 3, FinStr);
             //printf("Proceso finalizado: %s\n", e.nombre);
         }
         else
@@ -94,12 +98,16 @@ int main()
             // printf("ID: %s\n", e.ID);
             // printf("Tiempo de ejecucion: %d\n", e.tiempoEjecucion);
             // printf("Tiempo total: %d\n", e.tiempoTotal);
-            Sleep(1000);
+           
 
             e = Dequeue(&Ejecutando);
             e.tiempoEjecucion--;
             Queue(&porEjecutar, e);
         }
+        int tamfaltantes= Size(&porEjecutar)+Size(&Ejecutando);
+        char FsltsntesStr[32];
+        sprintf(FsltsntesStr, "Faltantes: %d", tamfaltantes);
+        TextoCajaContador(2, 1, anchoFaltantes, 3, FsltsntesStr);
     }
 /*
     printf("Los procesos finalizados son:\n");
@@ -118,6 +126,7 @@ int main()
     Destroy(&Finalizados);
     return 0;
     */
+   MoverCursor(1,29);
 }
 
 void DibujarCaja(int x, int y, int ancho, int alto, char *texto)
