@@ -19,13 +19,12 @@
 void DibujarCaja(int x, int y, int ancho, int alto, char *texto);
 void TextoCajaContador(int x, int y, int ancho, int alto, char *texto);
 
-
 int main()
 {
     cola porEjecutar, Ejecutando, Finalizados;
-    int i, j, cantProcesos, tiempoEjecutar, tiempoTotal=0, InicioCajaX, InicioCajaY;
-    char NombreProceso[45], actividad[200], ID[45], tiempoStr[32];
-    elemento e;
+    int i, j, cantProcesos, tiempoEjecutar, tiempoTotal = 0, InicioCajaX, InicioCajaY, tamFinalizados, tamfaltantes;
+    char NombreProceso[45], actividad[200], ID[45], tiempoStr[32], FinStr[32], FsltsntesStr[32], UltFin[32], Ant[32], Sig[32];
+    elemento e, e_ant, e_sig;
     Initialize(&porEjecutar);
     Initialize(&Ejecutando);
     Initialize(&Finalizados);
@@ -61,16 +60,16 @@ int main()
 
     system("pause");
     BorrarPantalla();
-    InicioCajaX = (ANCHO- anchoCaja) / 2 + 10;
-    InicioCajaY = (ALTO - altoCaja) / 2 -5;
+    InicioCajaX = (ANCHO - anchoCaja) / 2 + 10;
+    InicioCajaY = (ALTO - altoCaja) / 2 - 5;
 
     DibujarCaja(2, 1, anchoFaltantes, 3, "Faltantes: 0");
     DibujarCaja(2, 12, anchoFaltantes, 3, "Tiempo: 0");
     DibujarCaja(2, 24, anchoFaltantes + 3, 3, "Terminados: 0");
-    DibujarCaja(InicioCajaX, InicioCajaY - 4, anchoCaja, 3, "Anterior: ID SAMPLE 1");
+    DibujarCaja(InicioCajaX, InicioCajaY - 4, anchoCaja, 3, "Anterior: ");
     DibujarCaja(InicioCajaX, InicioCajaY, anchoCaja, altoCaja, "");
-    DibujarCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, "Siguiente: ID SAMPLE 1");
-    DibujarCaja(InicioCajaX, altoCaja + InicioCajaY + 6, anchoCaja, 5, "Ultimo Finalizado: Nombre/ID");
+    DibujarCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, "Siguiente: ");
+    DibujarCaja(InicioCajaX, altoCaja + InicioCajaY + 6, anchoCaja, 5, "Ultimo Finalizado:");
     MoverCursor(0, 29);
     while (!Empty(&porEjecutar))
     {
@@ -82,41 +81,52 @@ int main()
         e.tiempoEjecucion--;
         e.tiempoTotal = tiempoTotal;
 
+        e_sig = Front(&porEjecutar);
+        e_ant = Final(&porEjecutar);
+
+        sprintf(Ant, "Anterior: %s %s", e_ant.ID, e_ant.nombre);
+        sprintf(Sig, "Siguiente: %s %s", e_sig.ID, e_sig.nombre);
+
+        DibujarCaja(InicioCajaX, InicioCajaY - 4, anchoCaja, 3, Ant);
+        DibujarCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, Sig);
+
         if (e.tiempoEjecucion <= 0)
         {
             Queue(&Finalizados, e);
-            int tamFinalizados = Size(&Finalizados);
-            char FinStr[32];
+            tamFinalizados = Size(&Finalizados);
             sprintf(FinStr, "Terminados: %d", tamFinalizados);
             TextoCajaContador(2, 24, anchoFaltantes + 3, 3, FinStr);
+
+            sprintf(UltFin, "Ultimo Finalizado: %s %s", e.ID, e.nombre);
+            TextoCajaContador(InicioCajaX, altoCaja + InicioCajaY + 6, anchoCaja, 5, UltFin);
         }
         else
         {
             Queue(&porEjecutar, e);
         }
-        int tamfaltantes= Size(&porEjecutar)+Size(&Ejecutando);
-        char FsltsntesStr[32];
+        tamfaltantes = Size(&porEjecutar) + Size(&Ejecutando);
+        FsltsntesStr[32];
         sprintf(FsltsntesStr, "Faltantes: %d", tamfaltantes);
         TextoCajaContador(2, 1, anchoFaltantes, 3, FsltsntesStr);
     }
-/*
-    printf("Los procesos finalizados son:\n");
-    while (!Empty(&Finalizados))
-    {
-        e = Dequeue(&Finalizados);
-        printf("Proceso finalizado:\n");
-        printf("Nombre: %s\n", e.nombre);
-        printf("Actividad: %s\n", e.actividad);
-        printf("ID: %s\n", e.ID);
-        printf("Tiempo total: %d\n\n", e.tiempoTotal);
-    }
+    /*
+        printf("Los procesos finalizados son:\n");
+        while (!Empty(&Finalizados))
+        {
+            e = Dequeue(&Finalizados);
+            printf("Proceso finalizado:\n");
+            printf("Nombre: %s\n", e.nombre);
+            printf("Actividad: %s\n", e.actividad);
+            printf("ID: %s\n", e.ID);
+            printf("Tiempo total: %d\n\n", e.tiempoTotal);
+        }
 
-    Destroy(&porEjecutar);
-    Destroy(&Ejecutando);
-    Destroy(&Finalizados);
-    return 0;
-    */
-   MoverCursor(1,29);
+        Destroy(&porEjecutar);
+        Destroy(&Ejecutando);
+        Destroy(&Finalizados);
+        return 0;
+        */
+    MoverCursor(1, 29);
 }
 
 void DibujarCaja(int x, int y, int ancho, int alto, char *texto)
@@ -148,18 +158,21 @@ void DibujarCaja(int x, int y, int ancho, int alto, char *texto)
         MoverCursor(x + offsetTituloX + 1, y + offsetTituloY);
         printf("%s", texto);
     }
-    
 }
 void TextoCajaContador(int x, int y, int ancho, int alto, char *texto)
 {
     int tituloLen = strlen(texto);
     int offsetTituloX = (ancho - tituloLen) / 2;
     int offsetTituloY = alto / 2 + 1;
+    int i;
 
+    MoverCursor(x + 1, offsetTituloY);
+    for (i = 0; i < ancho - 1; i++)
+        printf(" ");
     if (tituloLen > 0 && ancho > tituloLen)
     {
         MoverCursor(x + offsetTituloX + 1, y + offsetTituloY);
+
         printf("%s", texto);
     }
 }
-
