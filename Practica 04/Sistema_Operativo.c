@@ -79,29 +79,19 @@ int main()
         sprintf(tiempoStr, "Tiempo: %d", tiempoTotal);
         TextoCajaContador(2, 12, anchoFaltantes, 3, tiempoStr);
         e = Dequeue(&porEjecutar);
-        if (e.tiempoEjecucion == 0)
+        e.tiempoEjecucion--;
+        e.tiempoTotal = tiempoTotal;
+
+        if (e.tiempoEjecucion <= 0)
         {
-            e.tiempoTotal=tiempoTotal;
             Queue(&Finalizados, e);
-            int tamFinalizados= Size(&Finalizados);
+            int tamFinalizados = Size(&Finalizados);
             char FinStr[32];
             sprintf(FinStr, "Terminados: %d", tamFinalizados);
             TextoCajaContador(2, 24, anchoFaltantes + 3, 3, FinStr);
-            //printf("Proceso finalizado: %s\n", e.nombre);
         }
         else
         {
-            e.tiempoTotal=tiempoTotal;
-            Queue(&Ejecutando, e);
-            // printf("\nEjecutando el proceso: %s\n", e.nombre);
-            // printf("Actividad: %s\n", e.actividad);
-            // printf("ID: %s\n", e.ID);
-            // printf("Tiempo de ejecucion: %d\n", e.tiempoEjecucion);
-            // printf("Tiempo total: %d\n", e.tiempoTotal);
-           
-
-            e = Dequeue(&Ejecutando);
-            e.tiempoEjecucion--;
             Queue(&porEjecutar, e);
         }
         int tamfaltantes= Size(&porEjecutar)+Size(&Ejecutando);
