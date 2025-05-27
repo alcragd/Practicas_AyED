@@ -137,23 +137,22 @@ int main()
         sprintf(FaltantesStr, "Faltantes: %d", tamfaltantes);
         UpdateTextoCaja(2, 1, anchoMiniCajas, 3, FaltantesStr);
     }
-    /*
-        printf("Los procesos finalizados son:\n");
+    Sleep(1000);
+    BorrarPantalla();
+        MoverCursor((ANCHO-21)/2,5);
+        printf("Orden de Finalización");
+        DibujarCaja(InicioCajaX-10, InicioCajaY+3, anchoCaja, altoCaja, "");
         while (!Empty(&Finalizados))
         {
+            Sleep(2000);
             e = Dequeue(&Finalizados);
-            printf("Proceso finalizado:\n");
-            printf("Nombre: %s\n", e.nombre);
-            printf("Actividad: %s\n", e.actividad);
-            printf("ID: %s\n", e.ID);
-            printf("Tiempo total: %d\n\n", e.tiempoTotal);
+            UpdateCajaPrincipal(InicioCajaX-10,InicioCajaY+3,e);
         }
 
         Destroy(&porEjecutar);
         Destroy(&Ejecutando);
         Destroy(&Finalizados);
-        return 0;
-        */
+    
     MoverCursor(1, 28);
     mostrarCursor();
     return 0;
@@ -220,7 +219,7 @@ void UpdateCajaPrincipal(int x, int y, elemento e)
             }
 
     
-     MoverCursor(x+2,y+2);
+    MoverCursor(x+2,y+2);
     printf("Nombre: %s",e.nombre);
     MoverCursor(x+2,y+3);
     printf("ID: %s",e.ID);
