@@ -1,5 +1,55 @@
 /*
+================================================================================
+Supermercado.c
+Versión: 1.0
+Fecha: Mayo 2025
+Autores: Coyol Moreno Angel Zoe | Ramirez Hernandez Christian Isaac | Ramos Mendoza Miguel Angel
 
+Descripción:
+------------
+Este programa simula el funcionamiento de un supermercado con múltiples cajas 
+de atención, gestionando dinámicamente las colas de clientes y mostrando de 
+forma visual su llegada y atención en la consola.
+
+El sistema permite:
+- Configurar el número de cajas y su tiempo de atención.
+- Definir el intervalo de llegada de nuevos clientes.
+- Dibujar gráficamente las cajas y las colas en consola.
+- Mostrar en tiempo real cuántos clientes han sido atendidos y cuántos están
+  formados.
+- Usar emojis aleatorios para representar gráficamente a los clientes.
+- Finalizar automáticamente cuando se atienden al menos 100 clientes y no
+  queden personas en espera.
+
+Compilación:
+------------
+gcc -o Supermercado.exe Supermercado.c
+    ./Cola Dinamica/TADColaDin.c ./Presentacion/presentacion.c
+    ./Utils/consola_utils.c
+
+Uso:
+----
+./Supermercado.exe
+
+El programa solicitará:
+  - Nombre del supermercado.
+  - Número de cajas (1 a 10).
+  - Tiempo de atención por caja (múltiplo de 10ms).
+  - Tiempo de llegada de clientes (múltiplo de 10ms).
+
+Salida:
+-------
+- Interfaz gráfica en consola representando cajas y clientes.
+- Número de clientes atendidos y en espera, actualizados en tiempo real.
+- Finalización con un resumen de clientes atendidos.
+
+Observaciones:
+--------------
+- Asegúrate de que la consola tenga un tamaño mínimo de 120x30 caracteres.
+- Los tiempos deben ser múltiplos de 10 para sincronización con el sistema.
+- Usa colas dinámicas (`TADColaDin.h`) para gestionar a los clientes.
+- El uso de Ctrl+C es interceptado para limpiar la consola y restaurar el cursor.
+================================================================================
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,7 +58,7 @@
 #include "Presentacion/presentacion.h"
 #include "Utils/consola_utils.h"
 #include <time.h>
-
+// #include "Cola Estática/TADColaEst.h"
 #define TIEMPO_BASE 10 // 10ms
 
 #define ANCHO 120 //
@@ -17,8 +67,7 @@
 #define altoCaja 8
 #define DISTANCIA 2 // Distancia entre clientes
 
-// #include "Cola Estática/TADColaEst.h"
-
+//Prototipos
 void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion);
 void AtenderCliente(cola *c, int numcola, int separacion);
 void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion);
@@ -205,7 +254,7 @@ int main()
 
             restaurarColor();
 
-            if (clientes == 9999)
+            if (clientes == 9999) //Si el numero de clientes llega a 9999 termina la animacion
                 break;
 
             // e.i = clientes;
@@ -233,7 +282,19 @@ int main()
     free(cajas);
     return 0;
 }
-
+/*
+void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
+Recibe:
+    int num: número de caja (1 a N).
+    int cliente: número de cliente (no usado directamente en esta versión).
+    int ancho: ancho del dibujo de la caja.
+    int alto: alto del dibujo de la caja.
+    int separacion: espacio horizontal entre cajas.
+Devuelve:
+    Nada.
+Observaciones:
+    Dibuja gráficamente una caja en la consola utilizando caracteres.
+*/
 void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
 {
     int columna, fila, i;
@@ -261,7 +322,18 @@ void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
     // MoverCursor(columna + ancho / 2 - 1, 7);
     // printf("C%d", cliente);
 }
-
+/*
+void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
+Recibe:
+    int numcliente: número de cliente actual.
+    int numcola: número de la cola (índice de caja).
+    cola *c: puntero a la estructura de cola donde se insertará el cliente.
+    int separacion: espacio horizontal entre cajas.
+Devuelve:
+    Nada.
+Observaciones:
+    Inserta un nuevo cliente a la cola correspondiente y lo muestra visualmente en la consola.
+*/
 void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
 {
     int columna, posX, posY, emoji_indice;
@@ -297,7 +369,17 @@ void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
 
     Queue(c, e);
 }
-
+/*
+void AtenderCliente(cola *c, int numcola, int separacion)
+Recibe:
+    cola *c: puntero a la estructura de cola de la caja que está atendiendo.
+    int numcola: índice de la caja (0 a N-1).
+    int separacion: espacio horizontal entre cajas.
+Devuelve:
+    Nada.
+Observaciones:
+    Elimina al primer cliente de la cola, limpia su visualización y reorganiza gráficamente a los demás clientes.
+*/
 void AtenderCliente(cola *c, int numcola, int separacion)
 {
     int columna, posX, posY, i;
@@ -340,7 +422,15 @@ void AtenderCliente(cola *c, int numcola, int separacion)
         }
     }
 }
-
+/*
+void cuandoCtrlC(void)
+Recibe:
+    Nada.
+Devuelve:
+    Nada.
+Observaciones:
+    Maneja la interrupción Ctrl+C restaurando el cursor y los colores antes de terminar el programa.
+*/
 void cuandoCtrlC(void)
 {
 
