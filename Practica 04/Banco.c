@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
-#include "Cola Dinámica/TADColaDin.h"
-#include "presentacion.h"
+#include "Cola Dinamica/TADColaDin.h"
+#include "Presentacion/presentacion.h"
 #include "Utils/consola_utils.h"
 #include <time.h>
 
@@ -11,12 +11,13 @@
 int main()
 {
     int numCajeros, *cajeros, *tiempoAtencion, tiempoCliente, tiempoUsuario, tiempoPreferente;
-    int noUsuarios = 0, tiempo = 0, numCliente = 0, numUsuario = 0, numPreferente = 0;
-    cola *clientes, *usuarios, *preferentes;
+    int  i, noUsuarios = 0, tiempo = 0, numCliente = 0, numUsuario = 0, numPreferente = 0;
+    cola clientes, usuarios, preferentes;
+    elemento e;
 
-    Initialice(&clientes);
-    Initialice(&usuarios);
-    Initialice(&preferentes);
+    Initialize(&clientes);
+    Initialize(&usuarios);
+    Initialize(&preferentes);
 
     printf("\nIngrese el numero de cajeros:\n>> ");
     scanf("%d", &numCajeros);
@@ -83,18 +84,21 @@ int main()
 		{
 			numCliente ++;
 			e.i = numCliente;
+            e.tipo='C';
 			Queue(&clientes, e);
 		}
 		if(tiempo * 10 % tiempoUsuario == 0)
 		{
 			numUsuario ++;
 			e.i = numUsuario;
+            e.tipo='U';
 			Queue(&usuarios, e);
 		}
 		if(tiempo * 10 % tiempoPreferente == 0)
 		{
 			numPreferente ++;
 			e.i = numPreferente;
+            e.tipo='P';
 			Queue(&preferentes, e);
 		}
 
@@ -105,39 +109,48 @@ int main()
 				if (tiempo * 10 % tiempoAtencion[i] == 0)
            		{
                		cajeros[i] = 0;
+                    //printf("Atendi a %c%d en la caja %d \n",e.tipo,e.i,i+1); No se como hacer para que sea el elemento que toca xd
            		}
 			}
 			else
             {
                 if(noUsuarios >= 5 && !Empty(&usuarios))
                 {
-                    Dequeue(&usuarios);
+                    e=Dequeue(&usuarios);
                     noUsuarios = 0;
 					cajeros[i] = 1;
+                    printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
                     continue;
                 }
                 if(!Empty(&preferentes))
                 {
-                    Dequeue(&preferentes);
+                    e=Dequeue(&preferentes);
                     noUsuarios++;
 					cajeros[i] = 1;
+                    printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
                     continue;
                 }
                 if(!Empty(&clientes))
                 {
-                    Dequeue(&clientes);
+                    e=Dequeue(&clientes);
                     noUsuarios++;
 					cajeros[i] = 1;
+                    printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
                     continue;
                 }
 				if(!Empty(&usuarios))
 				{
-					Dequeue(&usuarios);
+					e=Dequeue(&usuarios);
                     noUsuarios = 0;
 					cajeros[i] = 1;
+                    printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
                     continue;
 				}
             }
         }
     }
+    Destroy(&usuarios);
+    Destroy(&clientes);
+    Destroy(&preferentes);
+    return 0;
 }

@@ -29,7 +29,8 @@ typedef struct elemento
 	// Supermercado
 	int i;
 	int emoji;
-
+	//Banco
+	char tipo;
 	// Sistema Operativo
 	char nombre[45];
 	int tiempoEjecucion;
