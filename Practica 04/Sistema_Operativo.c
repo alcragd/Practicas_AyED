@@ -66,15 +66,14 @@ Observaciones:
 #define anchoCaja 80
 
 #define altoMiniCajas 3
-#define anchoMiniCajas 20
-
-#define MAX_LINEA_ACTIVIDAD 70
+#define anchoMiniCajas 21
 
 // Prototipos de funciones
 void DibujarCaja(int x, int y, int ancho, int alto, char *texto);
 void UpdateTextoCaja(int x, int y, int ancho, int alto, char *texto);
 void UpdateCajaPrincipal(int x, int y, elemento e);
 void AjustarTexto(char *texto, int x, int y, int max_ancho, int max_lineas);
+void cuandoCtrlC(void);
 
 const char *emojisReloj[] = {
     "🕛", // 12:00
@@ -117,6 +116,8 @@ int main()
     Initialize(&porEjecutar);
     Initialize(&Ejecutando);
     Initialize(&Finalizados);
+
+    cacharCtrlC(cuandoCtrlC);
 
     // Solicita cantidad de procesos
     printf("Ingrese la cantidad de procesos a ejecutar: ");
@@ -404,7 +405,7 @@ void UpdateCajaPrincipal(int x, int y, elemento e)
     MoverCursor(x + 4, y + 4);
     printf("ℹ️ Actividad:");
 
-    AjustarTexto(e.actividad, x + 6, y + 5, MAX_LINEA_ACTIVIDAD, 3);
+    AjustarTexto(e.actividad, x + 8, y + 5, 70, 3);
 
     MoverCursor(x + 4, y + 8);
     printf("⏱️ Tiempo Total: %d", e.tiempoTotal);
@@ -445,14 +446,12 @@ void AjustarTexto(char *texto, int x, int y, int max_ancho, int max_lineas)
 
     while (inicio < len && linea < max_lineas)
     {
-        char lineaTexto[MAX_LINEA_ACTIVIDAD + 1];
+        char lineaTexto[max_ancho + 1];
         int i;
 
         // Copiar hasta max_ancho o hasta que se encuentre un espacio cercano al límite
         for (i = 0; i < max_ancho && (inicio + i) < len; i++)
-        {
             lineaTexto[i] = texto[inicio + i];
-        }
 
         // Si el texto no terminó, tratar de cortar en espacio
         if ((inicio + i) < len && texto[inicio + i] != ' ')
@@ -471,4 +470,14 @@ void AjustarTexto(char *texto, int x, int y, int max_ancho, int max_lineas)
 
         linea++;
     }
+}
+
+void cuandoCtrlC(void)
+{
+
+    restaurarColor();
+    mostrarCursor();
+    MoverCursor(0, ALTO - 2);
+
+    exit(0);
 }
