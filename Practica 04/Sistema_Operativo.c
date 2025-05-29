@@ -26,7 +26,7 @@ Compilación:
 gcc -o Sistema_Operativo.exe Sistema_Operativo.c
     ./Cola Dinamica/TADColaDin.c ./Presentacion/presentacion.c
     ./Utils/consola_utils.c
--libraries: windows.h para Sleep y manipulación de consola.
+-libraries: windows.h para EsperarMiliSeg y manipulación de consola.
 
 Uso:
 ----
@@ -66,7 +66,7 @@ Observaciones:
 #define anchoCaja 80
 
 #define altoMiniCajas 3
-#define anchoMiniCajas 17
+#define anchoMiniCajas 20
 
 #define MAX_LINEA_ACTIVIDAD 70
 
@@ -75,6 +75,34 @@ void DibujarCaja(int x, int y, int ancho, int alto, char *texto);
 void UpdateTextoCaja(int x, int y, int ancho, int alto, char *texto);
 void UpdateCajaPrincipal(int x, int y, elemento e);
 void AjustarTexto(char *texto, int x, int y, int max_ancho, int max_lineas);
+
+const char *emojisReloj[] = {
+    "🕛", // 12:00
+    "🕧", // 12:30
+    "🕐", // 1:00
+    "🕜", // 1:30
+    "🕑", // 2:00
+    "🕝", // 2:30
+    "🕒", // 3:00
+    "🕞", // 3:30
+    "🕓", // 4:00
+    "🕟", // 4:30
+    "🕔", // 5:00
+    "🕠", // 5:30
+    "🕕", // 6:00
+    "🕡", // 6:30
+    "🕖", // 7:00
+    "🕢", // 7:30
+    "🕗", // 8:00
+    "🕣", // 8:30
+    "🕘", // 9:00
+    "🕤", // 9:30
+    "🕙", // 10:00
+    "🕥", // 10:30
+    "🕚", // 11:00
+    "🕦"  // 11:30
+};
+#define NUM_EMOJIS_RELOJ (sizeof(emojisReloj) / sizeof(emojisReloj[0]))
 
 int main()
 {
@@ -133,21 +161,21 @@ int main()
     InicioCajaY = (ALTO - altoCaja) / 2 - 5;
 
     // Dibuja cajas fijas para información
-    DibujarCaja(2, 1, anchoMiniCajas, 3, "Faltantes: 0");
-    DibujarCaja(2, 12, anchoMiniCajas, 3, "Tiempo: 0");
-    DibujarCaja(2, 24, anchoMiniCajas + 3, 3, "Terminados: 0");
-    DibujarCaja(InicioCajaX, InicioCajaY - 4, anchoCaja, 3, "Anterior: ");
+    DibujarCaja(2, 1, anchoMiniCajas, 3, "📝 Faltantes: -");
+    DibujarCaja(2, 12, anchoMiniCajas, 3, "🕛 Tiempo: -");
+    DibujarCaja(2, 24, anchoMiniCajas + 3, 3, "⚙️ Terminados: -");
+    DibujarCaja(InicioCajaX, InicioCajaY - 4, anchoCaja, 3, "↩️ Anterior: -");
     DibujarCaja(InicioCajaX, InicioCajaY, anchoCaja, altoCaja, "");
-    DibujarCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, "Siguiente: ");
-    DibujarCaja(InicioCajaX, altoCaja + InicioCajaY + 6, anchoCaja, 5, "Ultimo Finalizado:");
+    DibujarCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, "↪️ Siguiente: -");
+    DibujarCaja(InicioCajaX, altoCaja + InicioCajaY + 6, anchoCaja, 5, "📀 Ultimo Finalizado: -");
     MoverCursor(0, 29);
 
     // Ciclo principal: ejecuta procesos hasta que se terminen todos
     while (!Empty(&porEjecutar))
     {
-        Sleep(1000); // Simula 1 segundo de ejecución
+        EsperarMiliSeg(1000); // Simula 1 segundo de ejecución
         tiempoTotal++;
-        sprintf(tiempoStr, "Tiempo: %d", tiempoTotal);
+        sprintf(tiempoStr, "%s Tiempo: %d", emojisReloj[tiempoTotal % NUM_EMOJIS_RELOJ], tiempoTotal);
         UpdateTextoCaja(2, 12, anchoMiniCajas, 3, tiempoStr);
 
         e = Dequeue(&porEjecutar);
@@ -161,22 +189,25 @@ int main()
         {
             e_sig = Front(&porEjecutar);
             e_ant = Final(&porEjecutar);
+
+            sprintf(Sig, "↪️ Siguiente: %s %s", e_sig.ID, e_sig.nombre);
+            UpdateTextoCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, Sig);
         }
         else
         {
             if (e.tiempoEjecucion <= 0)
             {
-                UpdateTextoCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, "Siguiente: -");
+                UpdateTextoCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, "↪️ Siguiente: -");
             }
             else
             {
                 e_sig = e;
-                sprintf(Sig, "Siguiente: %s %s", e_sig.ID, e_sig.nombre);
+                sprintf(Sig, "↪️ Siguiente: %s %s", e_sig.ID, e_sig.nombre);
                 UpdateTextoCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, Sig);
             }
             e_ant = e;
         }
-        sprintf(Ant, "Anterior: %s %s", e_ant.ID, e_ant.nombre);
+        sprintf(Ant, "↩️ Anterior: %s %s", e_ant.ID, e_ant.nombre);
         UpdateTextoCaja(InicioCajaX, InicioCajaY - 4, anchoCaja, 3, Ant);
 
         // Verifica si el proceso actual terminó
@@ -184,10 +215,10 @@ int main()
         {
             Queue(&Finalizados, e);
             int tamFinalizados = Size(&Finalizados);
-            sprintf(FinStr, "Terminados: %d", tamFinalizados);
+            sprintf(FinStr, "🗒️ Terminados: %d", tamFinalizados);
             UpdateTextoCaja(2, 24, anchoMiniCajas + 3, 3, FinStr);
 
-            sprintf(UltFin, "Ultimo Finalizado: %s %s", e.ID, e.nombre);
+            sprintf(UltFin, "📀 Ultimo Finalizado: %s %s", e.ID, e.nombre);
             UpdateTextoCaja(InicioCajaX, altoCaja + InicioCajaY + 6, anchoCaja, 5, UltFin);
         }
         else
@@ -196,23 +227,25 @@ int main()
         }
 
         int tamfaltantes = Size(&porEjecutar);
-        sprintf(FaltantesStr, "Faltantes: %d", tamfaltantes);
+        sprintf(FaltantesStr, "📝 Faltantes: %d", tamfaltantes);
         UpdateTextoCaja(2, 1, anchoMiniCajas, 3, FaltantesStr);
     }
 
-    Sleep(1000);
+    EsperarMiliSeg(1000);
     BorrarPantalla();
 
     // Muestra orden de finalización
     MoverCursor((ANCHO - 21) / 2, 5);
-    printf("Orden de Finalización");
-    DibujarCaja(InicioCajaX - 10, InicioCajaY + 3, anchoCaja, altoCaja, "");
+    printf("Orden de Finalización:\n");
+
+    i = 1;
 
     while (!Empty(&Finalizados))
     {
-        Sleep(2000);
+        EsperarMiliSeg(300);
         e = Dequeue(&Finalizados);
-        UpdateCajaPrincipal(InicioCajaX - 10, InicioCajaY + 3, e);
+        printf("\n%d. ID: %s\tNombre: %s\t Tiempo de ejecución: %d", i, e.ID, e.nombre, e.tiempoTotal);
+        i++;
     }
 
     // Limpieza de colas
@@ -355,31 +388,28 @@ Observaciones:
 */
 void UpdateCajaPrincipal(int x, int y, elemento e)
 {
-    int i,j;
-    
-    for (i=1;i<anchoCaja;i++)
-        for (j=1;j<altoCaja;j++)
-            {
-                MoverCursor(x+i,y+j);
-                printf(" ");
-            }
+    int i, j;
 
-    
-    MoverCursor(x+2,y+2);
-    printf("Nombre: %s",e.nombre);
-    MoverCursor(x+2,y+3);
-    printf("ID: %s",e.ID);
-    MoverCursor(x+2,y+4);
-    printf("Actividad:");
+    for (i = 1; i < anchoCaja; i++)
+        for (j = 1; j < altoCaja; j++)
+        {
+            MoverCursor(x + i, y + j);
+            printf(" ");
+        }
 
-    
-    AjustarTexto(e.actividad, x+4, y+5, MAX_LINEA_ACTIVIDAD, 3);
+    MoverCursor(x + 4, y + 2);
+    printf("🆔 ID: %s", e.ID);
+    MoverCursor(x + 4, y + 3);
+    printf("✅ Nombre: %s", e.nombre);
+    MoverCursor(x + 4, y + 4);
+    printf("ℹ️ Actividad:");
 
-    MoverCursor(x+2,y+8);
-    printf("Tiempo Total: %d",e.tiempoTotal);
-    MoverCursor(x+2,y+9);
-    printf("Tiempo Restante: %d",e.tiempoEjecucion);
+    AjustarTexto(e.actividad, x + 6, y + 5, MAX_LINEA_ACTIVIDAD, 3);
 
+    MoverCursor(x + 4, y + 8);
+    printf("⏱️ Tiempo Total: %d", e.tiempoTotal);
+    MoverCursor(x + 4, y + 9);
+    printf("⌛ Tiempo Restante: %d", e.tiempoEjecucion);
 }
 /*
 ================================================================================
@@ -431,12 +461,13 @@ void AjustarTexto(char *texto, int x, int y, int max_ancho, int max_lineas)
                 i--;
         }
 
-        lineaTexto[i] = '\0';  // Terminar línea
+        lineaTexto[i] = '\0'; // Terminar línea
         MoverCursor(x, y + linea);
         printf("%s", lineaTexto);
 
         inicio += i;
-        while (texto[inicio] == ' ') inicio++; // Saltar espacios
+        while (texto[inicio] == ' ')
+            inicio++; // Saltar espacios
 
         linea++;
     }

@@ -1,0 +1,41 @@
+10
+P01
+Navegador
+Cargar página web en segundo plano
+20
+P02
+EditorTexto
+Guardar archivo automáticamente
+18
+P03
+Antivirus
+Escanear directorios del sistema
+30
+P04
+Reproductor
+Reproducir música en segundo plano
+15
+P05
+Actualizador
+Buscar actualizaciones del sistema
+10
+P06
+Compilador
+Compilar código fuente C++
+30
+P07
+Chat
+Sincronizar mensajes con servidor
+16
+P08
+Descargador
+Descargar archivo de internet
+18
+P09
+Backup
+Respaldar archivos de usuario
+24
+P10
+MonitorSistema
+Actualizar uso de CPU y memoria
+9

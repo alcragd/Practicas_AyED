@@ -2,10 +2,11 @@ CC = gcc
 
 OUT1 = Supermercado.exe
 OUT2 = Sistema_Operativo.exe
+OUT3 = Banco.exe
 
 FUENTE1 = Supermercado.c
 FUENTE2 = Sistema_Operativo.c
-
+FUENTE3 = Banco.c
 
 COLA_DIN = './Cola Dinamica/TADColaDin.c'
 COLA_EST = './Cola Estatica/TADColaEst.c'
@@ -18,6 +19,7 @@ Presentacion = ./Presentacion/presentacionWin.c
 all:
 	$(CC) -o $(OUT1) $(FUENTE1) $(COLA_DIN) $(Presentacion) $(UTILS)
 	$(CC) -o $(OUT2) $(FUENTE2) $(COLA_DIN) $(Presentacion) $(UTILS)
+	$(CC) -o $(OUT3) $(FUENTE3) $(COLA_DIN) $(Presentacion) $(UTILS)
 
 
 super_din:
@@ -30,6 +32,12 @@ so_din:
 	$(CC) -o $(OUT2) $(FUENTE2) $(COLA_DIN) $(Presentacion) $(UTILS)
 so_est:
 	$(CC) -o $(OUT2) $(FUENTE2) $(COLA_EST) $(Presentacion) $(UTILS)
+
+
+banco_din:
+	$(CC) -o $(OUT3) $(FUENTE3) $(COLA_DIN) $(Presentacion) $(UTILS)
+banco_est:
+	$(CC) -o $(OUT3) $(FUENTE3) $(COLA_EST) $(Presentacion) $(UTILS)
 
 
 clean:
