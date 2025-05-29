@@ -1,3 +1,55 @@
+/*
+================================================================================
+Sistema_Operativo.c
+Versión: 1.0
+Fecha: Mayo 2025
+Autor: Coyol Moreno Angel Zoe | Ramirez Hernandez Christian Isaac | Ramos Mendoza Miguel Angel
+
+Descripción:
+------------
+Este programa simula la ejecución de procesos en un sistema, mostrando en consola
+una interfaz visual con información de los procesos que están por ejecutarse,
+los que están en ejecución y los finalizados.
+
+Funcionalidades:
+- Permite ingresar una cantidad determinada de procesos con sus datos: ID, nombre,
+  actividad y tiempo de ejecución.
+- Muestra en tiempo real la ejecución de cada proceso, actualizando su estado,
+  tiempo restante y tiempo total ejecutado.
+- Presenta información visual de procesos anteriores, actuales, siguientes y últimos
+  finalizados mediante "cajas" en consola.
+- Ajusta textos largos para mostrar las actividades de los procesos en varias líneas.
+- Al terminar, muestra el orden de finalización de los procesos.
+
+Compilación:
+------------
+gcc -o Sistema_Operativo.exe Sistema_Operativo.c
+    ./Cola Dinamica/TADColaDin.c ./Presentacion/presentacion.c
+    ./Utils/consola_utils.c
+-libraries: windows.h para Sleep y manipulación de consola.
+
+Uso:
+----
+./Sistema_Operativo.exe
+
+El programa solicitará:
+  - Cantidad de procesos a ejecutar.
+  - Para cada proceso: ID, nombre, actividad y tiempo de ejecución (en segundos).
+
+Salida:
+-------
+- Visualización en consola del estado de los procesos en ejecución.
+- Información dinámica actualizada del tiempo transcurrido y procesos pendientes.
+- Listado final de procesos en orden de finalización.
+
+Observaciones:
+--------------
+- Se recomienda ejecutar en consola con tamaño mínimo 120x30.
+- Utiliza colas dinámicas para gestionar los procesos.
+- La interfaz gráfica usa caracteres ASCII para dibujar cajas y mostrar textos.
+- Requiere los archivos y librerías auxiliares indicados para funcionar correctamente.
+================================================================================
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
@@ -18,37 +70,45 @@
 
 #define MAX_LINEA_ACTIVIDAD 70
 
+// Prototipos de funciones
 void DibujarCaja(int x, int y, int ancho, int alto, char *texto);
 void UpdateTextoCaja(int x, int y, int ancho, int alto, char *texto);
 void UpdateCajaPrincipal(int x, int y, elemento e);
 void AjustarTexto(char *texto, int x, int y, int max_ancho, int max_lineas);
 
-
 int main()
 {
     cola porEjecutar, Ejecutando, Finalizados;
-    int i, j, cantProcesos, tiempoEjecutar, tiempoTotal = 0, InicioCajaX, InicioCajaY, tamFinalizados, tamfaltantes;
-    char NombreProceso[45], actividad[200], ID[45], tiempoStr[32], FinStr[32], FaltantesStr[32], UltFin[32], Ant[32], Sig[32];
+    int i, cantProcesos, tiempoEjecutar, tiempoTotal = 0;
+    int InicioCajaX, InicioCajaY;
+    char NombreProceso[45], actividad[200], ID[45];
+    char tiempoStr[32], FinStr[32], FaltantesStr[32], UltFin[32], Ant[32], Sig[32];
     elemento e, e_ant, e_sig;
+
+    // Inicializa colas dinámicas
     Initialize(&porEjecutar);
     Initialize(&Ejecutando);
     Initialize(&Finalizados);
+
+    // Solicita cantidad de procesos
     printf("Ingrese la cantidad de procesos a ejecutar: ");
     scanf("%d", &cantProcesos);
     getchar();
+
+    // Lectura de datos de cada proceso
     for (i = 0; i < cantProcesos; i++)
     {
         printf("Ingrese el ID del proceso %d: ", i + 1);
         fgets(ID, sizeof(ID), stdin);
-        ID[strcspn(ID, "\n")] = 0; // Elimina el salto de línea
+        ID[strcspn(ID, "\n")] = 0;
 
         printf("Ingrese el nombre del proceso %d: ", i + 1);
         fgets(NombreProceso, sizeof(NombreProceso), stdin);
-        NombreProceso[strcspn(NombreProceso, "\n")] = 0; // Elimina el salto de línea
+        NombreProceso[strcspn(NombreProceso, "\n")] = 0;
 
         printf("Ingrese su actividad a realizar: ");
         fgets(actividad, sizeof(actividad), stdin);
-        actividad[strcspn(actividad, "\n")] = 0; // Elimina el salto de línea
+        actividad[strcspn(actividad, "\n")] = 0;
 
         printf("Ingrese el tiempo de ejecucion del proceso %d: ", i + 1);
         scanf("%d", &tiempoEjecutar);
@@ -65,12 +125,14 @@ int main()
 
     system("pause");
 
+    // Configura consola y ubicación para dibujar cajas
     ocultarCursor();
     forzarUTF8();
     BorrarPantalla();
     InicioCajaX = (ANCHO - anchoCaja) / 2 + 10;
     InicioCajaY = (ALTO - altoCaja) / 2 - 5;
 
+    // Dibuja cajas fijas para información
     DibujarCaja(2, 1, anchoMiniCajas, 3, "Faltantes: 0");
     DibujarCaja(2, 12, anchoMiniCajas, 3, "Tiempo: 0");
     DibujarCaja(2, 24, anchoMiniCajas + 3, 3, "Terminados: 0");
@@ -79,49 +141,49 @@ int main()
     DibujarCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, "Siguiente: ");
     DibujarCaja(InicioCajaX, altoCaja + InicioCajaY + 6, anchoCaja, 5, "Ultimo Finalizado:");
     MoverCursor(0, 29);
+
+    // Ciclo principal: ejecuta procesos hasta que se terminen todos
     while (!Empty(&porEjecutar))
     {
-        Sleep(1000);
+        Sleep(1000); // Simula 1 segundo de ejecución
         tiempoTotal++;
         sprintf(tiempoStr, "Tiempo: %d", tiempoTotal);
         UpdateTextoCaja(2, 12, anchoMiniCajas, 3, tiempoStr);
+
         e = Dequeue(&porEjecutar);
         e.tiempoEjecucion--;
         e.tiempoTotal = tiempoTotal;
 
-        UpdateCajaPrincipal(InicioCajaX,InicioCajaY,e);
+        UpdateCajaPrincipal(InicioCajaX, InicioCajaY, e);
 
-        if(!Empty(&porEjecutar))
+        // Maneja procesos anterior y siguiente
+        if (!Empty(&porEjecutar))
         {
             e_sig = Front(&porEjecutar);
-            e_ant = Final(&porEjecutar);            
+            e_ant = Final(&porEjecutar);
         }
-        else {
-            if(e.tiempoEjecucion<=0)
-                {
-                    UpdateTextoCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, "Siguiente: -");
-                }
+        else
+        {
+            if (e.tiempoEjecucion <= 0)
+            {
+                UpdateTextoCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, "Siguiente: -");
+            }
             else
-                {
-                    e_sig = e;
-                    sprintf(Sig, "Siguiente: %s %s", e_sig.ID, e_sig.nombre);
-                    UpdateTextoCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, Sig);
-                }
-
-
+            {
+                e_sig = e;
+                sprintf(Sig, "Siguiente: %s %s", e_sig.ID, e_sig.nombre);
+                UpdateTextoCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, Sig);
+            }
             e_ant = e;
         }
         sprintf(Ant, "Anterior: %s %s", e_ant.ID, e_ant.nombre);
-        
-
         UpdateTextoCaja(InicioCajaX, InicioCajaY - 4, anchoCaja, 3, Ant);
-        
-        
 
+        // Verifica si el proceso actual terminó
         if (e.tiempoEjecucion <= 0)
         {
             Queue(&Finalizados, e);
-            tamFinalizados = Size(&Finalizados);
+            int tamFinalizados = Size(&Finalizados);
             sprintf(FinStr, "Terminados: %d", tamFinalizados);
             UpdateTextoCaja(2, 24, anchoMiniCajas + 3, 3, FinStr);
 
@@ -132,32 +194,64 @@ int main()
         {
             Queue(&porEjecutar, e);
         }
-        tamfaltantes = Size(&porEjecutar);
-        FaltantesStr[32];
+
+        int tamfaltantes = Size(&porEjecutar);
         sprintf(FaltantesStr, "Faltantes: %d", tamfaltantes);
         UpdateTextoCaja(2, 1, anchoMiniCajas, 3, FaltantesStr);
     }
+
     Sleep(1000);
     BorrarPantalla();
-        MoverCursor((ANCHO-21)/2,5);
-        printf("Orden de Finalización");
-        DibujarCaja(InicioCajaX-10, InicioCajaY+3, anchoCaja, altoCaja, "");
-        while (!Empty(&Finalizados))
-        {
-            Sleep(2000);
-            e = Dequeue(&Finalizados);
-            UpdateCajaPrincipal(InicioCajaX-10,InicioCajaY+3,e);
-        }
 
-        Destroy(&porEjecutar);
-        Destroy(&Ejecutando);
-        Destroy(&Finalizados);
-    
-    MoverCursor(1, 28);
-    mostrarCursor();
+    // Muestra orden de finalización
+    MoverCursor((ANCHO - 21) / 2, 5);
+    printf("Orden de Finalización");
+    DibujarCaja(InicioCajaX - 10, InicioCajaY + 3, anchoCaja, altoCaja, "");
+
+    while (!Empty(&Finalizados))
+    {
+        Sleep(2000);
+        e = Dequeue(&Finalizados);
+        UpdateCajaPrincipal(InicioCajaX - 10, InicioCajaY + 3, e);
+    }
+
+    // Limpieza de colas
+    Destroy(&porEjecutar);
+    Destroy(&Ejecutando);
+    Destroy(&Finalizados);
+
+    MoverCursor(0, 29);
+    printf("\n");
     return 0;
 }
+/*
+================================================================================
+void DibujarCaja(int x, int y, int ancho, int alto, char *texto)
 
+Descripción:
+------------
+Dibuja una caja rectangular con bordes usando caracteres ASCII en la consola.
+Coloca un texto centrado vertical y horizontalmente dentro de la caja.
+
+Parámetros:
+-----------
+x       : Posición horizontal (columna) en la consola donde inicia la caja.
+y       : Posición vertical (fila) en la consola donde inicia la caja.
+ancho   : Ancho total de la caja (en caracteres).
+alto    : Alto total de la caja (en líneas).
+texto   : Cadena de texto que se mostrará centrada dentro de la caja.
+
+Salida:
+-------
+Dibuja la caja y el texto en la consola.
+
+Observaciones:
+--------------
+- Usa funciones para mover el cursor en consola.
+- Los bordes se dibujan con caracteres '_' y '|'.
+- El texto se centra solo si cabe dentro de la caja.
+================================================================================
+*/
 void DibujarCaja(int x, int y, int ancho, int alto, char *texto)
 {
     int i, j;
@@ -188,7 +282,33 @@ void DibujarCaja(int x, int y, int ancho, int alto, char *texto)
         printf("%s", texto);
     }
 }
+/*
+================================================================================
+void UpdateTextoCaja(int x, int y, int ancho, int alto, char *texto)
 
+Descripción:
+------------
+Actualiza el texto que se muestra dentro de una caja ya dibujada en la consola.
+Limpia la línea donde se colocará el texto y luego imprime el nuevo texto centrado.
+
+Parámetros:
+-----------
+x       : Posición horizontal (columna) de la caja.
+y       : Posición vertical (fila) de la caja.
+ancho   : Ancho de la caja (en caracteres).
+alto    : Alto de la caja (en líneas).
+texto   : Texto nuevo a mostrar dentro de la caja.
+
+Salida:
+-------
+Actualiza el texto dentro de la caja en consola.
+
+Observaciones:
+--------------
+- Asume que la caja ya está dibujada.
+- Limpia la línea de texto para evitar restos de texto anterior.
+================================================================================
+*/
 void UpdateTextoCaja(int x, int y, int ancho, int alto, char *texto)
 {
     int tituloLen = strlen(texto);
@@ -206,7 +326,33 @@ void UpdateTextoCaja(int x, int y, int ancho, int alto, char *texto)
         printf("%s", texto);
     }
 }
+/*
+================================================================================
+void UpdateCajaPrincipal(int x, int y, elemento e)
 
+Descripción:
+------------
+Actualiza el contenido de la caja principal que muestra los detalles del proceso
+actual en ejecución.
+
+Parámetros:
+-----------
+x : Posición horizontal (columna) donde se dibuja la caja.
+y : Posición vertical (fila) donde se dibuja la caja.
+e : Estructura que contiene los datos del proceso (nombre, ID, actividad,
+    tiempo total y tiempo restante).
+
+Salida:
+-------
+Actualiza la información del proceso dentro de la caja principal en consola.
+
+Observaciones:
+--------------
+- Limpia el área de la caja antes de actualizar para evitar restos.
+- Muestra texto en varias líneas para los diferentes campos.
+- Usa la función AjustarTexto para mostrar la actividad en múltiples líneas.
+================================================================================
+*/
 void UpdateCajaPrincipal(int x, int y, elemento e)
 {
     int i,j;
@@ -235,7 +381,33 @@ void UpdateCajaPrincipal(int x, int y, elemento e)
     printf("Tiempo Restante: %d",e.tiempoEjecucion);
 
 }
+/*
+================================================================================
+void AjustarTexto(char *texto, int x, int y, int max_ancho, int max_lineas)
 
+Descripción:
+------------
+Imprime un texto largo en la consola ajustándolo para que no sobrepase un ancho
+máximo y dividiéndolo en varias líneas, hasta un número máximo de líneas.
+
+Parámetros:
+-----------
+texto       : Cadena de texto a mostrar.
+x           : Posición horizontal (columna) donde inicia el texto.
+y           : Posición vertical (fila) donde inicia el texto.
+max_ancho   : Máximo ancho (caracteres) permitido por línea.
+max_lineas  : Máximo número de líneas a mostrar.
+
+Salida:
+-------
+Imprime el texto ajustado en consola.
+
+Observaciones:
+--------------
+- Intenta no cortar palabras a la mitad, buscando un espacio cercano para cortar.
+- Si el texto es más largo que el permitido, se trunca.
+================================================================================
+*/
 void AjustarTexto(char *texto, int x, int y, int max_ancho, int max_lineas)
 {
     int len = strlen(texto);
