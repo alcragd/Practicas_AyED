@@ -128,6 +128,28 @@ int main()
     BorrarPantalla();
     ocultarCursor();
 
+	MoverCursor(1,15);
+	cambiarColor(VERDE, NEGRO);
+	printf("Clientes    ( C )");
+	MoverCursor(1,17);
+	cambiarColor(AMARILLO, NEGRO);
+	printf("Preferentes ( P )");
+	MoverCursor(1,19);
+	cambiarColor(AZUL, NEGRO);
+	printf("Usuarios    ( U )");
+
+	MoverCursor(53,0);
+	cambiarColor(VERDE, NEGRO);
+	printf("Banco ");
+	MoverCursor(60,0);
+	cambiarColor(BLANCO, NEGRO);
+	printf("de ");
+	MoverCursor(63,0);
+	cambiarColor(ROJO, NEGRO);
+	printf("Mexico ");
+
+	restaurarColor();
+
 	for (i = 0; i < numCajeros; i++)
 	{
 		cajeros[i].i = 0;
@@ -219,7 +241,7 @@ int main()
 
 void DibujaCajero(int num, int ancho, int alto, int separacion)
 {
-	int columna, fila, i;
+	int columna, fila, i, n = 3, divisor, mov = 1, posX;
 	columna = separacion + num * (ancho + separacion);
 
 	MoverCursor(columna, 2);
@@ -241,6 +263,33 @@ void DibujaCajero(int num, int ancho, int alto, int separacion)
 
 	MoverCursor(columna - (ancho / 2), 5);
 	printf("👤");
+
+	while(n--)
+	{
+		if(n == 2)
+		{
+			divisor = 4;
+		}
+		else if(n == 1)
+		{
+			divisor = 2;
+		}
+		else
+		{
+			mov = 3;
+			divisor = 4;
+		}
+
+		posX = ANCHO / divisor * mov - 3;
+		for (fila = 13; fila < 27; fila++)
+		{
+			MoverCursor(posX - 1, fila);
+			printf("|");
+			MoverCursor(posX + 7, fila);
+			printf("|");
+		}
+	}
+	
 }
 
 void llegadaCliente(int numTipoCliente, cola *tipoCola, char tipoCliente)
@@ -309,7 +358,7 @@ void limpiarCajero(int separacion, int i)
 	posX = separacion + i * (anchoCajero + separacion);
 
     MoverCursor(posX, posY);
-    printf("       ");
+    printf("      ");
 }
 
 void actualizarColas(cola *tipoCola, char tipoCliente)
