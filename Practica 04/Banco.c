@@ -8,9 +8,48 @@
 
 #define TIEMPO_BASE 10 // 10ms
 
+#define ANCHO 120 //
+#define ALTO 30   // ANCHO y AlTO de la consola*
+#define anchoCajero 5
+#define altoCajero 4
+#define DISTANCIA 2 // Distancia entre clientes
+
+void DibujaCajero(int num, int ancho, int alto, int separacion);
+void llegadaCliente(int numCliente, cola *clientes);
+void llegadaPreferente(int numPreferente, cola *preferentes);
+void llegadaUsuario(int numUsuario, cola *usuarios);
+void atenderCliente(cola *tipoCola, int i, int separacion, elemento *cajeros);
+
+char *Emojis[] = {
+	"👦",            // niño
+	"👧",            // niña
+	"🧑",            // persona
+	"👨",            // hombre
+	"👩",            // mujer
+	"🧔",            // hombre con barba
+	"👱‍♂️", // hombre rubio
+	"👱‍♀️", // mujer rubia
+	"🧓",            // persona mayor
+	"👴",            // abuelo
+	"👵",            // abuela
+	"🧑‍🎓",   // estudiante
+	"🧑‍💼",   // oficinista
+	"🧑‍🔬",   // científico
+	"🧑‍🍳",   // chef
+	"🧑‍🚀",   // astronauta
+	"🧑‍🚒",   // bombero
+	"👮",            // policía
+	"🕵️",            // detective
+	"💂"             // guardia
+};
+
+#define NUM_EMOJIS (sizeof(Emojis) / sizeof(Emojis[0]))
+
+
 int main()
 {
-    int numCajeros, *cajeros, *tiempoAtencion, tiempoCliente, tiempoUsuario, tiempoPreferente;
+    int numCajeros, *tiempoAtencion, tiempoCliente, tiempoUsuario, tiempoPreferente, separacionCajeros;
+	elemento *cajeros;
     int  i, noUsuarios = 0, tiempo = 0, numCliente = 0, numUsuario = 0, numPreferente = 0;
     cola clientes, usuarios, preferentes;
     elemento e;
@@ -28,7 +67,7 @@ int main()
     }
 
     tiempoAtencion = malloc(numCajeros * sizeof(int));
-    cajeros = calloc(numCajeros, sizeof(int));
+    cajeros = calloc(numCajeros, sizeof(elemento));
 
     for (i = 0; i < numCajeros; i++)
     {
@@ -69,11 +108,26 @@ int main()
         scanf("%d", &tiempoPreferente);
     }
 
+	separacionCajeros = (ANCHO - anchoCajero * numCajeros) / (numCajeros + 1);
+
+	if (separacionCajeros < 7)
+	{
+		separacionCajeros = 7; // Asegurar una separación minima
+		printf("\n[!]-- Separación minima alcanzada, se recomienda ampliar el tamaño de la consola.");
+	}
+
     printf("\n");
     system("pause");
+	forzarUTF8();
 
     BorrarPantalla();
     ocultarCursor();
+
+	for (i = 0; i < numCajeros; i++)
+	{
+		cajeros[i].i = 0;
+		DibujaCajero(i, anchoCajero, altoCajero, separacionCajeros);
+	}
 
     while(1)
     {
@@ -83,32 +137,26 @@ int main()
 		if(tiempo * 10 % tiempoCliente == 0)
 		{
 			numCliente ++;
-			e.i = numCliente;
-            e.tipo='C';
-			Queue(&clientes, e);
+			llegadaCliente(numCliente, &clientes);
 		}
 		if(tiempo * 10 % tiempoUsuario == 0)
 		{
 			numUsuario ++;
-			e.i = numUsuario;
-            e.tipo='U';
-			Queue(&usuarios, e);
+			llegadaUsuario(numUsuario, &usuarios);
 		}
 		if(tiempo * 10 % tiempoPreferente == 0)
 		{
 			numPreferente ++;
-			e.i = numPreferente;
-            e.tipo='P';
-			Queue(&preferentes, e);
+			llegadaPreferente(numPreferente, &preferentes);
 		}
 
         for(i = 0; i < numCajeros; i++)
         {
-			if(cajeros[i] == 1)
+			if(cajeros[i].i != 0)
 			{
 				if (tiempo * 10 % tiempoAtencion[i] == 0)
            		{
-               		cajeros[i] = 0;
+               		cajeros[i].i = 0;
                     //printf("Atendi a %c%d en la caja %d \n",e.tipo,e.i,i+1); No se como hacer para que sea el elemento que toca xd
            		}
 			}
@@ -116,34 +164,30 @@ int main()
             {
                 if(noUsuarios >= 5 && !Empty(&usuarios))
                 {
-                    e=Dequeue(&usuarios);
                     noUsuarios = 0;
-					cajeros[i] = 1;
-                    printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
+                	atenderCliente(&usuarios, i, separacionCajeros, cajeros);
+                    //printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
                     continue;
                 }
                 if(!Empty(&preferentes))
                 {
-                    e=Dequeue(&preferentes);
                     noUsuarios++;
-					cajeros[i] = 1;
-                    printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
+                	atenderCliente(&preferentes, i, separacionCajeros, cajeros);
+                    //printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
                     continue;
                 }
                 if(!Empty(&clientes))
                 {
-                    e=Dequeue(&clientes);
                     noUsuarios++;
-					cajeros[i] = 1;
-                    printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
+					atenderCliente(&clientes, i, separacionCajeros, cajeros);
+                    //printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
                     continue;
                 }
 				if(!Empty(&usuarios))
 				{
-					e=Dequeue(&usuarios);
                     noUsuarios = 0;
-					cajeros[i] = 1;
-                    printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
+					atenderCliente(&usuarios, i, separacionCajeros, cajeros);
+                    //printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
                     continue;
 				}
             }
@@ -153,4 +197,138 @@ int main()
     Destroy(&clientes);
     Destroy(&preferentes);
     return 0;
+}
+
+
+void DibujaCajero(int num, int ancho, int alto, int separacion)
+{
+	int columna, fila, i;
+	columna = separacion + num * (ancho + separacion);
+
+	MoverCursor(columna, 2);
+	printf("Cajero %d", num + 1);
+	for (fila = 4; fila < alto + 3; fila++)
+	{
+		MoverCursor(columna, fila);
+		printf("|");
+		MoverCursor(columna + ancho, fila);
+		printf("|");
+	}
+	for (i = 1; i < ancho; columna++, i++)
+	{
+		MoverCursor(columna + 1, 3);
+		printf("_");
+		MoverCursor(columna + 1, fila - 1);
+		printf("_");
+	}
+
+	MoverCursor(columna - (ancho / 2), 5);
+	printf("👤");
+}
+
+void llegadaCliente(int numCliente, cola *clientes)
+{
+	int posX, posY, emoji_indice;
+	elemento e;
+
+	posX = ANCHO / 4 - 3;
+	emoji_indice = rand() % NUM_EMOJIS;
+
+	e.i = numCliente;
+	e.tipo='C';
+	e.emoji = emoji_indice;
+
+	Queue(clientes, e);
+
+	// Calcula la posición vertical según la cantidad de clientes en la cola
+	if (Size(clientes) < 7)
+	{
+		posY = 11 + (Size(clientes) * DISTANCIA);
+		MoverCursor(posX, posY);
+		printf("%sC%d", Emojis[emoji_indice], numCliente);
+	}
+	else
+	{
+		posY = 11 + 7 * DISTANCIA;
+		MoverCursor(posX, posY);
+		cambiarColor(GRIS_CLARO, NEGRO);
+		printf("+%d", Size(clientes) - 6);
+		restaurarColor();
+	}
+}
+
+void llegadaPreferente(int numPreferente, cola *preferentes)
+{
+	int posX, posY, emoji_indice;
+	elemento e;
+
+	posX = ANCHO / 2 - 3;
+	emoji_indice = rand() % NUM_EMOJIS;
+
+	e.i = numPreferente;
+	e.tipo='P';
+	e.emoji = emoji_indice;
+
+	Queue(preferentes, e);
+
+	// Calcula la posición vertical según la cantidad de preferentes en la cola
+	if (Size(preferentes) < 7)
+	{
+		posY = 11 + (Size(preferentes) * DISTANCIA);
+		MoverCursor(posX, posY);
+		printf("%sP%d", Emojis[emoji_indice], numPreferente);
+	}
+	else
+	{
+		posY = 11 + 7 * DISTANCIA;
+		MoverCursor(posX, posY);
+		cambiarColor(GRIS_CLARO, NEGRO);
+		printf("+%d", Size(preferentes) - 6);
+		restaurarColor();
+	}
+}
+
+void llegadaUsuario(int numUsuario, cola *usuarios)
+{
+	int posX, posY, emoji_indice;
+	elemento e;
+
+	posX = ANCHO / 4 * 3 - 3;
+	emoji_indice = rand() % NUM_EMOJIS;
+
+	e.i = numUsuario;
+	e.tipo='U';
+	e.emoji = emoji_indice;
+
+	Queue(usuarios, e);
+
+	// Calcula la posición vertical según la cantidad de usuarios en la cola
+	if (Size(usuarios) < 7)
+	{
+		posY = 11 + (Size(usuarios) * DISTANCIA);
+		MoverCursor(posX, posY);
+		printf("%sU%d", Emojis[emoji_indice], numUsuario);
+	}
+	else
+	{
+		posY = 11 + 7 * DISTANCIA;
+		MoverCursor(posX, posY);
+		cambiarColor(GRIS_CLARO, NEGRO);
+		printf("+%d", Size(usuarios) - 6);
+		restaurarColor();
+	}
+}
+
+void atenderCliente(cola *tipoCola, int i, int separacion, elemento *cajeros)
+{
+	int posX, posY = 7;
+	elemento e;
+
+	posX = separacion + i * (anchoCajero + separacion);
+
+	e = Dequeue(tipoCola);
+	cajeros[i] = e;
+
+	MoverCursor(posX, posY);
+	printf("%s%c%d", Emojis[e.emoji], e.tipo, e.i);
 }
