@@ -22,7 +22,7 @@ Buscar actualizaciones del sistema
 P06
 Compilador
 Compilar código fuente C++
-30
+10
 P07
 Chat
 Sincronizar mensajes con servidor
@@ -34,7 +34,7 @@ Descargar archivo de internet
 P09
 Backup
 Respaldar archivos de usuario
-24
+14
 P10
 MonitorSistema
 Actualizar uso de CPU y memoria

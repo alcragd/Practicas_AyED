@@ -15,10 +15,11 @@
 #define DISTANCIA 2 // Distancia entre clientes
 
 void DibujaCajero(int num, int ancho, int alto, int separacion);
-void llegadaCliente(int numCliente, cola *clientes);
-void llegadaPreferente(int numPreferente, cola *preferentes);
-void llegadaUsuario(int numUsuario, cola *usuarios);
+void llegadaCliente(int numTipoCliente, cola *tipoCola, char tipoCliente);
 void atenderCliente(cola *tipoCola, int i, int separacion, elemento *cajeros);
+void limpiarCajero(int separacion, int i);
+void actualizarColas(cola *tipoCola, char tipoCliente);
+void cuandoCtrlC(void);
 
 char *Emojis[] = {
 	"👦",            // niño
@@ -50,6 +51,7 @@ int main()
 {
     int numCajeros, *tiempoAtencion, tiempoCliente, tiempoUsuario, tiempoPreferente, separacionCajeros;
 	elemento *cajeros;
+	char tipo;
     int  i, noUsuarios = 0, tiempo = 0, numCliente = 0, numUsuario = 0, numPreferente = 0;
     cola clientes, usuarios, preferentes;
     elemento e;
@@ -57,6 +59,8 @@ int main()
     Initialize(&clientes);
     Initialize(&usuarios);
     Initialize(&preferentes);
+
+	
 
     printf("\nIngrese el numero de cajeros:\n>> ");
     scanf("%d", &numCajeros);
@@ -118,8 +122,9 @@ int main()
 
     printf("\n");
     system("pause");
-	forzarUTF8();
 
+	forzarUTF8();
+	cacharCtrlC(cuandoCtrlC);
     BorrarPantalla();
     ocultarCursor();
 
@@ -137,17 +142,20 @@ int main()
 		if(tiempo * 10 % tiempoCliente == 0)
 		{
 			numCliente ++;
-			llegadaCliente(numCliente, &clientes);
+			tipo = 'C';
+			llegadaCliente(numCliente, &clientes, tipo);
 		}
 		if(tiempo * 10 % tiempoUsuario == 0)
 		{
 			numUsuario ++;
-			llegadaUsuario(numUsuario, &usuarios);
+			tipo = 'U';
+			llegadaCliente(numUsuario, &usuarios, tipo);
 		}
 		if(tiempo * 10 % tiempoPreferente == 0)
 		{
 			numPreferente ++;
-			llegadaPreferente(numPreferente, &preferentes);
+			tipo = 'P';
+			llegadaCliente(numPreferente, &preferentes, tipo);
 		}
 
         for(i = 0; i < numCajeros; i++)
@@ -156,6 +164,7 @@ int main()
 			{
 				if (tiempo * 10 % tiempoAtencion[i] == 0)
            		{
+					limpiarCajero(separacionCajeros, i);
                		cajeros[i].i = 0;
                     //printf("Atendi a %c%d en la caja %d \n",e.tipo,e.i,i+1); No se como hacer para que sea el elemento que toca xd
            		}
@@ -166,6 +175,8 @@ int main()
                 {
                     noUsuarios = 0;
                 	atenderCliente(&usuarios, i, separacionCajeros, cajeros);
+					tipo = 'U';
+					actualizarColas(&usuarios, tipo);
                     //printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
                     continue;
                 }
@@ -173,6 +184,8 @@ int main()
                 {
                     noUsuarios++;
                 	atenderCliente(&preferentes, i, separacionCajeros, cajeros);
+					tipo = 'P';
+					actualizarColas(&preferentes, tipo);
                     //printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
                     continue;
                 }
@@ -180,6 +193,8 @@ int main()
                 {
                     noUsuarios++;
 					atenderCliente(&clientes, i, separacionCajeros, cajeros);
+					tipo = 'C';
+					actualizarColas(&clientes, tipo);
                     //printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
                     continue;
                 }
@@ -187,6 +202,8 @@ int main()
 				{
                     noUsuarios = 0;
 					atenderCliente(&usuarios, i, separacionCajeros, cajeros);
+					tipo = 'U';
+					actualizarColas(&usuarios, tipo);
                     //printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
                     continue;
 				}
@@ -226,95 +243,47 @@ void DibujaCajero(int num, int ancho, int alto, int separacion)
 	printf("👤");
 }
 
-void llegadaCliente(int numCliente, cola *clientes)
+void llegadaCliente(int numTipoCliente, cola *tipoCola, char tipoCliente)
 {
-	int posX, posY, emoji_indice;
+	int posX, posY, emoji_indice, mov = 1, divisor;
 	elemento e;
 
-	posX = ANCHO / 4 - 3;
-	emoji_indice = rand() % NUM_EMOJIS;
-
-	e.i = numCliente;
-	e.tipo='C';
-	e.emoji = emoji_indice;
-
-	Queue(clientes, e);
-
-	// Calcula la posición vertical según la cantidad de clientes en la cola
-	if (Size(clientes) < 7)
+	if(tipoCliente == 'C')
 	{
-		posY = 11 + (Size(clientes) * DISTANCIA);
-		MoverCursor(posX, posY);
-		printf("%sC%d", Emojis[emoji_indice], numCliente);
+		divisor = 4;
+	}
+	else if(tipoCliente == 'P')
+	{
+		divisor = 2;
 	}
 	else
 	{
-		posY = 11 + 7 * DISTANCIA;
-		MoverCursor(posX, posY);
-		cambiarColor(GRIS_CLARO, NEGRO);
-		printf("+%d", Size(clientes) - 6);
-		restaurarColor();
+		mov = 3;
+		divisor = 4;
 	}
-}
 
-void llegadaPreferente(int numPreferente, cola *preferentes)
-{
-	int posX, posY, emoji_indice;
-	elemento e;
-
-	posX = ANCHO / 2 - 3;
+	posX = ANCHO / divisor * mov - 3;
 	emoji_indice = rand() % NUM_EMOJIS;
 
-	e.i = numPreferente;
-	e.tipo='P';
+	e.i = numTipoCliente;
+	e.tipo=tipoCliente;
 	e.emoji = emoji_indice;
 
-	Queue(preferentes, e);
-
-	// Calcula la posición vertical según la cantidad de preferentes en la cola
-	if (Size(preferentes) < 7)
-	{
-		posY = 11 + (Size(preferentes) * DISTANCIA);
-		MoverCursor(posX, posY);
-		printf("%sP%d", Emojis[emoji_indice], numPreferente);
-	}
-	else
-	{
-		posY = 11 + 7 * DISTANCIA;
-		MoverCursor(posX, posY);
-		cambiarColor(GRIS_CLARO, NEGRO);
-		printf("+%d", Size(preferentes) - 6);
-		restaurarColor();
-	}
-}
-
-void llegadaUsuario(int numUsuario, cola *usuarios)
-{
-	int posX, posY, emoji_indice;
-	elemento e;
-
-	posX = ANCHO / 4 * 3 - 3;
-	emoji_indice = rand() % NUM_EMOJIS;
-
-	e.i = numUsuario;
-	e.tipo='U';
-	e.emoji = emoji_indice;
-
-	Queue(usuarios, e);
+	Queue(tipoCola, e);
 
 	// Calcula la posición vertical según la cantidad de usuarios en la cola
-	if (Size(usuarios) < 7)
+	if (Size(tipoCola) < 7)
 	{
-		posY = 11 + (Size(usuarios) * DISTANCIA);
+		posY = 11 + (Size(tipoCola) * DISTANCIA);
 		MoverCursor(posX, posY);
-		printf("%sU%d", Emojis[emoji_indice], numUsuario);
+		printf("%s%c%d", Emojis[emoji_indice], tipoCliente, numTipoCliente);
 	}
 	else
 	{
 		posY = 11 + 7 * DISTANCIA;
 		MoverCursor(posX, posY);
 		cambiarColor(GRIS_CLARO, NEGRO);
-		printf("+%d", Size(usuarios) - 6);
+		printf("+%d", Size(tipoCola) - 6);
 		restaurarColor();
 	}
 }
@@ -331,4 +300,71 @@ void atenderCliente(cola *tipoCola, int i, int separacion, elemento *cajeros)
 
 	MoverCursor(posX, posY);
 	printf("%s%c%d", Emojis[e.emoji], e.tipo, e.i);
+}
+
+void limpiarCajero(int separacion, int i)
+{
+	int posX, posY = 7;
+
+	posX = separacion + i * (anchoCajero + separacion);
+
+    MoverCursor(posX, posY);
+    printf("       ");
+}
+
+void actualizarColas(cola *tipoCola, char tipoCliente)
+{
+	int posX, posY, emoji_indice, mov = 1, divisor, i;
+
+	if(tipoCliente == 'C')
+	{
+		divisor = 4;
+	}
+	else if(tipoCliente == 'P')
+	{
+		divisor = 2;
+	}
+	else
+	{
+		mov = 3;
+		divisor = 4;
+	}
+
+	posX = ANCHO / divisor * mov - 3;
+
+    // Limpiar la cola de clientes
+    for (i = 0; i < 9; i++)
+    {
+        MoverCursor(posX, 13 + i * DISTANCIA);
+        printf("      ");
+    }
+
+	for (i = 1; i <= Size(tipoCola); i++)
+	{
+		if (i < 7)
+		{
+			posY = 11 + (i* DISTANCIA);
+			MoverCursor(posX, posY);
+			printf("%s%c%d", Emojis[Element(tipoCola, i).emoji],  tipoCliente, Element(tipoCola, i).i);
+		}
+		else
+		{
+			posY = 11 + 7 * DISTANCIA;
+			MoverCursor(posX, posY);
+			cambiarColor(GRIS_CLARO, NEGRO);
+			printf("+%d", Size(tipoCola) - 6);
+			restaurarColor();
+		}
+	}
+	
+}
+
+void cuandoCtrlC(void)
+{
+
+    restaurarColor();
+    mostrarCursor();
+    MoverCursor(0, ALTO - 2);
+
+    exit(0);
 }
