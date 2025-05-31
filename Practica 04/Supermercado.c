@@ -62,10 +62,12 @@ Observaciones:
 #include <stdlib.h>
 #include <windows.h>
 #include "Cola Dinamica/TADColaDin.h"
+// #include "Cola Estática/TADColaEst.h"
+
 #include "Presentacion/presentacion.h"
 #include "Utils/consola_utils.h"
 #include <time.h>
-// #include "Cola Estática/TADColaEst.h"
+
 #define TIEMPO_BASE 10 // 10ms
 
 #define ANCHO 120 //
@@ -75,33 +77,15 @@ Observaciones:
 #define DISTANCIA 2 // Distancia entre clientes
 
 // Prototipos
+
 void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion);
 void AtenderCliente(cola *c, int numcola, int separacion);
 void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion);
 void cuandoCtrlC(void);
 
 char *Emojis[] = {
-    "👦",            // niño
-    "👧",            // niña
-    "🧑",            // persona
-    "👨",            // hombre
-    "👩",            // mujer
-    "🧔",            // hombre con barba
-    "👱‍♂️", // hombre rubio
-    "👱‍♀️", // mujer rubia
-    "🧓",            // persona mayor
-    "👴",            // abuelo
-    "👵",            // abuela
-    "🧑‍🎓",   // estudiante
-    "🧑‍💼",   // oficinista
-    "🧑‍🔬",   // científico
-    "🧑‍🍳",   // chef
-    "🧑‍🚀",   // astronauta
-    "🧑‍🚒",   // bombero
-    "👮",            // policía
-    "🕵️",            // detective
-    "💂"             // guardia
-};
+    "👦", "👧", "🧑", "👨", "👩", "🧔", "👱‍♂️", "👱‍♀️", "🧓", "👴",
+    "👵", "🧑‍🎓", "🧑‍💼", "🧑‍🔬", "🧑‍🍳", "🧑‍🚀", "🧑‍🚒", "👮", "🕵️", "💂"};
 
 #define NUM_EMOJIS (sizeof(Emojis) / sizeof(Emojis[0]))
 
@@ -180,7 +164,7 @@ int main()
     BorrarPantalla();
     ocultarCursor();
 
-    MoverCursor((ANCHO - strlen(nombreSuper) - 13) / 2, 0); // Centrar nombre del supermercado
+    MoverCursor((ANCHO - strlen(nombreSuper) - 14) / 2, 0); // Centrar nombre del supermercado
     printf("Supermercado ");
     cambiarColor(VERDE, NEGRO);
     printf("%s", nombreSuper);
@@ -230,13 +214,7 @@ int main()
                     printf("%d", clientes - clientesAtendidos);
 
                     restaurarColor();
-                    // e = Dequeue(&cajas[i]);
-                    // printf("\n\nAtendi a: %d en caja %d", e.i, i + 1);
                 }
-                // else
-                // {
-                //     // printf("\n\nNo hay alguien por atender en caja %d", i + 1);
-                // }
             }
         }
 
@@ -263,10 +241,6 @@ int main()
 
             if (clientes == 9999) // Si el numero de clientes llega a 9999 termina la animacion
                 break;
-
-            // e.i = clientes;
-            // Queue(&cajas[caja], e);
-            // printf("\n\nLlego el cliente: %d a la cola de la caja %d", e.i, caja + 1);
         }
 
         if (clientesAtendidos >= 100)
@@ -289,18 +263,26 @@ int main()
     free(cajas);
     return 0;
 }
+
 /*
+================================================================================
 void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
-Recibe:
-    int num: número de caja (1 a N).
-    int cliente: número de cliente (no usado directamente en esta versión).
-    int ancho: ancho del dibujo de la caja.
-    int alto: alto del dibujo de la caja.
-    int separacion: espacio horizontal entre cajas.
-Devuelve:
-    Nada.
-Observaciones:
-    Dibuja gráficamente una caja en la consola utilizando caracteres.
+--------------------------------------------------------------------------------
+Descripción:
+Dibuja gráficamente una caja de supermercado en la consola, usando caracteres
+ASCII y un emoji para representar la caja. La posición horizontal depende del
+número de caja y la separación calculada.
+
+Parámetros:
+- int num: Número de la caja (1 a N).
+- int cliente: Número de cliente (no usado en esta versión, reservado para futuras mejoras).
+- int ancho: Ancho de la caja.
+- int alto: Alto de la caja.
+- int separacion: Espacio horizontal entre cajas.
+
+Retorno:
+- Nada. Dibuja la caja en la consola.
+================================================================================
 */
 void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
 {
@@ -326,20 +308,27 @@ void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion)
 
     MoverCursor(columna - (ancho / 2), 5);
     printf("🗃️");
-    // MoverCursor(columna + ancho / 2 - 1, 7);
-    // printf("C%d", cliente);
 }
+
 /*
+================================================================================
 void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
-Recibe:
-    int numcliente: número de cliente actual.
-    int numcola: número de la cola (índice de caja).
-    cola *c: puntero a la estructura de cola donde se insertará el cliente.
-    int separacion: espacio horizontal entre cajas.
-Devuelve:
-    Nada.
-Observaciones:
-    Inserta un nuevo cliente a la cola correspondiente y lo muestra visualmente en la consola.
+--------------------------------------------------------------------------------
+Descripción:
+Agrega un nuevo cliente a la cola de una caja específica y lo muestra visualmente
+en la consola usando un emoji aleatorio. Calcula la posición horizontal y vertical
+para que los clientes se apilen correctamente frente a su caja.
+
+Parámetros:
+- int numcliente: Número de cliente (consecutivo).
+- int numcola: Índice de la caja (0 a N-1).
+- cola *c: Puntero a la cola de la caja correspondiente.
+- int separacion: Espacio horizontal entre cajas.
+
+Retorno:
+- Nada. Inserta el cliente en la cola y lo dibuja en la consola.
+
+================================================================================
 */
 void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
 {
@@ -376,16 +365,25 @@ void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion)
 
     Queue(c, e);
 }
+
 /*
+================================================================================
 void AtenderCliente(cola *c, int numcola, int separacion)
-Recibe:
-    cola *c: puntero a la estructura de cola de la caja que está atendiendo.
-    int numcola: índice de la caja (0 a N-1).
-    int separacion: espacio horizontal entre cajas.
-Devuelve:
-    Nada.
-Observaciones:
-    Elimina al primer cliente de la cola, limpia su visualización y reorganiza gráficamente a los demás clientes.
+--------------------------------------------------------------------------------
+Descripción:
+Atiende (elimina) al primer cliente de la cola de una caja, limpia su visualización
+en la consola y reorganiza gráficamente a los clientes restantes, manteniendo la
+alineación y el apilamiento correcto.
+
+Parámetros:
+- cola *c: Puntero a la cola de la caja que atiende.
+- int numcola: Índice de la caja (0 a N-1).
+- int separacion: Espacio horizontal entre cajas.
+
+Retorno:
+- Nada. Actualiza la visualización de la cola en la consola.
+
+================================================================================
 */
 void AtenderCliente(cola *c, int numcola, int separacion)
 {
@@ -414,10 +412,8 @@ void AtenderCliente(cola *c, int numcola, int separacion)
                 posY = 9 + (i - 1) * DISTANCIA;
 
             MoverCursor(posX, posY);
-
             printf("%s%d", Emojis[Element(c, i).emoji], Element(c, i).i);
         }
-
         else
         {
             posY = 9 + 7 * DISTANCIA;
@@ -429,14 +425,22 @@ void AtenderCliente(cola *c, int numcola, int separacion)
         }
     }
 }
+
 /*
+================================================================================
 void cuandoCtrlC(void)
-Recibe:
-    Nada.
-Devuelve:
-    Nada.
-Observaciones:
-    Maneja la interrupción Ctrl+C restaurando el cursor y los colores antes de terminar el programa.
+--------------------------------------------------------------------------------
+Descripción:
+Maneja la señal de interrupción Ctrl+C. Restaura los colores y el cursor de la
+consola antes de finalizar el programa, asegurando una salida limpia.
+
+Parámetros:
+- Ninguno.
+
+Retorno:
+- Nada. Termina el programa limpiamente.
+
+================================================================================
 */
 void cuandoCtrlC(void)
 {
