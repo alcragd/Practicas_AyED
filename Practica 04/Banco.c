@@ -123,7 +123,7 @@ int main()
 		}
 	}
 
-	printf("\nIngrese el tiempo de llegada de los clientes del banco en milisegundos:\n>>  ");
+	printf("\nIngrese el tiempo de llegada de los clientes del banco en milisegundos:\n>> ");
 	scanf("%d", &tiempoCliente);
 	while (tiempoCliente % 10 != 0)
 	{
@@ -131,7 +131,7 @@ int main()
 		scanf("%d", &tiempoCliente);
 	}
 
-	printf("\nIngrese el tiempo de llegada de los usuarios del banco en milisegundos:\n>>  ");
+	printf("\nIngrese el tiempo de llegada de los usuarios del banco en milisegundos:\n>> ");
 	scanf("%d", &tiempoUsuario);
 	while (tiempoUsuario % 10 != 0)
 	{
@@ -139,7 +139,7 @@ int main()
 		scanf("%d", &tiempoUsuario);
 	}
 
-	printf("\nIngrese el tiempo de llegada de los clientes preferentes del banco en milisegundos:\n>>  ");
+	printf("\nIngrese el tiempo de llegada de los clientes preferentes del banco en milisegundos:\n>> ");
 	scanf("%d", &tiempoPreferente);
 	while (tiempoPreferente % 10 != 0)
 	{
