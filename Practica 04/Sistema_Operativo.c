@@ -3,7 +3,7 @@
 Sistema_Operativo.c
 Versión: 1.0
 Fecha: Mayo 2025
-Autor: Coyol Moreno Angel Zoe | Ramirez Hernandez Christian Isaac | Ramos Mendoza Miguel Angel
+Autores: Coyol Moreno Angel Zoe | Ramirez Hernandez Christian Isaac | Ramos Mendoza Miguel Angel
 
 Descripción:
 ------------
@@ -23,10 +23,17 @@ Funcionalidades:
 
 Compilación:
 ------------
+
+Windows:
 gcc -o Sistema_Operativo.exe Sistema_Operativo.c
-    ./Cola Dinamica/TADColaDin.c ./Presentacion/presentacion.c
+    ./Cola Dinamica/TADColaDin.c ./Presentacion/presentacionWin.c
     ./Utils/consola_utils.c
--libraries: windows.h para EsperarMiliSeg y manipulación de consola.
+
+Linux:
+gcc -o Sistema_Operativo.exe Sistema_Operativo.c
+    ./Cola Dinamica/TADColaDin.c ./Presentacion/presentacionLin.c
+    ./Utils/consola_utils.c
+
 
 Uso:
 ----
@@ -68,6 +75,8 @@ Observaciones:
 #define altoMiniCajas 3
 #define anchoMiniCajas 21
 
+#define QUANTUM 1000 // 1s
+
 // Prototipos de funciones
 void DibujarCaja(int x, int y, int ancho, int alto, char *texto);
 void UpdateTextoCaja(int x, int y, int ancho, int alto, char *texto);
@@ -76,31 +85,11 @@ void AjustarTexto(char *texto, int x, int y, int max_ancho, int max_lineas);
 void cuandoCtrlC(void);
 
 const char *emojisReloj[] = {
-    "🕛", // 12:00
-    "🕧", // 12:30
-    "🕐", // 1:00
-    "🕜", // 1:30
-    "🕑", // 2:00
-    "🕝", // 2:30
-    "🕒", // 3:00
-    "🕞", // 3:30
-    "🕓", // 4:00
-    "🕟", // 4:30
-    "🕔", // 5:00
-    "🕠", // 5:30
-    "🕕", // 6:00
-    "🕡", // 6:30
-    "🕖", // 7:00
-    "🕢", // 7:30
-    "🕗", // 8:00
-    "🕣", // 8:30
-    "🕘", // 9:00
-    "🕤", // 9:30
-    "🕙", // 10:00
-    "🕥", // 10:30
-    "🕚", // 11:00
-    "🕦"  // 11:30
-};
+    "🕛", "🕧", "🕐", "🕜", "🕑", "🕝",
+    "🕒", "🕞", "🕓", "🕟", "🕔", "🕠",
+    "🕕", "🕡", "🕖", "🕢", "🕗", "🕣",
+    "🕘", "🕤", "🕙", "🕥", "🕚", "🕦"};
+
 #define NUM_EMOJIS_RELOJ (sizeof(emojisReloj) / sizeof(emojisReloj[0]))
 
 int main()
@@ -112,7 +101,6 @@ int main()
     char tiempoStr[32], FinStr[32], FaltantesStr[32], UltFin[32], Ant[32], Sig[32];
     elemento e, e_ant, e_sig;
 
-    // Inicializa colas dinámicas
     Initialize(&porEjecutar);
     Initialize(&Ejecutando);
     Initialize(&Finalizados);
@@ -139,7 +127,7 @@ int main()
         fgets(actividad, sizeof(actividad), stdin);
         actividad[strcspn(actividad, "\n")] = 0;
 
-        printf("Ingrese el tiempo de ejecucion del proceso %d: ", i + 1);
+        printf("Ingrese el tiempo de ejecucion del proceso %d(segundos): ", i + 1);
         scanf("%d", &tiempoEjecutar);
         getchar();
 
@@ -174,7 +162,7 @@ int main()
     // Ciclo principal: ejecuta procesos hasta que se terminen todos
     while (!Empty(&porEjecutar))
     {
-        EsperarMiliSeg(1000); // Simula 1 segundo de ejecución
+        EsperarMiliSeg(QUANTUM); // Simula 1 QUANTUM de ejecución
         tiempoTotal++;
         sprintf(tiempoStr, "%s Tiempo: %d", emojisReloj[tiempoTotal % NUM_EMOJIS_RELOJ], tiempoTotal);
         UpdateTextoCaja(2, 12, anchoMiniCajas, 3, tiempoStr);
@@ -399,18 +387,34 @@ void UpdateCajaPrincipal(int x, int y, elemento e)
         }
 
     MoverCursor(x + 4, y + 2);
-    printf("🆔 ID: %s", e.ID);
+    cambiarColor(GRIS_CLARO, NEGRO);
+    printf("🆔 ID:");
+    restaurarColor();
+    printf(" %s", e.ID);
+
     MoverCursor(x + 4, y + 3);
-    printf("✅ Nombre: %s", e.nombre);
+    cambiarColor(GRIS_CLARO, NEGRO);
+    printf("✅ Nombre:");
+    restaurarColor();
+    printf(" %s", e.nombre);
+
     MoverCursor(x + 4, y + 4);
+    cambiarColor(GRIS_CLARO, NEGRO);
     printf("ℹ️ Actividad:");
+    restaurarColor();
+    AjustarTexto(e.actividad, x + 8, y + 5, 70, 4);
 
-    AjustarTexto(e.actividad, x + 8, y + 5, 70, 3);
-
-    MoverCursor(x + 4, y + 8);
-    printf("⏱️ Tiempo Total: %d", e.tiempoTotal);
     MoverCursor(x + 4, y + 9);
-    printf("⌛ Tiempo Restante: %d", e.tiempoEjecucion);
+    cambiarColor(GRIS_CLARO, NEGRO);
+    printf("⏱️ Tiempo Total:");
+    restaurarColor();
+    printf(" %d", e.tiempoTotal);
+
+    MoverCursor(x + 4, y + 10);
+    cambiarColor(GRIS_CLARO, NEGRO);
+    printf("⌛ Tiempo Restante:");
+    restaurarColor();
+    printf(" %d", e.tiempoEjecucion);
 }
 /*
 ================================================================================

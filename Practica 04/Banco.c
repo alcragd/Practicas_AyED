@@ -1,3 +1,63 @@
+/*
+================================================================================
+Banco.c
+Versión: 1.0
+Fecha: Mayo 2025
+Autores: Coyol Moreno Angel Zoe | Ramirez Hernandez Christian Isaac | Ramos Mendoza Miguel Angel
+
+Descripción:
+------------
+Este programa simula la atención de clientes en un banco con múltiples cajeros,
+gestionando colas independientes para clientes normales, usuarios y preferentes.
+La interfaz gráfica en consola muestra la llegada, atención y espera de los
+clientes, utilizando emojis para representar a cada persona.
+
+Funcionalidades:
+- Permite configurar el número de cajeros y su tiempo de atención.
+- Define el intervalo de llegada para clientes, usuarios y preferentes.
+- Dibuja gráficamente los cajeros y las colas en la consola.
+- Atiende a los clientes según prioridad: usuarios (cada 5 turnos), preferentes y luego clientes normales.
+- Muestra en tiempo real la atención y la cantidad de personas en cada cola.
+- Usa emojis aleatorios para representar a los clientes.
+- Finaliza con Ctrl+C, restaurando la consola.
+
+Compilación:
+------------
+
+Windows:
+gcc -o Sistema_Operativo.exe Sistema_Operativo.c
+	./Cola Dinamica/TADColaDin.c ./Presentacion/presentacionWin.c
+	./Utils/consola_utils.c
+
+Linux:
+gcc -o Sistema_Operativo.exe Sistema_Operativo.c
+	./Cola Dinamica/TADColaDin.c ./Presentacion/presentacionLin.c
+	./Utils/consola_utils.c
+
+Uso:
+----
+./Banco.exe
+
+El programa solicitará:
+  - Número de cajeros (1 a 10).
+  - Tiempo de atención por cajero (múltiplo de 10ms).
+  - Tiempo de llegada de clientes, usuarios y preferentes (múltiplo de 10ms).
+
+Salida:
+-------
+- Interfaz gráfica en consola representando cajeros y colas de clientes.
+- Número de clientes atendidos y en espera, actualizados en tiempo real.
+- Finalización con Ctrl+C, restaurando la consola.
+
+Observaciones:
+--------------
+- Se recomienda ejecutar en consola con tamaño mínimo 120x30.
+- Los tiempos deben ser múltiplos de 10 para sincronización.
+- Utiliza colas dinámicas para gestionar a los clientes.
+- Usa emojis para una representación visual amigable.
+================================================================================
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
@@ -8,12 +68,13 @@
 
 #define TIEMPO_BASE 10 // 10ms
 
-#define ANCHO 120 //
-#define ALTO 30   // ANCHO y AlTO de la consola*
+#define ANCHO 120
+#define ALTO 30
 #define anchoCajero 5
 #define altoCajero 4
 #define DISTANCIA 2 // Distancia entre clientes
 
+// Prototipos de funciones
 void DibujaCajero(int num, int ancho, int alto, int separacion);
 void llegadaCliente(int numTipoCliente, cola *tipoCola, char tipoCliente);
 void atenderCliente(cola *tipoCola, int i, int separacion, elemento *cajeros);
@@ -22,132 +83,104 @@ void actualizarColas(cola *tipoCola, char tipoCliente);
 void cuandoCtrlC(void);
 
 char *Emojis[] = {
-	"👦",            // niño
-	"👧",            // niña
-	"🧑",            // persona
-	"👨",            // hombre
-	"👩",            // mujer
-	"🧔",            // hombre con barba
-	"👱‍♂️", // hombre rubio
-	"👱‍♀️", // mujer rubia
-	"🧓",            // persona mayor
-	"👴",            // abuelo
-	"👵",            // abuela
-	"🧑‍🎓",   // estudiante
-	"🧑‍💼",   // oficinista
-	"🧑‍🔬",   // científico
-	"🧑‍🍳",   // chef
-	"🧑‍🚀",   // astronauta
-	"🧑‍🚒",   // bombero
-	"👮",            // policía
-	"🕵️",            // detective
-	"💂"             // guardia
-};
-
+	"👦", "👧", "🧑", "👨", "👩", "🧔", "👱‍♂️", "👱‍♀️", "🧓", "👴",
+	"👵", "🧑‍🎓", "🧑‍💼", "🧑‍🔬", "🧑‍🍳", "🧑‍🚀", "🧑‍🚒", "👮", "🕵️", "💂"};
 #define NUM_EMOJIS (sizeof(Emojis) / sizeof(Emojis[0]))
-
 
 int main()
 {
-    int numCajeros, *tiempoAtencion, tiempoCliente, tiempoUsuario, tiempoPreferente, separacionCajeros;
+	int numCajeros, *tiempoAtencion, tiempoCliente, tiempoUsuario, tiempoPreferente, separacionCajeros;
 	elemento *cajeros;
 	char tipo;
-    int  i, noUsuarios = 0, tiempo = 0, numCliente = 0, numUsuario = 0, numPreferente = 0;
-    cola clientes, usuarios, preferentes;
-    elemento e;
+	int i, noUsuarios = 0, tiempo = 0, numCliente = 0, numUsuario = 0, numPreferente = 0;
+	cola clientes, usuarios, preferentes;
+	elemento e;
 
-    Initialize(&clientes);
-    Initialize(&usuarios);
-    Initialize(&preferentes);
+	Initialize(&clientes);
+	Initialize(&usuarios);
+	Initialize(&preferentes);
 
-	
+	printf("\nIngrese el numero de cajeros:\n>> ");
+	scanf("%d", &numCajeros);
+	while (numCajeros < 1 || numCajeros > 10)
+	{
+		printf("\n[*]-- El numero de cajeros debe estar entre 1 y 10\n>> ");
+		scanf("%d", &numCajeros);
+	}
 
-    printf("\nIngrese el numero de cajeros:\n>> ");
-    scanf("%d", &numCajeros);
-    while (numCajeros < 1 || numCajeros > 10)
-    {
-        printf("\n[*]-- El numero de cajeros debe estar entre 1 y 10\n>> ");
-        scanf("%d", &numCajeros);
-    }
+	tiempoAtencion = malloc(numCajeros * sizeof(int));
+	cajeros = calloc(numCajeros, sizeof(elemento));
 
-    tiempoAtencion = malloc(numCajeros * sizeof(int));
-    cajeros = calloc(numCajeros, sizeof(elemento));
+	for (i = 0; i < numCajeros; i++)
+	{
+		printf("\nIngrese el tiempo de atencion del cajero %d en milisegundos: \n>> ", i + 1);
+		scanf("%d", &tiempoAtencion[i]);
 
-    for (i = 0; i < numCajeros; i++)
-    {
-        printf("\nIngrese el tiempo de atencion del cajero %d en milisegundos: \n>> ", i + 1);
-        scanf("%d", &tiempoAtencion[i]);
+		while (tiempoAtencion[i] % 10 != 0)
+		{
+			printf("\n[*]-- El tiempo de atencion debe ser un multiplo de 10 \n>> ");
+			scanf("%d", &tiempoAtencion[i]);
+		}
+	}
 
-        while (tiempoAtencion[i] % 10 != 0)
-        {
-            printf("\n[*]-- El tiempo de atencion debe ser un multiplo de 10 \n>> ");
-            scanf("%d", &tiempoAtencion[i]);
-        }
-    }
+	printf("\nIngrese el tiempo de llegada de los clientes del banco en milisegundos:\n>>  ");
+	scanf("%d", &tiempoCliente);
+	while (tiempoCliente % 10 != 0)
+	{
+		printf("\n[*]-- El tiempo de llegada debe ser un multiplo de 10\n>> ");
+		scanf("%d", &tiempoCliente);
+	}
 
-    printf("\nIngrese el tiempo de llegada de los clientes del banco en milisegundos:\n>>  ");
-    scanf("%d", &tiempoCliente);
+	printf("\nIngrese el tiempo de llegada de los usuarios del banco en milisegundos:\n>>  ");
+	scanf("%d", &tiempoUsuario);
+	while (tiempoUsuario % 10 != 0)
+	{
+		printf("\n[*]-- El tiempo de llegada debe ser un multiplo de 10\n>> ");
+		scanf("%d", &tiempoUsuario);
+	}
 
-    while (tiempoCliente % 10 != 0)
-    {
-        printf("\n[*]-- El tiempo de llegada debe ser un multiplo de 10\n>> ");
-        scanf("%d", &tiempoCliente);
-    }
-
-    printf("\nIngrese el tiempo de llegada de los usuarios del banco en milisegundos:\n>>  ");
-    scanf("%d", &tiempoUsuario);
-
-    while (tiempoUsuario % 10 != 0)
-    {
-        printf("\n[*]-- El tiempo de llegada debe ser un multiplo de 10\n>> ");
-        scanf("%d", &tiempoUsuario);
-    }
-
-    printf("\nIngrese el tiempo de llegada de los clientes preferentes del banco en milisegundos:\n>>  ");
-    scanf("%d", &tiempoPreferente);
-
-    while (tiempoPreferente % 10 != 0)
-    {
-        printf("\n[*]-- El tiempo de llegada debe ser un multiplo de 10\n>> ");
-        scanf("%d", &tiempoPreferente);
-    }
+	printf("\nIngrese el tiempo de llegada de los clientes preferentes del banco en milisegundos:\n>>  ");
+	scanf("%d", &tiempoPreferente);
+	while (tiempoPreferente % 10 != 0)
+	{
+		printf("\n[*]-- El tiempo de llegada debe ser un multiplo de 10\n>> ");
+		scanf("%d", &tiempoPreferente);
+	}
 
 	separacionCajeros = (ANCHO - anchoCajero * numCajeros) / (numCajeros + 1);
-
 	if (separacionCajeros < 7)
 	{
 		separacionCajeros = 7; // Asegurar una separación minima
 		printf("\n[!]-- Separación minima alcanzada, se recomienda ampliar el tamaño de la consola.");
 	}
 
-    printf("\n");
-    system("pause");
+	printf("\n");
+	system("pause");
 
 	forzarUTF8();
 	cacharCtrlC(cuandoCtrlC);
-    BorrarPantalla();
-    ocultarCursor();
+	BorrarPantalla();
+	ocultarCursor();
 
-	MoverCursor(1,15);
+	MoverCursor(1, 15);
 	cambiarColor(VERDE, NEGRO);
 	printf("Clientes    ( C )");
-	MoverCursor(1,17);
+	MoverCursor(1, 17);
 	cambiarColor(AMARILLO, NEGRO);
 	printf("Preferentes ( P )");
-	MoverCursor(1,19);
+	MoverCursor(1, 19);
 	cambiarColor(AZUL, NEGRO);
 	printf("Usuarios    ( U )");
 
-	MoverCursor(53,0);
+	MoverCursor(53, 0);
 	cambiarColor(VERDE, NEGRO);
-	printf("Banco ");
-	MoverCursor(60,0);
+	printf("Banco");
+	MoverCursor(59, 0);
 	cambiarColor(BLANCO, NEGRO);
-	printf("de ");
-	MoverCursor(63,0);
+	printf("de");
+	MoverCursor(62, 0);
 	cambiarColor(ROJO, NEGRO);
-	printf("Mexico ");
-
+	printf("Mexico");
 	restaurarColor();
 
 	for (i = 0; i < numCajeros; i++)
@@ -156,89 +189,103 @@ int main()
 		DibujaCajero(i, anchoCajero, altoCajero, separacionCajeros);
 	}
 
-    while(1)
-    {
+	while (1)
+	{
 		EsperarMiliSeg(TIEMPO_BASE); // Esperar el tiempo base
-        tiempo++;
+		tiempo++;
 
-		if(tiempo * 10 % tiempoCliente == 0)
+		if (tiempo * 10 % tiempoCliente == 0)
 		{
-			numCliente ++;
+			numCliente++;
 			tipo = 'C';
 			llegadaCliente(numCliente, &clientes, tipo);
 		}
-		if(tiempo * 10 % tiempoUsuario == 0)
+		if (tiempo * 10 % tiempoUsuario == 0)
 		{
-			numUsuario ++;
+			numUsuario++;
 			tipo = 'U';
 			llegadaCliente(numUsuario, &usuarios, tipo);
 		}
-		if(tiempo * 10 % tiempoPreferente == 0)
+		if (tiempo * 10 % tiempoPreferente == 0)
 		{
-			numPreferente ++;
+			numPreferente++;
 			tipo = 'P';
 			llegadaCliente(numPreferente, &preferentes, tipo);
 		}
 
-        for(i = 0; i < numCajeros; i++)
-        {
-			if(cajeros[i].i != 0)
+		for (i = 0; i < numCajeros; i++)
+		{
+			if (cajeros[i].i != 0)
 			{
 				if (tiempo * 10 % tiempoAtencion[i] == 0)
-           		{
+				{
 					limpiarCajero(separacionCajeros, i);
-               		cajeros[i].i = 0;
-                    //printf("Atendi a %c%d en la caja %d \n",e.tipo,e.i,i+1); No se como hacer para que sea el elemento que toca xd
-           		}
+					cajeros[i].i = 0;
+				}
 			}
 			else
-            {
-                if(noUsuarios >= 5 && !Empty(&usuarios))
-                {
-                    noUsuarios = 0;
-                	atenderCliente(&usuarios, i, separacionCajeros, cajeros);
-					tipo = 'U';
-					actualizarColas(&usuarios, tipo);
-                    //printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
-                    continue;
-                }
-                if(!Empty(&preferentes))
-                {
-                    noUsuarios++;
-                	atenderCliente(&preferentes, i, separacionCajeros, cajeros);
-					tipo = 'P';
-					actualizarColas(&preferentes, tipo);
-                    //printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
-                    continue;
-                }
-                if(!Empty(&clientes))
-                {
-                    noUsuarios++;
-					atenderCliente(&clientes, i, separacionCajeros, cajeros);
-					tipo = 'C';
-					actualizarColas(&clientes, tipo);
-                    //printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
-                    continue;
-                }
-				if(!Empty(&usuarios))
+			{
+				if (noUsuarios >= 5 && !Empty(&usuarios))
 				{
-                    noUsuarios = 0;
+					noUsuarios = 0;
 					atenderCliente(&usuarios, i, separacionCajeros, cajeros);
 					tipo = 'U';
 					actualizarColas(&usuarios, tipo);
-                    //printf("Atendiendo a %c%d en la caja %d\n",e.tipo,e.i,i+1);
-                    continue;
+					continue;
 				}
-            }
-        }
-    }
-    Destroy(&usuarios);
-    Destroy(&clientes);
-    Destroy(&preferentes);
-    return 0;
+				if (!Empty(&preferentes))
+				{
+					noUsuarios++;
+					atenderCliente(&preferentes, i, separacionCajeros, cajeros);
+					tipo = 'P';
+					actualizarColas(&preferentes, tipo);
+					continue;
+				}
+				if (!Empty(&clientes))
+				{
+					noUsuarios++;
+					atenderCliente(&clientes, i, separacionCajeros, cajeros);
+					tipo = 'C';
+					actualizarColas(&clientes, tipo);
+					continue;
+				}
+				if (!Empty(&usuarios))
+				{
+					noUsuarios = 0;
+					atenderCliente(&usuarios, i, separacionCajeros, cajeros);
+					tipo = 'U';
+					actualizarColas(&usuarios, tipo);
+					continue;
+				}
+			}
+		}
+	}
+	Destroy(&usuarios);
+	Destroy(&clientes);
+	Destroy(&preferentes);
+	return 0;
 }
 
+/*
+================================================================================
+void DibujaCajero(int num, int ancho, int alto, int separacion)
+Descripción:
+------------
+Dibuja un cajero en la consola en la posición correspondiente, usando caracteres
+ASCII y un emoji para representar al cajero.
 
+Parámetros:
+-----------
+num        : Número de cajero (índice).
+ancho      : Ancho del cajero.
+alto       : Alto del cajero.
+separacion : Separación horizontal entre cajeros.
+
+Salida:
+-------
+Dibuja el cajero en la consola.
+================================================================================
+*/
 void DibujaCajero(int num, int ancho, int alto, int separacion)
 {
 	int columna, fila, i, n = 3, divisor, mov = 1, posX;
@@ -264,13 +311,13 @@ void DibujaCajero(int num, int ancho, int alto, int separacion)
 	MoverCursor(columna - (ancho / 2), 5);
 	printf("👤");
 
-	while(n--)
+	while (n--)
 	{
-		if(n == 2)
+		if (n == 2)
 		{
 			divisor = 4;
 		}
-		else if(n == 1)
+		else if (n == 1)
 		{
 			divisor = 2;
 		}
@@ -289,19 +336,38 @@ void DibujaCajero(int num, int ancho, int alto, int separacion)
 			printf("|");
 		}
 	}
-	
 }
 
+/*
+================================================================================
+void llegadaCliente(int numTipoCliente, cola *tipoCola, char tipoCliente)
+Descripción:
+------------
+Agrega un cliente a la cola correspondiente y lo dibuja en la consola usando un
+emoji aleatorio. Calcula la posición según el tipo de cliente y la cantidad en
+la cola.
+
+Parámetros:
+-----------
+numTipoCliente : Número del cliente (consecutivo).
+tipoCola       : Puntero a la cola correspondiente.
+tipoCliente    : Tipo de cliente ('C', 'U', 'P').
+
+Salida:
+-------
+Dibuja el cliente en la consola y lo agrega a la cola.
+================================================================================
+*/
 void llegadaCliente(int numTipoCliente, cola *tipoCola, char tipoCliente)
 {
 	int posX, posY, emoji_indice, mov = 1, divisor;
 	elemento e;
 
-	if(tipoCliente == 'C')
+	if (tipoCliente == 'C')
 	{
 		divisor = 4;
 	}
-	else if(tipoCliente == 'P')
+	else if (tipoCliente == 'P')
 	{
 		divisor = 2;
 	}
@@ -315,7 +381,7 @@ void llegadaCliente(int numTipoCliente, cola *tipoCola, char tipoCliente)
 	emoji_indice = rand() % NUM_EMOJIS;
 
 	e.i = numTipoCliente;
-	e.tipo=tipoCliente;
+	e.tipo = tipoCliente;
 	e.emoji = emoji_indice;
 
 	Queue(tipoCola, e);
@@ -337,6 +403,26 @@ void llegadaCliente(int numTipoCliente, cola *tipoCola, char tipoCliente)
 	}
 }
 
+/*
+================================================================================
+void atenderCliente(cola *tipoCola, int i, int separacion, elemento *cajeros)
+Descripción:
+------------
+Atiende (desencola) al primer cliente de la cola y lo muestra en el cajero
+correspondiente en la consola.
+
+Parámetros:
+-----------
+tipoCola   : Puntero a la cola correspondiente.
+i          : Índice del cajero.
+separacion : Separación horizontal entre cajeros.
+cajeros    : Arreglo de elementos que representa los cajeros.
+
+Salida:
+-------
+Muestra el cliente atendido en el cajero correspondiente.
+================================================================================
+*/
 void atenderCliente(cola *tipoCola, int i, int separacion, elemento *cajeros)
 {
 	int posX, posY = 7;
@@ -351,25 +437,60 @@ void atenderCliente(cola *tipoCola, int i, int separacion, elemento *cajeros)
 	printf("%s%c%d", Emojis[e.emoji], e.tipo, e.i);
 }
 
+/*
+================================================================================
+void limpiarCajero(int separacion, int i)
+Descripción:
+------------
+Limpia la zona del cajero en la consola donde se muestra al cliente atendido.
+
+Parámetros:
+-----------
+separacion : Separación horizontal entre cajeros.
+i          : Índice del cajero.
+
+Salida:
+-------
+Borra el área del cliente atendido en el cajero.
+================================================================================
+*/
 void limpiarCajero(int separacion, int i)
 {
 	int posX, posY = 7;
 
 	posX = separacion + i * (anchoCajero + separacion);
 
-    MoverCursor(posX, posY);
-    printf("      ");
+	MoverCursor(posX, posY);
+	printf("      ");
 }
 
+/*
+================================================================================
+void actualizarColas(cola *tipoCola, char tipoCliente)
+Descripción:
+------------
+Actualiza la visualización de la cola correspondiente en la consola, mostrando
+los clientes restantes y el contador de excedentes si hay más de 6.
+
+Parámetros:
+-----------
+tipoCola    : Puntero a la cola correspondiente.
+tipoCliente : Tipo de cliente ('C', 'U', 'P').
+
+Salida:
+-------
+Actualiza la visualización de la cola en la consola.
+================================================================================
+*/
 void actualizarColas(cola *tipoCola, char tipoCliente)
 {
 	int posX, posY, emoji_indice, mov = 1, divisor, i;
 
-	if(tipoCliente == 'C')
+	if (tipoCliente == 'C')
 	{
 		divisor = 4;
 	}
-	else if(tipoCliente == 'P')
+	else if (tipoCliente == 'P')
 	{
 		divisor = 2;
 	}
@@ -381,20 +502,20 @@ void actualizarColas(cola *tipoCola, char tipoCliente)
 
 	posX = ANCHO / divisor * mov - 3;
 
-    // Limpiar la cola de clientes
-    for (i = 0; i < 9; i++)
-    {
-        MoverCursor(posX, 13 + i * DISTANCIA);
-        printf("      ");
-    }
+	// Limpiar la cola de clientes
+	for (i = 0; i < 9; i++)
+	{
+		MoverCursor(posX, 13 + i * DISTANCIA);
+		printf("      ");
+	}
 
 	for (i = 1; i <= Size(tipoCola); i++)
 	{
 		if (i < 7)
 		{
-			posY = 11 + (i* DISTANCIA);
+			posY = 11 + (i * DISTANCIA);
 			MoverCursor(posX, posY);
-			printf("%s%c%d", Emojis[Element(tipoCola, i).emoji],  tipoCliente, Element(tipoCola, i).i);
+			printf("%s%c%d", Emojis[Element(tipoCola, i).emoji], tipoCliente, Element(tipoCola, i).i);
 		}
 		else
 		{
@@ -405,15 +526,28 @@ void actualizarColas(cola *tipoCola, char tipoCliente)
 			restaurarColor();
 		}
 	}
-	
 }
 
+/*
+================================================================================
+void cuandoCtrlC(void)
+Descripción:
+------------
+Maneja la señal Ctrl+C para restaurar la consola y salir limpiamente.
+
+Parámetros:
+-----------
+Ninguno.
+
+Salida:
+-------
+Restaura la consola y termina el programa.
+================================================================================
+*/
 void cuandoCtrlC(void)
 {
-
-    restaurarColor();
-    mostrarCursor();
-    MoverCursor(0, ALTO - 2);
-
-    exit(0);
+	restaurarColor();
+	mostrarCursor();
+	MoverCursor(0, ALTO - 2);
+	exit(0);
 }

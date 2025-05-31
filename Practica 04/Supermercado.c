@@ -7,8 +7,8 @@ Autores: Coyol Moreno Angel Zoe | Ramirez Hernandez Christian Isaac | Ramos Mend
 
 Descripción:
 ------------
-Este programa simula el funcionamiento de un supermercado con múltiples cajas 
-de atención, gestionando dinámicamente las colas de clientes y mostrando de 
+Este programa simula el funcionamiento de un supermercado con múltiples cajas
+de atención, gestionando dinámicamente las colas de clientes y mostrando de
 forma visual su llegada y atención en la consola.
 
 El sistema permite:
@@ -23,8 +23,15 @@ El sistema permite:
 
 Compilación:
 ------------
-gcc -o Supermercado.exe Supermercado.c
-    ./Cola Dinamica/TADColaDin.c ./Presentacion/presentacion.c
+
+Windows:
+gcc -o Sistema_Operativo.exe Sistema_Operativo.c
+    ./Cola Dinamica/TADColaDin.c ./Presentacion/presentacionWin.c
+    ./Utils/consola_utils.c
+
+Linux:
+gcc -o Sistema_Operativo.exe Sistema_Operativo.c
+    ./Cola Dinamica/TADColaDin.c ./Presentacion/presentacionLin.c
     ./Utils/consola_utils.c
 
 Uso:
@@ -67,7 +74,7 @@ Observaciones:
 #define altoCaja 8
 #define DISTANCIA 2 // Distancia entre clientes
 
-//Prototipos
+// Prototipos
 void DibujaCaja(int num, int cliente, int ancho, int alto, int separacion);
 void AtenderCliente(cola *c, int numcola, int separacion);
 void LlegadaCliente(int numcliente, int numcola, cola *c, int separacion);
@@ -254,7 +261,7 @@ int main()
 
             restaurarColor();
 
-            if (clientes == 9999) //Si el numero de clientes llega a 9999 termina la animacion
+            if (clientes == 9999) // Si el numero de clientes llega a 9999 termina la animacion
                 break;
 
             // e.i = clientes;
