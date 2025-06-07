@@ -32,7 +32,7 @@ boolean Exists_TH(tablaHash *t, elemento e)
     indice = Hash(e.p);
 
     p = Search(t->listas[indice], e);
-    if (ValidatePosition(t, p))
+    if (ValidatePosition(t->listas[indice], p))
         return TRUE;
 
     return FALSE;
