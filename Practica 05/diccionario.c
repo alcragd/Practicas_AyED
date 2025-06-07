@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <windows.h>
 #include "Tabla Hash/TablaHash.h"
 
 void imprimirMenu();
@@ -17,6 +18,9 @@ int main(int argc, char *argv[])
     tablaHash tablaH;
 
     Initialize_TH(&tablaH);
+
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
 
     while (1)
     {
@@ -47,6 +51,7 @@ int main(int argc, char *argv[])
             verEstadisticasHash(&tablaH);
             break;
         case 7:
+            Destroy_TH(&tablaH);
             exit(0);
         default:
             printf("\nOPCIÓN INVALIDA\n");
@@ -69,9 +74,10 @@ void agregarPalabra(tablaHash *t)
         fgets(e.d, sizeof(e.d), stdin);
         e.d[strcspn(e.d, "\n")] = '\0';
 
-        Insert_TH(t, e);
+        if (!Exists_TH(t, e))
+            Insert_TH(t, e);
 
-        printf("\n¿Agregar más palabras?(Y/N)\n>> ");
+        printf("\n\n¿Agregar más palabras?(Y/N)\n>> ");
         scanf("%c", &opc);
         getchar();
     } while (opc == 'Y' || opc == 'y');
@@ -92,13 +98,13 @@ void buscarPalabra(tablaHash *t)
         e = Search_TH(t, palabra);
 
         if (e.p[0] == '\0')
-            printf("\n[!]-- No se encontró la palabra");
+            printf("\n[!] No se encontró la palabra");
         else
         {
-            printf("\n%s", e.p);
+            printf("\n\"%s\"", e.p);
             printf("\nDefinición: %s", e.d);
         }
-        printf("\n¿Hacer otra busqueda?(Y/N)\n>> ");
+        printf("\n\n¿Hacer otra busqueda?(Y/N)\n>> ");
         scanf("%c", &opc);
         getchar();
     } while (opc == 'Y' || opc == 'y');
@@ -118,7 +124,7 @@ void modificarDefinicion(tablaHash *t)
         e = Search_TH(t, e2.p);
 
         if (e.p[0] == '\0')
-            printf("\n[!]-- No se encontró la palabra");
+            printf("\n[!] No se encontró la palabra");
         else
         {
             printf("\nIngrese la nueva definición\n>> ");
@@ -128,7 +134,7 @@ void modificarDefinicion(tablaHash *t)
             Replace_TH(t, e2, e);
         }
 
-        printf("\n¿Hacer otra modificación?(Y/N)\n>> ");
+        printf("\n\n¿Hacer otra modificación?(Y/N)\n>> ");
         scanf("%c", &opc);
         getchar();
     } while (opc == 'Y' || opc == 'y');
@@ -148,14 +154,14 @@ void eliminarPalabra(tablaHash *t)
         e = Search_TH(t, palabra);
 
         if (e.p[0] == '\0')
-            printf("\n[!]-- No se encontró la palabra");
+            printf("\n[!] No se encontró la palabra");
         else
         {
             Delete_TH(t, e);
             printf("\nPalabra eliminada satisfactoriamente");
         }
 
-        printf("\n¿Hacer otra eliminación?(Y/N)\n>> ");
+        printf("\n\n¿Hacer otra eliminación?(Y/N)\n>> ");
         scanf("%c", &opc);
         getchar();
     } while (opc == 'Y' || opc == 'y');
@@ -177,46 +183,81 @@ void imprimirMenu()
 void cargarArchivo(tablaHash *t)
 {
     FILE *archivo;
-    char palabra[101], definicion[251], nombreArchivo[45];
+    char palabra[101], definicion[251], nombreArchivo[256], opc;
     elemento e;
     int c, cont = 0;
 
-    printf("\nIngrese la ruta del archivo\n>> ");
-    fgets(nombreArchivo, sizeof(nombreArchivo), stdin);
-    nombreArchivo[strcspn(nombreArchivo, "\n")] = '\0';
+    do
+    {
+        printf("\nIngrese la ruta del archivo\n>> ");
+        fgets(nombreArchivo, sizeof(nombreArchivo), stdin);
+        nombreArchivo[strcspn(nombreArchivo, "\n")] = '\0';
 
-    archivo = fopen(nombreArchivo, "r");
-    if (archivo == NULL)
-    {
-        printf("[!]-- No se pudo abrir el archivo '%s'.\n", nombreArchivo);
-        return;
-    }
-    while (!feof(archivo))
-    {
-        if (fscanf(archivo, "%100[^:]: %250[^\n]\n", palabra, definicion) == 2 ||
-            fscanf(archivo, "%100[^:]:%250[^\n]\n", palabra, definicion) == 2)
+        archivo = fopen(nombreArchivo, "r");
+        if (archivo == NULL)
         {
-            strcpy(e.p, palabra);
-            strcpy(e.d, definicion);
-
-            Insert_TH(t, e);
+            printf("[!]-- No se pudo abrir el archivo '%s'.\n", nombreArchivo);
+            return;
         }
-        else
+        while (!feof(archivo))
         {
-            cont++;
-            while ((c = fgetc(archivo)) != '\n' && c != EOF)
+            if (fscanf(archivo, "%100[^:]: %250[^\n]\n", palabra, definicion) == 2 ||
+                fscanf(archivo, "%100[^:]:%250[^\n]\n", palabra, definicion) == 2)
             {
-            };
+                strcpy(e.p, palabra);
+                strcpy(e.d, definicion);
+                if (!Exists_TH(t, e))
+                    Insert_TH(t, e);
+            }
+            else
+            {
+                cont++;
+                while ((c = fgetc(archivo)) != '\n' && c != EOF)
+                {
+                };
+            }
         }
-    }
 
-    fclose(archivo);
+        fclose(archivo);
 
-    printf("\nArchivo %s cargado extitosamente.", nombreArchivo);
-    if (cont)
-        printf("\n[WARNING]-- Se encontraron %d lineas con formato incorrecto.", cont);
+        printf("\nArchivo %s cargado extitosamente.", nombreArchivo);
+        if (cont)
+            printf("\n[WARNING] Se encontraron %d lineas con formato incorrecto.", cont);
+
+        printf("\n\n¿Desea cargar otro archivo?(Y/N)\n>> ");
+        scanf("%c", &opc);
+        getchar();
+    } while (opc == 'Y' || opc == 'y');
 }
 
 void verEstadisticasHash(tablaHash *t)
 {
+    int colisiones, i, empty = 0, sum, min = (int)1e19, max = -1;
+    double prom;
+
+    printf("\nEstadisticas Hash:");
+    printf("\n\tColisiones:");
+    for (i = 0; i < TAM_TABLA; i++)
+    {
+        colisiones = Collisions_TH(t, i);
+        if (!EmptyIndex_TH(t, i))
+        {
+            printf("\n\t\tLista [%d]:\t%d", i + 1, colisiones);
+
+            sum += colisiones;
+            min = (min < colisiones ? min : colisiones);
+            max = (max > colisiones ? max : colisiones);
+        }
+        else
+        {
+            printf("\n\t\tLista [%d]:\tVACIA", i + 1);
+            empty++;
+        }
+    }
+    prom = sum / (TAM_TABLA - empty);
+    printf("\n\n\tMáximo de colisiones:\t%d", max);
+    printf("\n\tMinimo de colisiones:\t%d", min);
+    printf("\n\tColisiones Promedio:\t%.2lf", prom);
+
+    printf("\nListas Vacias:\t%d", empty);
 }

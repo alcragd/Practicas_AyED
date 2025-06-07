@@ -25,6 +25,19 @@ void Insert_TH(tablaHash *t, elemento e)
     return;
 }
 
+boolean Exists_TH(tablaHash *t, elemento e)
+{
+    int indice;
+    posicion p;
+    indice = Hash(e.p);
+
+    p = Search(t->listas[indice], e);
+    if (ValidatePosition(t, p))
+        return TRUE;
+
+    return FALSE;
+}
+
 elemento Search_TH(tablaHash *t, char *clave)
 {
     int indice;
@@ -80,16 +93,19 @@ void Destroy_TH(tablaHash *t)
 {
     int i;
     for (i = 0; i < TAM_TABLA; i++)
+    {
         Destroy(t->listas[i]);
+        free(t->listas[i]);
+    }
 
     return;
 }
 
-int Collisions_TH(tablaHash *t, elemento e)
+int Collisions_TH(tablaHash *t, int i)
 {
-    int indice, size;
-    indice = Hash(e.p);
-    size = Size(t->listas[indice]);
+    int size;
+
+    size = Size(t->listas[i]);
 
     return size == 0 ? size : size - 1;
 }
@@ -105,4 +121,12 @@ int Hash(char *clave)
     sum %= TAM_TABLA; // sum = sum % TAM_TABLA;
 
     return sum;
+}
+
+boolean EmptyIndex_TH(tablaHash *t, int i)
+{
+    if (!Size(t->listas[i]))
+        return TRUE;
+
+    return FALSE;
 }
