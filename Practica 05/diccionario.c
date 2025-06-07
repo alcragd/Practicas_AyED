@@ -4,7 +4,7 @@
 #include "Tabla Hash/TablaHash.h"
 
 void imprimirMenu();
-void cargarArchivo();
+void cargarArchivo(tablaHash *t);
 void agregarPalabra(tablaHash *t);
 void buscarPalabra(tablaHash *t);
 void modificarDefinicion(tablaHash *t);
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
         switch (opc)
         {
         case 1:
-            cargarArchivo();
+            cargarArchivo(&tablaH);
             break;
         case 2:
             agregarPalabra(&tablaH);
@@ -95,8 +95,8 @@ void buscarPalabra(tablaHash *t)
             printf("\n[!]-- No se encontró la palabra");
         else
         {
-            printf("\n%s ", e.p);
-            printf("\n\tDefinición: %s", e.d);
+            printf("\n%s", e.p);
+            printf("\nDefinición: %s", e.d);
         }
         printf("\n¿Hacer otra busqueda?(Y/N)\n>> ");
         scanf("%c", &opc);
@@ -174,9 +174,49 @@ void imprimirMenu()
     printf("\n======================================");
 }
 
-void cargarArchivo()
+void cargarArchivo(tablaHash *t)
 {
+    FILE *archivo;
+    char palabra[101], definicion[251], nombreArchivo[45];
+    elemento e;
+    int c, cont = 0;
+
+    printf("\nIngrese la ruta del archivo\n>> ");
+    fgets(nombreArchivo, sizeof(nombreArchivo), stdin);
+    nombreArchivo[strcspn(nombreArchivo, "\n")] = '\0';
+
+    archivo = fopen(nombreArchivo, "r");
+    if (archivo == NULL)
+    {
+        printf("[!]-- No se pudo abrir el archivo '%s'.\n", nombreArchivo);
+        return;
+    }
+    while (!feof(archivo))
+    {
+        if (fscanf(archivo, "%100[^:]: %250[^\n]\n", palabra, definicion) == 2 ||
+            fscanf(archivo, "%100[^:]:%250[^\n]\n", palabra, definicion) == 2)
+        {
+            strcpy(e.p, palabra);
+            strcpy(e.d, definicion);
+
+            Insert_TH(t, e);
+        }
+        else
+        {
+            cont++;
+            while ((c = fgetc(archivo)) != '\n' && c != EOF)
+            {
+            };
+        }
+    }
+
+    fclose(archivo);
+
+    printf("\nArchivo %s cargado extitosamente.", nombreArchivo);
+    if (cont)
+        printf("\n[WARNING]-- Se encontraron %d lineas con formato incorrecto.", cont);
 }
+
 void verEstadisticasHash(tablaHash *t)
 {
 }
