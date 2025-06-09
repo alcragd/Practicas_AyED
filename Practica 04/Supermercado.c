@@ -207,9 +207,13 @@ int main()
 
                     cambiarColor(colAtendidos, NEGRO);
                     MoverCursor(21, 11 + 7 * DISTANCIA);
+                    printf("    ");
+                    MoverCursor(21, 11 + 7 * DISTANCIA);
                     printf("%d", clientesAtendidos);
 
                     cambiarColor(colFormados, NEGRO);
+                    MoverCursor(20, 12 + 7 * DISTANCIA);
+                    printf("    ");
                     MoverCursor(20, 12 + 7 * DISTANCIA);
                     printf("%d", clientes - clientesAtendidos);
 

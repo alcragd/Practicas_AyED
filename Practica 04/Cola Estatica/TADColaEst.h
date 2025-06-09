@@ -26,8 +26,17 @@ typedef unsigned char boolean;
 // Definir un elemento (Se modela con una estructura "elemento")
 typedef struct elemento
 {
-	// Variables de la estructura "elemento" (El usuario puede modificar)
+	// Supermercado
 	int i;
+	int emoji;
+	//Banco
+	char tipo;
+	// Sistema Operativo
+	char nombre[45];
+	int tiempoEjecucion;
+	int tiempoTotal;
+	char actividad[200];
+	char ID[45];
 	//***
 	//***
 	//***
