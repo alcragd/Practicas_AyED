@@ -11,6 +11,8 @@ void buscarPalabra(tablaHash *t);
 void modificarDefinicion(tablaHash *t);
 void eliminarPalabra(tablaHash *t);
 void verEstadisticasHash(tablaHash *t);
+void EstadisticasGenerales(tablaHash *t, elemento e);
+
 
 int main(int argc, char *argv[])
 {
@@ -73,9 +75,12 @@ void agregarPalabra(tablaHash *t)
         printf("\nIngrese la definición\n>> ");
         fgets(e.d, sizeof(e.d), stdin);
         e.d[strcspn(e.d, "\n")] = '\0';
+        e.indice=Hash(e.p);
 
         if (!Exists_TH(t, e))
             Insert_TH(t, e);
+        
+        EstadisticasGenerales(t,e);
 
         printf("\n\n¿Agregar más palabras?(Y/N)\n>> ");
         scanf("%c", &opc);
@@ -103,6 +108,7 @@ void buscarPalabra(tablaHash *t)
         {
             printf("\n\"%s\"", e.p);
             printf("\nDefinición: %s", e.d);
+            EstadisticasGenerales(t,e);
         }
         printf("\n\n¿Hacer otra busqueda?(Y/N)\n>> ");
         scanf("%c", &opc);
@@ -130,8 +136,10 @@ void modificarDefinicion(tablaHash *t)
             printf("\nIngrese la nueva definición\n>> ");
             fgets(e2.d, sizeof(e2.d), stdin);
             e2.d[strcspn(e2.d, "\n")] = '\0';
+            e2.indice=Hash(e2.p);
 
             Replace_TH(t, e2, e);
+            EstadisticasGenerales(t,e2);
         }
 
         printf("\n\n¿Hacer otra modificación?(Y/N)\n>> ");
@@ -157,6 +165,7 @@ void eliminarPalabra(tablaHash *t)
             printf("\n[!] No se encontró la palabra");
         else
         {
+            EstadisticasGenerales(t,e);
             Delete_TH(t, e);
             printf("\nPalabra eliminada satisfactoriamente");
         }
@@ -193,6 +202,8 @@ void cargarArchivo(tablaHash *t)
         fgets(nombreArchivo, sizeof(nombreArchivo), stdin);
         nombreArchivo[strcspn(nombreArchivo, "\n")] = '\0';
 
+        //C:\Users\chris\OneDrive\Escritorio\ESCOM\Algoritmos y Estructura\Practicas_AyED\Practica 05\Palabras
+
         archivo = fopen(nombreArchivo, "r");
         if (archivo == NULL)
         {
@@ -204,8 +215,9 @@ void cargarArchivo(tablaHash *t)
             if (fscanf(archivo, "%100[^:]: %250[^\n]\n", palabra, definicion) == 2 ||
                 fscanf(archivo, "%100[^:]:%250[^\n]\n", palabra, definicion) == 2)
             {
-                strcpy(e.p, palabra);
-                strcpy(e.d, definicion);
+                strcpy(e.p,palabra);
+                strcpy(e.d,definicion);
+                e.indice=Hash(e.p);
                 if (!Exists_TH(t, e))
                     Insert_TH(t, e);
             }
@@ -242,7 +254,7 @@ void verEstadisticasHash(tablaHash *t)
         colisiones = Collisions_TH(t, i);
         if (!EmptyIndex_TH(t, i))
         {
-            printf("\n\t\tLista [%d]:\t%d", i + 1, colisiones);
+            printf("\n\t\tLista [%d]:\t%d", i, colisiones);
 
             sum += colisiones;
             min = (min < colisiones ? min : colisiones);
@@ -250,7 +262,7 @@ void verEstadisticasHash(tablaHash *t)
         }
         else
         {
-            printf("\n\t\tLista [%d]:\tVACIA", i + 1);
+            printf("\n\t\tLista [%d]:\tVACIA", i);
             empty++;
         }
     }
@@ -260,4 +272,15 @@ void verEstadisticasHash(tablaHash *t)
     printf("\n\tColisiones Promedio:\t%.2lf", prom);
 
     printf("\nListas Vacias:\t%d", empty);
+}
+void EstadisticasGenerales(tablaHash *t, elemento e)
+{
+    int pos;
+    pos=Posicion(t,e);
+    VerListadeElemnto(t,e);
+    printf("\nIndice de la lista de la tabla: %d",e.indice);
+    printf("\nSe encontro detras de %d palabras",pos);
+    printf("\nNumero de comparaciones: %d",pos+1);
+    printf("\nEl resultado del hash de la palabra %s fue: %d",e.p,e.indice);
+    return;
 }

@@ -27,3 +27,7 @@ boolean EmptyIndex_TH(tablaHash *t, int i);
 boolean Exists_TH(tablaHash *t, elemento e);
 
 int Hash(char *clave);
+
+int Posicion(tablaHash *t, elemento e);
+
+void VerListadeElemnto(tablaHash *t, elemento e);
