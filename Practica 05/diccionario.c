@@ -70,6 +70,8 @@ void EstadisticasGenerales(tablaHash *t, elemento e);
 void AjustarTexto(char *texto, int max_ancho);
 void exportarArchivo(tablaHash *t);
 
+int contador_palabras = 0;
+
 int main(int argc, char *argv[])
 {
     int opc;
@@ -157,7 +159,10 @@ void agregarPalabra(tablaHash *t)
         e.indice = Hash(e.p);
 
         if (!Exists_TH(t, e))
+        {
             Insert_TH(t, e);
+            contador_palabras++;
+        }
 
         EstadisticasGenerales(t, e);
 
@@ -315,6 +320,7 @@ void eliminarPalabra(tablaHash *t)
             EstadisticasGenerales(t, e);
             Delete_TH(t, e);
             printf("\nPalabra eliminada satisfactoriamente");
+            contador_palabras--;
         }
 
         printf("\n\n¿Hacer otra eliminación?(Y/N)\n>> ");
@@ -417,6 +423,7 @@ void cargarArchivo(tablaHash *t)
                 {
                     Insert_TH(t, e);
                     total++;
+                    contador_palabras++;
                 }
             }
             else
@@ -492,6 +499,7 @@ void verEstadisticasHash(tablaHash *t)
         }
     }
     prom = sum / contColisiones;
+    printf("\n\n\tTotal de palabras:\t%d", contador_palabras);
     printf("\n\n\tMáximo de colisiones:\t%d", max);
     printf("\n\tMinimo de colisiones:\t%d", min);
     printf("\n\tColisiones Promedio:\t%.2lf", prom);

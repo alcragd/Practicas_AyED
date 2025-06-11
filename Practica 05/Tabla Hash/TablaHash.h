@@ -15,7 +15,7 @@ Este archivo contiene las declaraciones de funciones definidas en
 #include <stdio.h>
 #include "TAD Lista DL/TADListaDL.h"
 
-#define TAM_TABLA 499
+#define TAM_TABLA 1009
 
 typedef struct
 {

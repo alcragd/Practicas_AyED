@@ -69,11 +69,11 @@ Observaciones:
 #define ANCHO 120
 #define ALTO 30
 
-#define altoCaja 12
-#define anchoCaja 80
+#define ALTO_CAJA 12
+#define ANCHO_CAJA 80
 
-#define altoMiniCajas 3
-#define anchoMiniCajas 21
+#define ALTO_MINI_CAJAS 3
+#define ANCHO_MINI_CAJAS 21
 
 #define QUANTUM 1000 // 1s
 
@@ -146,17 +146,17 @@ int main()
     ocultarCursor();
     forzarUTF8();
     BorrarPantalla();
-    InicioCajaX = (ANCHO - anchoCaja) / 2 + 10;
-    InicioCajaY = (ALTO - altoCaja) / 2 - 5;
+    InicioCajaX = (ANCHO - ANCHO_CAJA) / 2 + 10;
+    InicioCajaY = (ALTO - ALTO_CAJA) / 2 - 5;
 
     // Dibuja cajas fijas para información
-    DibujarCaja(2, 1, anchoMiniCajas, 3, "📝 Faltantes: -");
-    DibujarCaja(2, 12, anchoMiniCajas, 3, "🕛 Tiempo: -");
-    DibujarCaja(2, 24, anchoMiniCajas + 3, 3, "⚙️ Terminados: -");
-    DibujarCaja(InicioCajaX, InicioCajaY - 4, anchoCaja, 3, "↩️ Anterior: -");
-    DibujarCaja(InicioCajaX, InicioCajaY, anchoCaja, altoCaja, "");
-    DibujarCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, "↪️ Siguiente: -");
-    DibujarCaja(InicioCajaX, altoCaja + InicioCajaY + 6, anchoCaja, 5, "📀 Ultimo Finalizado: -");
+    DibujarCaja(2, 1, ANCHO_MINI_CAJAS, 3, "📝 Faltantes: -");
+    DibujarCaja(2, 12, ANCHO_MINI_CAJAS, 3, "🕛 Tiempo: -");
+    DibujarCaja(2, 24, ANCHO_MINI_CAJAS + 3, 3, "⚙️ Terminados: -");
+    DibujarCaja(InicioCajaX, InicioCajaY - 4, ANCHO_CAJA, 3, "↩️ Anterior: -");
+    DibujarCaja(InicioCajaX, InicioCajaY, ANCHO_CAJA, ALTO_CAJA, "");
+    DibujarCaja(InicioCajaX, ALTO_CAJA + InicioCajaY + 1, ANCHO_CAJA, 3, "↪️ Siguiente: -");
+    DibujarCaja(InicioCajaX, ALTO_CAJA + InicioCajaY + 6, ANCHO_CAJA, 5, "📀 Ultimo Finalizado: -");
     MoverCursor(0, 29);
 
     // Ciclo principal: ejecuta procesos hasta que se terminen todos
@@ -165,7 +165,7 @@ int main()
         EsperarMiliSeg(QUANTUM); // Simula 1 QUANTUM de ejecución
         tiempoTotal++;
         sprintf(tiempoStr, "%s Tiempo: %d", emojisReloj[tiempoTotal % NUM_EMOJIS_RELOJ], tiempoTotal);
-        UpdateTextoCaja(2, 12, anchoMiniCajas, 3, tiempoStr);
+        UpdateTextoCaja(2, 12, ANCHO_MINI_CAJAS, 3, tiempoStr);
 
         e = Dequeue(&porEjecutar);
         e.tiempoEjecucion--;
@@ -180,24 +180,24 @@ int main()
             e_ant = Final(&porEjecutar);
 
             sprintf(Sig, "↪️ Siguiente: %s %s", e_sig.ID, e_sig.nombre);
-            UpdateTextoCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, Sig);
+            UpdateTextoCaja(InicioCajaX, ALTO_CAJA + InicioCajaY + 1, ANCHO_CAJA, 3, Sig);
         }
         else
         {
             if (e.tiempoEjecucion <= 0)
             {
-                UpdateTextoCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, "↪️ Siguiente: -");
+                UpdateTextoCaja(InicioCajaX, ALTO_CAJA + InicioCajaY + 1, ANCHO_CAJA, 3, "↪️ Siguiente: -");
             }
             else
             {
                 e_sig = e;
                 sprintf(Sig, "↪️ Siguiente: %s %s", e_sig.ID, e_sig.nombre);
-                UpdateTextoCaja(InicioCajaX, altoCaja + InicioCajaY + 1, anchoCaja, 3, Sig);
+                UpdateTextoCaja(InicioCajaX, ALTO_CAJA + InicioCajaY + 1, ANCHO_CAJA, 3, Sig);
             }
             e_ant = e;
         }
         sprintf(Ant, "↩️ Anterior: %s %s", e_ant.ID, e_ant.nombre);
-        UpdateTextoCaja(InicioCajaX, InicioCajaY - 4, anchoCaja, 3, Ant);
+        UpdateTextoCaja(InicioCajaX, InicioCajaY - 4, ANCHO_CAJA, 3, Ant);
 
         // Verifica si el proceso actual terminó
         if (e.tiempoEjecucion <= 0)
@@ -205,10 +205,10 @@ int main()
             Queue(&Finalizados, e);
             int tamFinalizados = Size(&Finalizados);
             sprintf(FinStr, "🗒️ Terminados: %d", tamFinalizados);
-            UpdateTextoCaja(2, 24, anchoMiniCajas + 3, 3, FinStr);
+            UpdateTextoCaja(2, 24, ANCHO_MINI_CAJAS + 3, 3, FinStr);
 
             sprintf(UltFin, "📀 Ultimo Finalizado: %s %s", e.ID, e.nombre);
-            UpdateTextoCaja(InicioCajaX, altoCaja + InicioCajaY + 6, anchoCaja, 5, UltFin);
+            UpdateTextoCaja(InicioCajaX, ALTO_CAJA + InicioCajaY + 6, ANCHO_CAJA, 5, UltFin);
         }
         else
         {
@@ -217,7 +217,7 @@ int main()
 
         int tamfaltantes = Size(&porEjecutar);
         sprintf(FaltantesStr, "📝 Faltantes: %d", tamfaltantes);
-        UpdateTextoCaja(2, 1, anchoMiniCajas, 3, FaltantesStr);
+        UpdateTextoCaja(2, 1, ANCHO_MINI_CAJAS, 3, FaltantesStr);
     }
 
     EsperarMiliSeg(1000);
@@ -379,8 +379,8 @@ void UpdateCajaPrincipal(int x, int y, elemento e)
 {
     int i, j;
 
-    for (i = 1; i < anchoCaja; i++)
-        for (j = 1; j < altoCaja; j++)
+    for (i = 1; i < ANCHO_CAJA; i++)
+        for (j = 1; j < ALTO_CAJA; j++)
         {
             MoverCursor(x + i, y + j);
             printf(" ");
