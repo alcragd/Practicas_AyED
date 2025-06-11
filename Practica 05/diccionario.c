@@ -4,6 +4,8 @@
 #include <windows.h>
 #include "Tabla Hash/TablaHash.h"
 
+#define ARCHIVO_DEFAULT "salida.txt"
+
 void imprimirMenu();
 void cargarArchivo(tablaHash *t);
 void agregarPalabra(tablaHash *t);
@@ -12,7 +14,8 @@ void modificarDefinicion(tablaHash *t);
 void eliminarPalabra(tablaHash *t);
 void verEstadisticasHash(tablaHash *t);
 void EstadisticasGenerales(tablaHash *t, elemento e);
-
+void AjustarTexto(char *texto, int max_ancho);
+void exportarArchivo(tablaHash *t);
 
 int main(int argc, char *argv[])
 {
@@ -33,13 +36,15 @@ int main(int argc, char *argv[])
 
         switch (opc)
         {
+        case 0:
+            Destroy_TH(&tablaH);
+            exit(0);
         case 1:
             cargarArchivo(&tablaH);
             break;
         case 2:
             agregarPalabra(&tablaH);
             break;
-
         case 3:
             buscarPalabra(&tablaH);
             break;
@@ -53,8 +58,8 @@ int main(int argc, char *argv[])
             verEstadisticasHash(&tablaH);
             break;
         case 7:
-            Destroy_TH(&tablaH);
-            exit(0);
+            exportarArchivo(&tablaH);
+            break;
         default:
             printf("\nOPCIÓN INVALIDA\n");
             break;
@@ -75,12 +80,12 @@ void agregarPalabra(tablaHash *t)
         printf("\nIngrese la definición\n>> ");
         fgets(e.d, sizeof(e.d), stdin);
         e.d[strcspn(e.d, "\n")] = '\0';
-        e.indice=Hash(e.p);
+        e.indice = Hash(e.p);
 
         if (!Exists_TH(t, e))
             Insert_TH(t, e);
-        
-        EstadisticasGenerales(t,e);
+
+        EstadisticasGenerales(t, e);
 
         printf("\n\n¿Agregar más palabras?(Y/N)\n>> ");
         scanf("%c", &opc);
@@ -106,9 +111,13 @@ void buscarPalabra(tablaHash *t)
             printf("\n[!] No se encontró la palabra");
         else
         {
+            printf("\n==========================================================");
             printf("\n\"%s\"", e.p);
-            printf("\nDefinición: %s", e.d);
-            EstadisticasGenerales(t,e);
+            printf("\n\nDefinición: ");
+            AjustarTexto(e.d, 58);
+            printf("\n==========================================================");
+
+            EstadisticasGenerales(t, e);
         }
         printf("\n\n¿Hacer otra busqueda?(Y/N)\n>> ");
         scanf("%c", &opc);
@@ -136,10 +145,10 @@ void modificarDefinicion(tablaHash *t)
             printf("\nIngrese la nueva definición\n>> ");
             fgets(e2.d, sizeof(e2.d), stdin);
             e2.d[strcspn(e2.d, "\n")] = '\0';
-            e2.indice=Hash(e2.p);
+            e2.indice = Hash(e2.p);
 
             Replace_TH(t, e2, e);
-            EstadisticasGenerales(t,e2);
+            EstadisticasGenerales(t, e2);
         }
 
         printf("\n\n¿Hacer otra modificación?(Y/N)\n>> ");
@@ -165,7 +174,7 @@ void eliminarPalabra(tablaHash *t)
             printf("\n[!] No se encontró la palabra");
         else
         {
-            EstadisticasGenerales(t,e);
+            EstadisticasGenerales(t, e);
             Delete_TH(t, e);
             printf("\nPalabra eliminada satisfactoriamente");
         }
@@ -178,23 +187,24 @@ void eliminarPalabra(tablaHash *t)
 
 void imprimirMenu()
 {
-    printf("\n================ MENU ================");
+    printf("\n================== MENU ==================");
     printf("\n 1) Cargar un archivo de definiciones");
     printf("\n 2) Agregar una palabra y su definicion");
     printf("\n 3) Buscar una palabra y ver su definición");
     printf("\n 4) Modificar una definición");
     printf("\n 5) Eliminar una palabra");
     printf("\n 6) Ver estadisticas Hash");
-    printf("\n 7) Salir");
-    printf("\n======================================");
+    printf("\n 7) Exportar definiciones");
+    printf("\n\n 0) Salir");
+    printf("\n==========================================");
 }
 
 void cargarArchivo(tablaHash *t)
 {
     FILE *archivo;
-    char palabra[101], definicion[251], nombreArchivo[256], opc;
+    char linea[2048], palabra[101], definicion[1024], nombreArchivo[256], opc;
     elemento e;
-    int c, cont = 0;
+    int c, cont = 0, total = 0;
 
     do
     {
@@ -202,7 +212,7 @@ void cargarArchivo(tablaHash *t)
         fgets(nombreArchivo, sizeof(nombreArchivo), stdin);
         nombreArchivo[strcspn(nombreArchivo, "\n")] = '\0';
 
-        //C:\Users\chris\OneDrive\Escritorio\ESCOM\Algoritmos y Estructura\Practicas_AyED\Practica 05\Palabras
+        // C:\Users\chris\OneDrive\Escritorio\ESCOM\Algoritmos y Estructura\Practicas_AyED\Practica 05\Palabras
 
         archivo = fopen(nombreArchivo, "r");
         if (archivo == NULL)
@@ -210,16 +220,24 @@ void cargarArchivo(tablaHash *t)
             printf("[!]-- No se pudo abrir el archivo '%s'.\n", nombreArchivo);
             return;
         }
-        while (!feof(archivo))
+        while (fgets(linea, sizeof(linea), archivo))
         {
-            if (fscanf(archivo, "%100[^:]: %250[^\n]\n", palabra, definicion) == 2 ||
-                fscanf(archivo, "%100[^:]:%250[^\n]\n", palabra, definicion) == 2)
+            if (sscanf(linea, "%[^:]: %[^\n]\n", palabra, definicion) == 2 ||
+                sscanf(linea, "%[^:]:%[^\n]\n", palabra, definicion) == 2)
             {
-                strcpy(e.p,palabra);
-                strcpy(e.d,definicion);
-                e.indice=Hash(e.p);
+                if (strlen(palabra) == 0 || strlen(definicion) == 0)
+                {
+                    printf("Línea problemática: '%s'\n", linea);
+                    printf("palabra='%s', definicion='%s'\n", palabra, definicion);
+                }
+                strcpy(e.p, palabra);
+                strcpy(e.d, definicion);
+                e.indice = Hash(e.p);
                 if (!Exists_TH(t, e))
+                {
                     Insert_TH(t, e);
+                    total++;
+                }
             }
             else
             {
@@ -233,6 +251,7 @@ void cargarArchivo(tablaHash *t)
         fclose(archivo);
 
         printf("\nArchivo %s cargado extitosamente.", nombreArchivo);
+        printf("\nPalabras agregadas: %d", total);
         if (cont)
             printf("\n[WARNING] Se encontraron %d lineas con formato incorrecto.", cont);
 
@@ -276,11 +295,110 @@ void verEstadisticasHash(tablaHash *t)
 void EstadisticasGenerales(tablaHash *t, elemento e)
 {
     int pos;
-    pos=Posicion(t,e);
-    VerListadeElemnto(t,e);
-    printf("\nIndice de la lista de la tabla: %d",e.indice);
-    printf("\nSe encontro detras de %d palabras",pos);
-    printf("\nNumero de comparaciones: %d",pos+1);
-    printf("\nEl resultado del hash de la palabra %s fue: %d",e.p,e.indice);
+    pos = Posicion(t, e);
+
+    printf("\n\n==========================================================");
+    printf("\nEstadisticas hash:\n");
+    VerListadeElemnto(t, e);
+    printf("\n\n-Indice de la lista de la tabla: %d", e.indice);
+    printf("\n-Se encontro detras de %d palabras", pos);
+    printf("\n-Numero de comparaciones: %d", pos + 1);
+    printf("\n-El resultado del hash de la palabra %s fue: %d", e.p, e.indice);
+    printf("\n==========================================================");
     return;
+}
+
+/*
+================================================================================
+void AjustarTexto(char *texto, int x, int y, int max_ancho, int max_lineas)
+
+Descripción:
+------------
+Imprime un texto largo en la consola ajustándolo para que no sobrepase un ancho
+máximo y dividiéndolo en varias líneas.
+
+Parámetros:
+-----------
+texto       : Cadena de texto a mostrar.
+max_ancho   : Máximo ancho (caracteres) permitido por línea.
+
+Salida:
+-------
+Imprime el texto ajustado en consola.
+
+Observaciones:
+--------------
+- Intenta no cortar palabras a la mitad, buscando un espacio cercano para cortar.
+- Si el texto es más largo que el permitido, se trunca.
+================================================================================
+*/
+void AjustarTexto(char *texto, int max_ancho)
+{
+    int len = strlen(texto);
+    int inicio = 0;
+
+    while (inicio < len)
+    {
+        char lineaTexto[max_ancho + 1];
+        int i;
+
+        // Copiar hasta max_ancho o hasta que se encuentre un espacio cercano al límite
+        for (i = 0; i < max_ancho && (inicio + i) < len; i++)
+            lineaTexto[i] = texto[inicio + i];
+
+        // Si el texto no terminó, tratar de cortar en espacio
+        if ((inicio + i) < len && texto[inicio + i] != ' ')
+        {
+            while (i > 0 && lineaTexto[i - 1] != ' ')
+                i--;
+        }
+
+        lineaTexto[i] = '\0'; // Terminar línea
+
+        printf("\n%s", lineaTexto);
+
+        inicio += i;
+        while (texto[inicio] == ' ')
+            inicio++; // Saltar espacios
+    }
+}
+
+void exportarArchivo(tablaHash *t)
+{
+    FILE *archivo;
+    char nomArchivo[256];
+    posicion p;
+    elemento e;
+    lista *l;
+
+    int i;
+    printf("\nIngrese el nombre del archivo: (default: %s)\n>> ", ARCHIVO_DEFAULT);
+    fgets(nomArchivo, sizeof(nomArchivo), stdin);
+    nomArchivo[strcspn(nomArchivo, "\n")] = '\0';
+
+    if (nomArchivo[0] == '\0')
+        strcpy(nomArchivo, ARCHIVO_DEFAULT);
+
+    archivo = fopen(nomArchivo, "w");
+    if (archivo == NULL)
+    {
+        printf("[!]-- No se pudo crear/editar el archivo '%s'.\n", nomArchivo);
+        return;
+    }
+
+    for (i = 0; i < TAM_TABLA; i++)
+    {
+        l = getLista(t, i);
+        p = First(l);
+        while (ValidatePosition(l, p))
+        {
+            e = Position(l, p);
+            fprintf(archivo, "%s: %s\n", e.p, e.d);
+            p = Following(l, p);
+        }
+    }
+
+    fclose(archivo);
+
+    printf("\nArchivo '%s' exportado exitosamente.", nomArchivo);
 }

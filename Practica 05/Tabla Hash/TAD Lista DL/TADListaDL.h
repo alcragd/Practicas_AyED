@@ -24,9 +24,9 @@ typedef unsigned char boolean;
 
 typedef struct elemento
 {
-	char p[101]; // Palabras de tamaño 100 maximo
-	char d[251]; // Definicion de la palabra de no mas 250 caracteres
-	int indice; 
+	char p[101];  // Palabras de tamaño 100 maximo
+	char d[1024]; // Definicion de la palabra de no mas 250 caracteres
+	int indice;
 } elemento;
 
 // Estructura de un NODO DOBLEMENTE LIGADO

@@ -17,7 +17,6 @@ void Initialize_TH(tablaHash *t)
 
 void Insert_TH(tablaHash *t, elemento e)
 {
-   
 
     Add(t->listas[e.indice], e);
 
@@ -29,7 +28,6 @@ boolean Exists_TH(tablaHash *t, elemento e)
     int indice;
     posicion p;
     indice = Hash(e.p);
- 
 
     p = Search(t->listas[indice], e);
     if (ValidatePosition(t->listas[indice], p))
@@ -46,7 +44,7 @@ elemento Search_TH(tablaHash *t, char *clave)
 
     enull.p[0] = '\0';
     indice = Hash(clave);
-   
+
     p = First(t->listas[indice]);
 
     while (p != NULL)
@@ -110,17 +108,44 @@ int Collisions_TH(tablaHash *t, int i)
     return size == 0 ? size : size - 1;
 }
 
+// int Hash(char *clave)
+// {
+//     int sum = 0, i = 0;
+//     while (clave[i] != '\0')
+//     {
+//         sum += clave[i];
+//         i++;
+//     }
+//     sum %= TAM_TABLA; // sum = sum % TAM_TABLA;
+
+//     return sum;
+// }
+
+// int Hash(char *clave)
+// {
+//     int sum = 0, i = 0;
+//     while (clave[i] != '\0')
+//     {
+//         sum += clave[i]*i;
+//         i++;
+//     }
+//     sum %= TAM_TABLA; // sum = sum % TAM_TABLA;
+
+//     return sum;
+// }
+
 int Hash(char *clave)
 {
-    int sum = 0, i = 0;
+    unsigned long sum = 101;
+    int i = 0, r;
     while (clave[i] != '\0')
     {
-        sum += clave[i];
+        sum = ((sum << 5) + sum) + clave[i];
         i++;
     }
-    sum %= TAM_TABLA; // sum = sum % TAM_TABLA;
+    r = (int)(sum % TAM_TABLA);
 
-    return sum;
+    return r;
 }
 
 boolean EmptyIndex_TH(tablaHash *t, int i)
@@ -131,12 +156,13 @@ boolean EmptyIndex_TH(tablaHash *t, int i)
     return FALSE;
 }
 int Posicion(tablaHash *t, elemento e)
-{   int indice;
-    int pos=0;
+{
+    int indice;
+    int pos = 0;
     posicion p;
     elemento aux;
     indice = e.indice;
-   
+
     p = First(t->listas[indice]);
 
     while (p != NULL)
@@ -151,17 +177,22 @@ int Posicion(tablaHash *t, elemento e)
 }
 void VerListadeElemnto(tablaHash *t, elemento e)
 {
-    int indice,i;
+    int indice, i;
     elemento aux;
     posicion p;
-    indice=e.indice;
+    indice = e.indice;
 
-    p=First(t->listas[indice]);
-    for(i=0;i<Size(t->listas[indice]);i++)
+    p = First(t->listas[indice]);
+    for (i = 0; i < Size(t->listas[indice]); i++)
     {
-        aux=Position(t->listas[indice], p);
-        printf("\nLista[%d] Elemento %d: %s",indice,i,aux.p);
-        p=Following(t->listas[indice],p);
+        aux = Position(t->listas[indice], p);
+        printf("\nLista[%d] Elemento %d: %s", indice, i, aux.p);
+        p = Following(t->listas[indice], p);
     }
     return;
+}
+
+lista *getLista(tablaHash *t, int i)
+{
+    return t->listas[i];
 }

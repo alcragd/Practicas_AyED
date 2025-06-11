@@ -26,6 +26,8 @@ boolean EmptyIndex_TH(tablaHash *t, int i);
 
 boolean Exists_TH(tablaHash *t, elemento e);
 
+lista *getLista(tablaHash *t, int i);
+
 int Hash(char *clave);
 
 int Posicion(tablaHash *t, elemento e);
