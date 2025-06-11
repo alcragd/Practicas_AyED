@@ -1,8 +1,72 @@
+/*
+================================================================================
+TablaHash.c
+Versión: 1.2
+Fecha: Mayo 2025
+Autores: Coyol Moreno Angel Zoe | Ramos Mendoza Miguel Angel | Ramirez Hernandez Christian Isaac
+
+Descripción:
+------------
+Este archivo implementa una tabla hash utilizando listas doblemente ligadas para
+gestionar colisiones. Proporciona funciones para inicializar, insertar, buscar,
+eliminar, reemplazar y liberar elementos, así como para calcular colisiones y
+recorrer la tabla.
+
+El sistema permite:
+- Insertar, eliminar, buscar y reemplazar elementos por clave.
+- Calcular el índice hash de una clave con tres funciones diferentes.
+- Analizar la dispersión y colisiones en la tabla.
+- Acceder y recorrer las listas internas de la tabla hash.
+
+Compilación:
+------------
+gcc -o Diccionario.exe Diccionario.c ./Tabla Hash/TablaHash.c ./TAD Lista DL/TADListaDL.c
+
+Uso:
+----
+Incluye "TablaHash.h" en tu archivo fuente y utiliza las funciones proporcionadas
+para gestionar una tabla hash de elementos.
+
+Observaciones:
+--------------
+- La tabla hash utiliza listas doblemente ligadas para manejar colisiones.
+- El tamaño de la tabla está definido por TAM_TABLA y debe ser un número primo
+  para mejorar la dispersión de claves.
+- Se recomienda verificar duplicados antes de insertar elementos usando Exists_TH.
+- Todas las funciones asumen que la tabla ha sido correctamente inicializada.
+- Es importante liberar la memoria con Destroy_TH al finalizar el uso de la tabla
+  para evitar fugas de memoria.
+- Incluye tres funciones hash para comparar eficiencia y dispersión.
+================================================================================
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include "TablaHash.h"
 
+/*
+================================================================================
+void Initialize_TH(tablaHash *t)
+
+Descripción:
+------------
+Inicializa una tabla hash, reservando memoria para cada lista y llamando a su
+función de inicialización.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash a inicializar.
+
+Salida:
+-------
+La tabla hash queda lista para usarse.
+
+Observaciones:
+--------------
+- Debe llamarse antes de cualquier operación sobre la tabla hash.
+================================================================================
+*/
 void Initialize_TH(tablaHash *t)
 {
     int i;
@@ -15,6 +79,29 @@ void Initialize_TH(tablaHash *t)
     return;
 }
 
+/*
+================================================================================
+void Insert_TH(tablaHash *t, elemento e)
+
+Descripción:
+------------
+Inserta un elemento en la tabla hash, agregándolo a la lista correspondiente
+según el índice hash del elemento.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash.
+e : Elemento a insertar.
+
+Salida:
+-------
+El elemento es agregado a la tabla hash.
+
+Observaciones:
+--------------
+- No verifica duplicados; se recomienda verificar con Exists_TH antes.
+================================================================================
+*/
 void Insert_TH(tablaHash *t, elemento e)
 {
 
@@ -23,6 +110,29 @@ void Insert_TH(tablaHash *t, elemento e)
     return;
 }
 
+/*
+================================================================================
+boolean Exists_TH(tablaHash *t, elemento e)
+
+Descripción:
+------------
+Verifica si un elemento existe en la tabla hash, buscando en la lista
+correspondiente a su índice hash.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash.
+e : Elemento a buscar.
+
+Salida:
+-------
+TRUE si existe, FALSE en caso contrario.
+
+Observaciones:
+--------------
+- Compara usando la clave del elemento.
+================================================================================
+*/
 boolean Exists_TH(tablaHash *t, elemento e)
 {
     int indice;
@@ -36,6 +146,28 @@ boolean Exists_TH(tablaHash *t, elemento e)
     return FALSE;
 }
 
+/*
+================================================================================
+elemento Search_TH(tablaHash *t, char *clave)
+
+Descripción:
+------------
+Busca un elemento en la tabla hash usando su clave.
+
+Parámetros:
+-----------
+t     : Puntero a la tabla hash.
+clave : Cadena clave a buscar.
+
+Salida:
+-------
+Devuelve el elemento encontrado o un elemento nulo si no existe.
+
+Observaciones:
+--------------
+- El elemento nulo tiene la clave vacía.
+================================================================================
+*/
 elemento Search_TH(tablaHash *t, char *clave)
 {
     int indice;
@@ -59,6 +191,28 @@ elemento Search_TH(tablaHash *t, char *clave)
     return enull;
 }
 
+/*
+================================================================================
+void Delete_TH(tablaHash *t, elemento e)
+
+Descripción:
+------------
+Elimina un elemento de la tabla hash, si existe, de la lista correspondiente.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash.
+e : Elemento a eliminar.
+
+Salida:
+-------
+El elemento es eliminado si se encuentra.
+
+Observaciones:
+--------------
+- No hace nada si el elemento no existe.
+================================================================================
+*/
 void Delete_TH(tablaHash *t, elemento e)
 {
     posicion p;
@@ -73,6 +227,29 @@ void Delete_TH(tablaHash *t, elemento e)
     return;
 }
 
+/*
+================================================================================
+void Replace_TH(tablaHash *t, elemento new, elemento old)
+
+Descripción:
+------------
+Reemplaza un elemento existente en la tabla hash por uno nuevo.
+
+Parámetros:
+-----------
+t   : Puntero a la tabla hash.
+new : Nuevo elemento.
+old : Elemento a reemplazar.
+
+Salida:
+-------
+El elemento viejo es reemplazado por el nuevo.
+
+Observaciones:
+--------------
+- Solo reemplaza si el elemento viejo existe.
+================================================================================
+*/
 void Replace_TH(tablaHash *t, elemento new, elemento old)
 {
     posicion p;
@@ -87,6 +264,27 @@ void Replace_TH(tablaHash *t, elemento new, elemento old)
     return;
 }
 
+/*
+================================================================================
+void Destroy_TH(tablaHash *t)
+
+Descripción:
+------------
+Libera toda la memoria utilizada por la tabla hash y sus listas internas.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash.
+
+Salida:
+-------
+Toda la memoria asociada es liberada.
+
+Observaciones:
+--------------
+- Debe llamarse al final del uso de la tabla para evitar fugas de memoria.
+================================================================================
+*/
 void Destroy_TH(tablaHash *t)
 {
     int i;
@@ -99,6 +297,29 @@ void Destroy_TH(tablaHash *t)
     return;
 }
 
+/*
+================================================================================
+int Collisions_TH(tablaHash *t, int i)
+
+Descripción:
+------------
+Devuelve el número de colisiones (elementos extra) en la lista de la posición i
+de la tabla hash.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash.
+i : Índice de la lista.
+
+Salida:
+-------
+Número de colisiones (elementos - 1, o 0 si está vacía).
+
+Observaciones:
+--------------
+- Útil para análisis de dispersión de la tabla hash.
+================================================================================
+*/
 int Collisions_TH(tablaHash *t, int i)
 {
     int size;
@@ -108,32 +329,35 @@ int Collisions_TH(tablaHash *t, int i)
     return size == 0 ? size : size - 1;
 }
 
-// int Hash(char *clave)
-// {
-//     int sum = 0, i = 0;
-//     while (clave[i] != '\0')
-//     {
-//         sum += clave[i];
-//         i++;
-//     }
-//     sum %= TAM_TABLA; // sum = sum % TAM_TABLA;
+/*
+================================================================================
+int Hash(char *clave)
 
-//     return sum;
-// }
+Descripción:
+------------
+Calcula el valor hash de una cadena clave para determinar su posición en la
+tabla hash.
 
-// int Hash(char *clave)
-// {
-//     int sum = 0, i = 0;
-//     while (clave[i] != '\0')
-//     {
-//         sum += clave[i]*i;
-//         i++;
-//     }
-//     sum %= TAM_TABLA; // sum = sum % TAM_TABLA;
+Parámetros:
+-----------
+clave : Cadena de caracteres a hashear.
 
-//     return sum;
-// }
+Salida:
+-------
+Índice hash correspondiente a la clave.
 
+Observaciones:
+--------------
+- Utiliza operaciones de bits (desplazamiento y suma) en vez de solo sumas o multiplicaciones.
+  Esto es preferible porque:
+    * El desplazamiento de bits (<< 5) es equivalente a multiplicar por 32, pero es más eficiente
+      en la mayoría de arquitecturas.
+    * Mezcla mejor los bits de los caracteres, logrando una distribución más uniforme de claves
+      y reduciendo colisiones en la tabla hash.
+    * La simple suma (como en Hash2) tiende a agrupar claves similares en los mismos índices,
+      mientras que la combinación de suma y desplazamiento dispersa mejor los valores.
+================================================================================
+*/
 int Hash(char *clave)
 {
     unsigned long sum = 101;
@@ -148,6 +372,108 @@ int Hash(char *clave)
     return r;
 }
 
+/*
+================================================================================
+int Hash2(char *clave)
+
+Descripción:
+------------
+Calcula el valor hash de una cadena clave usando la suma simple de los valores
+ASCII de los caracteres.
+
+Parámetros:
+-----------
+clave : Cadena de caracteres a hashear.
+
+Salida:
+-------
+Índice hash correspondiente a la clave.
+
+Observaciones:
+--------------
+- Es un método simple y puede generar más colisiones.
+- Útil para comparar la eficiencia de diferentes funciones hash.
+- Defecto: No toma en cuenta el orden de los caracteres, por lo que anagramas
+  (palabras con las mismas letras en diferente orden) producirán el mismo hash.
+- Defecto: Las claves similares tienden a agruparse, lo que reduce la dispersión
+  y aumenta el riesgo de colisiones.
+================================================================================
+*/
+int Hash2(char *clave)
+{
+    int i = 0, sum = 0;
+    while (clave[i] != '\0')
+    {
+        sum += clave[i];
+        i++;
+    }
+    sum %= TAM_TABLA;
+
+    return sum;
+}
+
+/*
+================================================================================
+int Hash3(char *clave)
+
+Descripción:
+------------
+Calcula el valor hash de una cadena clave multiplicando el valor ASCII de cada
+carácter por su posición y sumando los resultados.
+
+Parámetros:
+-----------
+clave : Cadena de caracteres a hashear.
+
+Salida:
+-------
+Índice hash correspondiente a la clave.
+
+Observaciones:
+--------------
+- Puede mejorar la dispersión respecto a Hash2, pero sigue siendo simple.
+- Útil para comparar la eficiencia de diferentes funciones hash.
+- Defecto: Si muchas claves comparten prefijos o sufijos comunes, pueden
+  agruparse en los mismos índices.
+- Defecto: Para claves cortas o con caracteres repetidos, la dispersión sigue
+  siendo limitada y pueden ocurrir colisiones.
+================================================================================
+*/
+int Hash3(char *clave)
+{
+    int i = 0, sum = 0;
+    while (clave[i] != '\0')
+    {
+        sum += clave[i] * i;
+        i++;
+    }
+    sum %= TAM_TABLA;
+
+    return sum;
+}
+
+/*
+================================================================================
+boolean EmptyIndex_TH(tablaHash *t, int i)
+
+Descripción:
+------------
+Verifica si la lista en la posición i de la tabla hash está vacía.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash.
+i : Índice de la lista.
+
+Salida:
+-------
+TRUE si está vacía, FALSE en caso contrario.
+
+Observaciones:
+--------------
+- Útil para recorrer solo listas no vacías.
+================================================================================
+*/
 boolean EmptyIndex_TH(tablaHash *t, int i)
 {
     if (!Size(t->listas[i]))
@@ -155,6 +481,29 @@ boolean EmptyIndex_TH(tablaHash *t, int i)
 
     return FALSE;
 }
+
+/*
+================================================================================
+int Posicion(tablaHash *t, elemento e)
+
+Descripción:
+------------
+Devuelve la posición (índice) de un elemento dentro de su lista en la tabla hash.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash.
+e : Elemento a buscar.
+
+Salida:
+-------
+Índice (posición) del elemento en su lista, o -1 si no se encuentra.
+
+Observaciones:
+--------------
+- Útil para operaciones avanzadas sobre la lista.
+================================================================================
+*/
 int Posicion(tablaHash *t, elemento e)
 {
     int indice;
@@ -175,6 +524,30 @@ int Posicion(tablaHash *t, elemento e)
         pos++;
     }
 }
+
+/*
+================================================================================
+void VerListadeElemnto(tablaHash *t, elemento e)
+
+Descripción:
+------------
+Imprime en consola todos los elementos de la lista correspondiente al índice
+hash del elemento dado.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash.
+e : Elemento de referencia.
+
+Salida:
+-------
+Imprime los elementos de la lista en consola.
+
+Observaciones:
+--------------
+- Útil para depuración y análisis de la tabla hash.
+================================================================================
+*/
 void VerListadeElemnto(tablaHash *t, elemento e)
 {
     int indice, i;
@@ -192,6 +565,28 @@ void VerListadeElemnto(tablaHash *t, elemento e)
     return;
 }
 
+/*
+================================================================================
+lista *getLista(tablaHash *t, int i)
+
+Descripción:
+------------
+Devuelve un puntero a la lista en la posición i de la tabla hash.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash.
+i : Índice de la lista.
+
+Salida:
+-------
+Puntero a la lista solicitada.
+
+Observaciones:
+--------------
+- Permite acceso directo a las listas internas de la tabla hash.
+================================================================================
+*/
 lista *getLista(tablaHash *t, int i)
 {
     return t->listas[i];
