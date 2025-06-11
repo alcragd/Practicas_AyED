@@ -464,7 +464,7 @@ Ninguna.
 */
 void verEstadisticasHash(tablaHash *t)
 {
-    int colisiones, contColisiones = 0, i, empty = 0, sum, min = (int)1e19, max = -1;
+    int colisiones = 0, contColisiones = 0, i, empty = 0, sum, min = (int)1e19, max = -1;
     double prom;
 
     printf("\nEstadisticas Hash:");
