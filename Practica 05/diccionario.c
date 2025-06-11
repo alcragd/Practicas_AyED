@@ -1,3 +1,56 @@
+/*
+================================================================================
+diccionario.c
+Versión: 1.0
+Fecha: Junio 2025
+Autor: Ramirez Hernandez Christian Isaac| Coyol Moreno Angel Zoe | Ramos Mendoza Miguel Angel
+
+Descripción:
+------------
+Este programa implementa un diccionario interactivo basado en una tabla hash.
+Permite cargar definiciones desde archivos, agregar, buscar, modificar y eliminar
+palabras, así como exportar el diccionario y ver estadísticas de la tabla hash.
+La interfaz es completamente en consola y soporta acentos y caracteres especiales.
+
+Funcionalidades:
+- Cargar definiciones desde archivos de texto.
+- Agregar palabras y definiciones manualmente.
+- Buscar palabras y mostrar su definición.
+- Modificar la definición de palabras existentes.
+- Eliminar palabras del diccionario.
+- Exportar todas las definiciones a un archivo de texto.
+- Mostrar estadísticas de la tabla hash (colisiones, listas vacías, etc.).
+- Ajustar visualmente el texto de las definiciones para una mejor presentación.
+
+Compilación:
+------------
+Windows:
+gcc -o diccionario.exe diccionario.c  "Tabla Hash/TablaHash.c" "Tabla Hash/TAD Lista DL/TADListaDL.c"
+
+Linux:
+gcc -o diccionario diccionario.c  "Tabla Hash/TablaHash.c" "Tabla Hash/TAD Lista DL/TADListaDL.c"
+
+Uso:
+----
+./diccionario.exe
+
+El programa solicitará:
+  - Seleccionar una opción del menú (cargar archivo, agregar palabra, buscar, etc.).
+  - Ingresar rutas de archivos, palabras y definiciones según la opción elegida.
+
+Salida:
+-------
+- Mensajes en consola con resultados de las operaciones.
+- Estadísticas y advertencias sobre el estado de la tabla hash.
+- Archivo exportado con todas las definiciones si se elige esa opción.
+
+Observaciones:
+--------------
+- Se recomienda ejecutar en consola con soporte UTF-8 para acentos y caracteres especiales.
+- El tamaño máximo de palabra y definición está limitado por el programa.
+- El formato de archivo esperado es: palabra: definición (una por línea).
+================================================================================
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -66,7 +119,28 @@ int main(int argc, char *argv[])
         }
     }
 }
+/*
+================================================================================
+void agregarPalabra(tablaHash *t)
 
+Descripción:
+------------
+Permite al usuario agregar manualmente una palabra y su definición al diccionario.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash donde se insertará la palabra.
+
+Salida:
+-------
+Actualiza la tabla hash con la nueva palabra y definición.
+
+Observaciones:
+--------------
+- Permite agregar varias palabras en una sola sesión.
+- Muestra estadísticas de la tabla hash después de cada inserción.
+================================================================================
+*/
 void agregarPalabra(tablaHash *t)
 {
     elemento e;
@@ -93,7 +167,29 @@ void agregarPalabra(tablaHash *t)
     } while (opc == 'Y' || opc == 'y');
     return;
 }
+/*
+================================================================================
+void buscarPalabra(tablaHash *t)
 
+Descripción:
+------------
+Permite al usuario buscar una palabra en el diccionario y muestra su definición
+si existe.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash donde se buscará la palabra.
+
+Salida:
+-------
+Imprime la definición de la palabra buscada y estadísticas de búsqueda.
+
+Observaciones:
+--------------
+- Permite realizar varias búsquedas en una sola sesión.
+- Si la palabra no existe, informa al usuario.
+================================================================================
+*/
 void buscarPalabra(tablaHash *t)
 {
     elemento e;
@@ -124,7 +220,28 @@ void buscarPalabra(tablaHash *t)
         getchar();
     } while (opc == 'Y' || opc == 'y');
 }
+/*
+================================================================================
+void modificarDefinicion(tablaHash *t)
 
+Descripción:
+------------
+Permite al usuario modificar la definición de una palabra existente en el diccionario.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash donde se modificará la definición.
+
+Salida:
+-------
+Actualiza la definición de la palabra en la tabla hash.
+
+Observaciones:
+--------------
+- Permite modificar varias definiciones en una sola sesión.
+- Si la palabra no existe, informa al usuario.
+================================================================================
+*/
 void modificarDefinicion(tablaHash *t)
 {
     char opc;
@@ -156,7 +273,28 @@ void modificarDefinicion(tablaHash *t)
         getchar();
     } while (opc == 'Y' || opc == 'y');
 }
+/*
+================================================================================
+void eliminarPalabra(tablaHash *t)
 
+Descripción:
+------------
+Permite al usuario eliminar una palabra y su definición del diccionario.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash donde se eliminará la palabra.
+
+Salida:
+-------
+Elimina la palabra de la tabla hash.
+
+Observaciones:
+--------------
+- Permite eliminar varias palabras en una sola sesión.
+- Si la palabra no existe, informa al usuario.
+================================================================================
+*/
 void eliminarPalabra(tablaHash *t)
 {
     char palabra[101], opc;
@@ -184,7 +322,27 @@ void eliminarPalabra(tablaHash *t)
         getchar();
     } while (opc == 'Y' || opc == 'y');
 }
+/*
+================================================================================
+void imprimirMenu()
 
+Descripción:
+------------
+Muestra en pantalla el menú principal de opciones para el usuario.
+
+Parámetros:
+-----------
+Ninguno.
+
+Salida:
+-------
+Imprime el menú en consola.
+
+Observaciones:
+--------------
+Ninguna.
+================================================================================
+*/
 void imprimirMenu()
 {
     printf("\n================== MENU ==================");
@@ -198,7 +356,29 @@ void imprimirMenu()
     printf("\n\n 0) Salir");
     printf("\n==========================================");
 }
+/*
+================================================================================
+void cargarArchivo(tablaHash *t)
 
+Descripción:
+------------
+Permite al usuario cargar un archivo de definiciones al diccionario. Lee cada línea,
+verifica el formato, y agrega las palabras y definiciones válidas a la tabla hash.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash donde se insertarán las definiciones.
+
+Salida:
+-------
+Actualiza la tabla hash con las palabras y definiciones del archivo.
+
+Observaciones:
+--------------
+- Informa al usuario si hay líneas con formato incorrecto.
+- Permite cargar varios archivos en una sola sesión.
+================================================================================
+*/
 void cargarArchivo(tablaHash *t)
 {
     FILE *archivo;
@@ -260,7 +440,28 @@ void cargarArchivo(tablaHash *t)
         getchar();
     } while (opc == 'Y' || opc == 'y');
 }
+/*
+================================================================================
+void verEstadisticasHash(tablaHash *t)
 
+Descripción:
+------------
+Muestra estadísticas sobre la distribución de las palabras en la tabla hash,
+como colisiones, listas vacías, y promedios.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash a analizar.
+
+Salida:
+-------
+Imprime estadísticas en consola.
+
+Observaciones:
+--------------
+Ninguna.
+================================================================================
+*/
 void verEstadisticasHash(tablaHash *t)
 {
     int colisiones, i, empty = 0, sum, min = (int)1e19, max = -1;
@@ -292,6 +493,29 @@ void verEstadisticasHash(tablaHash *t)
 
     printf("\nListas Vacias:\t%d", empty);
 }
+/*
+================================================================================
+void EstadisticasGenerales(tablaHash *t, elemento e)
+
+Descripción:
+------------
+Muestra estadísticas detalladas sobre la posición y búsqueda de un elemento
+específico en la tabla hash.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash.
+e : Elemento del cual se mostrarán estadísticas.
+
+Salida:
+-------
+Imprime estadísticas en consola.
+
+Observaciones:
+--------------
+Ninguna.
+================================================================================
+*/
 void EstadisticasGenerales(tablaHash *t, elemento e)
 {
     int pos;
@@ -362,7 +586,28 @@ void AjustarTexto(char *texto, int max_ancho)
             inicio++; // Saltar espacios
     }
 }
+/*
+================================================================================
+void exportarArchivo(tablaHash *t)
 
+Descripción:
+------------
+Permite exportar todas las palabras y definiciones del diccionario a un archivo de texto.
+
+Parámetros:
+-----------
+t : Puntero a la tabla hash a exportar.
+
+Salida:
+-------
+Crea o sobrescribe un archivo de texto con las definiciones.
+
+Observaciones:
+--------------
+- El usuario puede elegir el nombre del archivo.
+- Si no se especifica, se usa un nombre por defecto.
+================================================================================
+*/
 void exportarArchivo(tablaHash *t)
 {
     FILE *archivo;

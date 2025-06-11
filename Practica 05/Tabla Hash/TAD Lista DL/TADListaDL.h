@@ -26,7 +26,7 @@ typedef struct elemento
 {
 	char p[101];  // Palabras de tamaño 100 maximo
 	char d[1024]; // Definicion de la palabra de no mas 250 caracteres
-	int indice;
+	int indice; //Indice del Hasheo
 } elemento;
 
 // Estructura de un NODO DOBLEMENTE LIGADO
