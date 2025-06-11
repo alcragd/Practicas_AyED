@@ -464,7 +464,7 @@ Ninguna.
 */
 void verEstadisticasHash(tablaHash *t)
 {
-    int colisiones, i, empty = 0, sum, min = (int)1e19, max = -1;
+    int colisiones, contColisiones = 0, i, empty = 0, sum, min = (int)1e19, max = -1;
     double prom;
 
     printf("\nEstadisticas Hash:");
@@ -472,11 +472,16 @@ void verEstadisticasHash(tablaHash *t)
     for (i = 0; i < TAM_TABLA; i++)
     {
         colisiones = Collisions_TH(t, i);
+
         if (!EmptyIndex_TH(t, i))
         {
             printf("\n\t\tLista [%d]:\t%d", i, colisiones);
 
-            sum += colisiones;
+            if (colisiones)
+            {
+                contColisiones++;
+                sum += colisiones;
+            }
             min = (min < colisiones ? min : colisiones);
             max = (max > colisiones ? max : colisiones);
         }
@@ -486,7 +491,7 @@ void verEstadisticasHash(tablaHash *t)
             empty++;
         }
     }
-    prom = sum / (TAM_TABLA - empty);
+    prom = sum / contColisiones;
     printf("\n\n\tMáximo de colisiones:\t%d", max);
     printf("\n\tMinimo de colisiones:\t%d", min);
     printf("\n\tColisiones Promedio:\t%.2lf", prom);
