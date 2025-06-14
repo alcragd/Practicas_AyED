@@ -47,7 +47,7 @@ void Destroy_TH(tablaHash *t);
 boolean EmptyIndex_TH(tablaHash *t, int i);
 
 // Verifica si un elemento existe en la tabla hash.
-boolean Exists_TH(tablaHash *t, elemento e);
+boolean Exists_TH(tablaHash *t, char* clave);
 
 // Devuelve un puntero a la lista en la posición i.
 lista *getLista(tablaHash *t, int i);

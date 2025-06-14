@@ -158,7 +158,7 @@ void agregarPalabra(tablaHash *t)
         e.d[strcspn(e.d, "\n")] = '\0';
         e.indice = Hash(e.p);
 
-        if (!Exists_TH(t, e))
+        if (!Exists_TH(t, e.p))
         {
             Insert_TH(t, e);
             contador_palabras++;
@@ -351,7 +351,7 @@ Ninguna.
 */
 void imprimirMenu()
 {
-    printf("\n================== DICCIONARIO ==================");
+    printf("\n=============== DICCIONARIO ==============");
     printf("\n================== MENU ==================");
     printf("\n 1) Cargar un archivo de definiciones");
     printf("\n 2) Agregar una palabra y su definicion");
@@ -420,7 +420,7 @@ void cargarArchivo(tablaHash *t)
                 strcpy(e.p, palabra);
                 strcpy(e.d, definicion);
                 e.indice = Hash(e.p);
-                if (!Exists_TH(t, e))
+                if (!Exists_TH(t, e.p))
                 {
                     Insert_TH(t, e);
                     total++;

@@ -112,37 +112,42 @@ void Insert_TH(tablaHash *t, elemento e)
 
 /*
 ================================================================================
-boolean Exists_TH(tablaHash *t, elemento e)
+boolean Exists_TH(tablaHash *t, char *clave)
 
 Descripción:
 ------------
-Verifica si un elemento existe en la tabla hash, buscando en la lista
-correspondiente a su índice hash.
+Verifica si una palabra (clave) ya existe en la tabla hash. Busca únicamente por la
+clave en la lista correspondiente al índice hash de la palabra, evitando así duplicados
+de palabras en el diccionario.
 
 Parámetros:
 -----------
-t : Puntero a la tabla hash.
-e : Elemento a buscar.
+t     : Puntero a la tabla hash.
+clave : Cadena de caracteres que representa la palabra a buscar.
 
 Salida:
 -------
-TRUE si existe, FALSE en caso contrario.
+TRUE si la palabra ya existe en la tabla hash, FALSE en caso contrario.
 
 Observaciones:
 --------------
-- Compara usando la clave del elemento.
+- Solo compara la clave (palabra), no la definición ni otros campos del elemento.
+- Se recomienda llamar a esta función antes de insertar una nueva palabra para evitar duplicados.
 ================================================================================
 */
-boolean Exists_TH(tablaHash *t, elemento e)
+boolean Exists_TH(tablaHash *t, char *clave)
 {
-    int indice;
-    posicion p;
-    indice = Hash(e.p);
+    int indice = Hash(clave);
+    posicion p = First(t->listas[indice]);
+    elemento aux;
 
-    p = Search(t->listas[indice], e);
-    if (ValidatePosition(t->listas[indice], p))
-        return TRUE;
-
+    while (p != NULL)
+    {
+        aux = Position(t->listas[indice], p);
+        if (strcmp(aux.p, clave) == 0)
+            return TRUE;
+        p = Following(t->listas[indice], p);
+    }
     return FALSE;
 }
 
