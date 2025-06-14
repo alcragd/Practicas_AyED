@@ -92,7 +92,10 @@ boolean NullNode_ABB(arbol_bin_busqueda *A, posicion p)
 void Destroy_ABB(arbol_bin_busqueda *A)
 {
     if ((*A)->left == NULL && (*A)->right == NULL)
+    {
         free(*A);
+        *A = NULL;
+    }
     else
     {
         if ((*A)->left != NULL)
