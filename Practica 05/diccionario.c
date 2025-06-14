@@ -472,7 +472,7 @@ Ninguna.
 void verEstadisticasHash(tablaHash *t)
 {
     int colisiones = 0, contColisiones = 0, i, empty = 0, sum, min = (int)1e19, max = -1;
-    double prom;
+    double prom, dispersion;
 
     printf("\nEstadisticas Hash:");
     printf("\n\tColisiones:");
@@ -498,13 +498,21 @@ void verEstadisticasHash(tablaHash *t)
             empty++;
         }
     }
-    prom = sum / contColisiones;
+    if (contColisiones > 0)
+        prom = (double)sum / contColisiones;
+    else
+        prom = 0;
+
+    // Porcentaje de dispersión
+    dispersion = 100.0 * (TAM_TABLA - empty) / TAM_TABLA;
+
     printf("\n\n\tTotal de palabras:\t%d", contador_palabras);
     printf("\n\n\tMáximo de colisiones:\t%d", max);
     printf("\n\tMinimo de colisiones:\t%d", min);
     printf("\n\tColisiones Promedio:\t%.2lf", prom);
 
-    printf("\nListas Vacias:\t%d", empty);
+    printf("\n\tListas Vacias:\t%d", empty);
+    printf("\n\tPorcentaje de dispersión:\t%.2lf%%", dispersion);
 }
 /*
 ================================================================================
