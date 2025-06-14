@@ -70,6 +70,8 @@ void EstadisticasGenerales(tablaHash *t, elemento e);
 void AjustarTexto(char *texto, int max_ancho);
 void exportarArchivo(tablaHash *t);
 
+int contador_palabras = 0;
+
 int main(int argc, char *argv[])
 {
     int opc;
@@ -157,7 +159,10 @@ void agregarPalabra(tablaHash *t)
         e.indice = Hash(e.p);
 
         if (!Exists_TH(t, e))
+        {
             Insert_TH(t, e);
+            contador_palabras++;
+        }
 
         EstadisticasGenerales(t, e);
 
@@ -315,6 +320,7 @@ void eliminarPalabra(tablaHash *t)
             EstadisticasGenerales(t, e);
             Delete_TH(t, e);
             printf("\nPalabra eliminada satisfactoriamente");
+            contador_palabras--;
         }
 
         printf("\n\n¿Hacer otra eliminación?(Y/N)\n>> ");
@@ -418,6 +424,7 @@ void cargarArchivo(tablaHash *t)
                 {
                     Insert_TH(t, e);
                     total++;
+                    contador_palabras++;
                 }
             }
             else
@@ -465,19 +472,24 @@ Ninguna.
 */
 void verEstadisticasHash(tablaHash *t)
 {
-    int colisiones, i, empty = 0, sum, min = (int)1e19, max = -1;
-    double prom;
+    int colisiones = 0, contColisiones = 0, i, empty = 0, sum, min = (int)1e19, max = -1;
+    double prom, dispersion;
 
     printf("\nEstadisticas Hash:");
     printf("\n\tColisiones:");
     for (i = 0; i < TAM_TABLA; i++)
     {
         colisiones = Collisions_TH(t, i);
+
         if (!EmptyIndex_TH(t, i))
         {
             printf("\n\t\tLista [%d]:\t%d", i, colisiones);
 
-            sum += colisiones;
+            if (colisiones)
+            {
+                contColisiones++;
+                sum += colisiones;
+            }
             min = (min < colisiones ? min : colisiones);
             max = (max > colisiones ? max : colisiones);
         }
@@ -487,12 +499,21 @@ void verEstadisticasHash(tablaHash *t)
             empty++;
         }
     }
-    prom = sum / (TAM_TABLA - empty);
+    if (contColisiones > 0)
+        prom = (double)sum / contColisiones;
+    else
+        prom = 0;
+
+    // Porcentaje de dispersión
+    dispersion = 100.0 * (TAM_TABLA - empty) / TAM_TABLA;
+
+    printf("\n\n\tTotal de palabras:\t%d", contador_palabras);
     printf("\n\n\tMáximo de colisiones:\t%d", max);
     printf("\n\tMinimo de colisiones:\t%d", min);
     printf("\n\tColisiones Promedio:\t%.2lf", prom);
 
-    printf("\nListas Vacias:\t%d", empty);
+    printf("\n\tListas Vacias:\t%d", empty);
+    printf("\n\tPorcentaje de dispersión:\t%.2lf%%", dispersion);
 }
 /*
 ================================================================================

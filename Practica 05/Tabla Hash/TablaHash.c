@@ -364,7 +364,7 @@ int Hash(char *clave)
     int i = 0, r;
     while (clave[i] != '\0')
     {
-        sum = ((sum << 5) + sum) + clave[i];
+        sum = ((sum << 4) + sum) + clave[i];
         i++;
     }
     r = (int)(sum % TAM_TABLA);
