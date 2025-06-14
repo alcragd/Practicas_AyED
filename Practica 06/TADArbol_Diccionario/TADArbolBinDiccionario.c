@@ -13,27 +13,28 @@ void Insert_ABB(arbol_bin_busqueda *A, char *clave, elemento e)
     nodo *newNode;
     int cmp;
 
-    newNode = malloc(sizeof(nodo));
-    if (newNode == NULL)
-    {
-        printf("\nInsert_ABB(A,e): ERROR Desbordamiento de Arbol.");
-        exit(1);
-    }
-
-    strcpy(newNode->clave, clave);
-    newNode->e = e;
-    newNode->left = NULL;
-    newNode->right = NULL;
-
     if (Empty_ABB(&(*A)))
+    {
+        newNode = malloc(sizeof(nodo));
+        if (newNode == NULL)
+        {
+            printf("\nInsert_ABB(A,e): ERROR Desbordamiento de Arbol.");
+            exit(1);
+        }
+
+        strcpy(newNode->clave, clave);
+        newNode->e = e;
+        newNode->left = NULL;
+        newNode->right = NULL;
         *A = newNode;
+    }
     else
     {
         cmp = strcmp(clave, (*A)->clave);
         if (cmp < 0)
-            (*A)->left = newNode;
+            Insert_ABB(&((*A)->left), clave, e);
         else if (cmp > 0)
-            (*A)->right = newNode;
+            Insert_ABB(&((*A)->right), clave, e);
         else
         {
             printf("\nInsert_ABB(A,e): La clave '%s' ya existe.", clave);
@@ -52,15 +53,15 @@ boolean Empty_ABB(arbol_bin_busqueda *A)
 posicion Search_ABB(arbol_bin_busqueda *A, char *clave)
 {
     int comp;
-    posicion p = NULL;
+    if (*A == NULL)
+        return NULL;
     comp = strcmp(clave, (*A)->clave);
-
     if (comp < 0)
-        p = Search_ABB(&((*A)->left), clave);
+        return Search_ABB(&((*A)->left), clave);
     else if (comp > 0)
-        p = Search_ABB(&((*A)->right), clave);
-
-    return p;
+        return Search_ABB(&((*A)->right), clave);
+    else
+        return *A;
 }
 
 elemento ReadNode_ABB(arbol_bin_busqueda *A, posicion p)
@@ -91,17 +92,10 @@ boolean NullNode_ABB(arbol_bin_busqueda *A, posicion p)
 
 void Destroy_ABB(arbol_bin_busqueda *A)
 {
-    if ((*A)->left == NULL && (*A)->right == NULL)
-    {
-        free(*A);
-        *A = NULL;
-    }
-    else
-    {
-        if ((*A)->left != NULL)
-            Destroy_ABB(&((*A)->left));
-        if ((*A)->right != NULL)
-            Destroy_ABB(&((*A)->right));
-    }
-    return;
+    if (*A == NULL)
+        return;
+    Destroy_ABB(&((*A)->left));
+    Destroy_ABB(&((*A)->right));
+    free(*A);
+    *A = NULL;
 }
