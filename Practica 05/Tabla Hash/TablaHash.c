@@ -355,7 +355,7 @@ Observaciones:
 --------------
 - Utiliza operaciones de bits (desplazamiento y suma) en vez de solo sumas o multiplicaciones.
   Esto es preferible porque:
-    * El desplazamiento de bits (<< 5) es equivalente a multiplicar por 32, pero es más eficiente
+    * El desplazamiento de bits (<< 4) es equivalente a multiplicar por 16, pero es más eficiente
       en la mayoría de arquitecturas.
     * Mezcla mejor los bits de los caracteres, logrando una distribución más uniforme de claves
       y reduciendo colisiones en la tabla hash.
