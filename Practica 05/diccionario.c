@@ -345,6 +345,7 @@ Ninguna.
 */
 void imprimirMenu()
 {
+    printf("\n================== DICCIONARIO ==================");
     printf("\n================== MENU ==================");
     printf("\n 1) Cargar un archivo de definiciones");
     printf("\n 2) Agregar una palabra y su definicion");
