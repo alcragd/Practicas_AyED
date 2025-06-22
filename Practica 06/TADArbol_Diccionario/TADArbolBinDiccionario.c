@@ -103,9 +103,12 @@ void Destroy_ABB(arbol_bin_busqueda *A)
 void Modify_ABB(arbol_bin_busqueda *A, char *clave, elemento new)
 {
     posicion p = Search_ABB(A, clave);
-    if (p == NULL) {
+    if (p == NULL)
+    {
         printf("No se encontró la clave \"%s\" a modificar.\n", clave);
-    } else {
+    }
+    else
+    {
         p->e = new;
         printf("Elemento modificado correctamente para la clave \"%s\".\n", clave);
     }
@@ -114,43 +117,52 @@ void Modify_ABB(arbol_bin_busqueda *A, char *clave, elemento new)
 
 void Delete_ABB(arbol_bin_busqueda *A, char *clave)
 {
-    if (*A == NULL) {
+    if (*A == NULL)
+    {
         printf("No se encontró la clave \"%s\" para eliminar.\n", clave);
         return;
     }
 
     int cmp = strcmp(clave, (*A)->clave);
 
-    if (cmp < 0) {
+    if (cmp < 0)
         Delete_ABB(&((*A)->left), clave);
-    } else if (cmp > 0) {
+
+    else if (cmp > 0)
         Delete_ABB(&((*A)->right), clave);
-    } else {
+
+    else
+    {
         // Nodo encontrado
         nodo *temp;
-        if ((*A)->left == NULL && (*A)->right == NULL) {
+        if ((*A)->left == NULL && (*A)->right == NULL)
+        {
             // Caso 1: Sin hijos
             free(*A);
             *A = NULL;
-            
-        } else if ((*A)->left == NULL) {
-            // Caso 2: Solo hijo derecho
+        }
+        else if ((*A)->left == NULL)
+        {
+            // Caso 2a: Solo hijo derecho
             temp = *A;
             *A = (*A)->right;
             free(temp);
-            
-        } else if ((*A)->right == NULL) {
-            // Caso 2: Solo hijo izquierdo
+        }
+        else if ((*A)->right == NULL)
+        {
+            // Caso 2b: Solo hijo izquierdo
             temp = *A;
             *A = (*A)->left;
             free(temp);
-            
-        } else {
+        }
+        else
+        {
             // Caso 3: Dos hijos
             // Buscar el sucesor inorden (el menor del subárbol derecho)
             nodo *succParent = *A;
             nodo *succ = (*A)->right;
-            while (succ->left != NULL) {
+            while (succ->left != NULL)
+            {
                 succParent = succ;
                 succ = succ->left;
             }
@@ -162,15 +174,14 @@ void Delete_ABB(arbol_bin_busqueda *A, char *clave)
                 Delete_ABB(&(succParent->left), succ->clave);
             else
                 Delete_ABB(&(succParent->right), succ->clave);
-            
         }
     }
 }
 void RecorridoPreOrden(arbol_bin_busqueda *A)
-{  
-    if(*A!=NULL)
+{
+    if (*A != NULL)
     {
-        printf("%s:\n%s\n",(*A)->clave,(*A)->e.d);
+        printf("%s:\n%s\n", (*A)->clave, (*A)->e.d);
         RecorridoPreOrden(&((*A)->left));
         RecorridoPreOrden(&((*A)->right));
     }
@@ -178,21 +189,21 @@ void RecorridoPreOrden(arbol_bin_busqueda *A)
 }
 void RecorridoInOrden(arbol_bin_busqueda *A)
 {
-    if(*A!=NULL)
+    if (*A != NULL)
     {
         RecorridoInOrden(&((*A)->left));
-        printf("%s:\n%s\n",(*A)->clave,(*A)->e.d);
+        printf("%s:\n%s\n", (*A)->clave, (*A)->e.d);
         RecorridoInOrden(&((*A)->right));
     }
     return;
 }
 void RecorridoPosOrden(arbol_bin_busqueda *A)
 {
-    if(*A!=NULL)
+    if (*A != NULL)
     {
         RecorridoPosOrden(&((*A)->left));
         RecorridoPosOrden(&((*A)->right));
-        printf("%s:\n%s\n",(*A)->clave,(*A)->e.d);
+        printf("%s:\n%s\n", (*A)->clave, (*A)->e.d);
     }
     return;
 }
