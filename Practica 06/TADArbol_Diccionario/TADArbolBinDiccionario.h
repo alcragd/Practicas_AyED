@@ -6,7 +6,7 @@
 #define TRUE 1
 #define FALSE 0
 
-typedef char boolean;
+typedef char booleano;
 
 typedef struct elemento
 {
@@ -18,8 +18,8 @@ typedef struct nodo
 {
     char clave[101];
     elemento e;
-    nodo *left;
-    nodo *right;
+    struct nodo *left;
+    struct nodo *right;
 } nodo;
 
 typedef nodo *arbol_bin_busqueda;
@@ -30,8 +30,13 @@ void Initialize_ABB(arbol_bin_busqueda *A);
 void Destroy_ABB(arbol_bin_busqueda *A);
 void Insert_ABB(arbol_bin_busqueda *A, char *clave, elemento e);
 posicion Search_ABB(arbol_bin_busqueda *A, char *clave);
-boolean Empty_ABB(arbol_bin_busqueda *A);
+booleano Empty_ABB(arbol_bin_busqueda *A);
 elemento ReadNode_ABB(arbol_bin_busqueda *A, posicion p);
-boolean NullNode_ABB(arbol_bin_busqueda *A, posicion p);
+booleano NullNode_ABB(arbol_bin_busqueda *A, posicion p);
+void Modify_ABB(arbol_bin_busqueda *A, char *clave, elemento new);
+void Delete_ABB(arbol_bin_busqueda *A, char *clave);
+void RecorridoPreOrden(arbol_bin_busqueda *A);
+void RecorridoInOrden(arbol_bin_busqueda *A);
+void RecorridoPosOrden(arbol_bin_busqueda *A);
 
 #endif //__TAD_ARBOL_BIN_BUSQUEDA_DICC
