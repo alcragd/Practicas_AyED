@@ -12,8 +12,7 @@ void agregarPalabra(arbol_bin_busqueda *a);
 void buscarPalabra(arbol_bin_busqueda *a);
 void modificarDefinicion(arbol_bin_busqueda *a);
 void eliminarPalabra(arbol_bin_busqueda *a);
-void verEstadisticasHash(arbol_bin_busqueda *a);
-void EstadisticasGenerales(arbol_bin_busqueda *a, elemento e);
+void EstadisticasABB(arbol_bin_busqueda *a);
 void AjustarTexto(char *texto, int max_ancho);
 void exportarArchivo(arbol_bin_busqueda *a);
 void menuExportarArchivo();
@@ -33,6 +32,7 @@ int main()
 
     while (1)
     {
+        system("cls");
         imprimirMenu();
         printf("\n>> ");
         scanf("%d", &opc);
@@ -59,21 +59,34 @@ int main()
             eliminarPalabra(&arbolD);
             break;
         case 6:
+            system("cls");
+            printf("\n=============== Recorrido PreOrden ==============\n");
             RecorridoPreOrden(&arbolD);
+            printf("\n\n");
+            system("pause");
             break;
         case 7:
+            system("cls");
+            printf("\n=============== Recorrido InOrden ==============\n");
             RecorridoInOrden(&arbolD);
+            printf("\n\n");
+            system("pause");
             break;
         case 8:
+            system("cls");
+            printf("\n=============== Recorrido PostOrden ==============\n");
             RecorridoPosOrden(&arbolD);
+            printf("\n\n");
+            system("pause");
             break;
         case 9:
-            verEstadisticasHash(&arbolD);
+            EstadisticasABB(&arbolD);
             break;
         case 10:
             exportarArchivo(&arbolD);
             break;
         default:
+            system("cls");
             printf("\nOPCIÓN INVALIDA\n");
             break;
         }
@@ -81,8 +94,8 @@ int main()
 }
 void imprimirMenu()
 {
-    printf("\n=============== DICCIONARIO ==============");
-    printf("\n================== MENU ==================");
+    printf("\n=============== DICCIONARIO ==============\n");
+    printf("\n================== MENU ==================\n");
     printf("\n 1) Cargar un archivo de definiciones");
     printf("\n 2) Agregar una palabra y su definicion");
     printf("\n 3) Buscar una palabra y ver su definición");
@@ -91,16 +104,19 @@ void imprimirMenu()
     printf("\n 6) Recorrido PreOrden");
     printf("\n 7) Recorrido InOrden");
     printf("\n 8) Recorrido PosOrden");
-    printf("\n 9) Ver estadisticas Hash");
+    printf("\n 9) Estadísticas del ABB");
     printf("\n 10) Exportar definiciones");
     printf("\n\n 0) Salir");
-    printf("\n==========================================");
+    printf("\n==========================================\n");
 }
 void agregarPalabra(arbol_bin_busqueda *a)
 {
     elemento e;
     char opc;
     char clave[101];
+    system("cls");
+    printf("\n=============== Agregar Palabra ==============\n");
+
     do
     {
         printf("Ingrese la palabra a definir\n>> ");
@@ -111,6 +127,7 @@ void agregarPalabra(arbol_bin_busqueda *a)
         e.d[strcspn(e.d, "\n")] = '\0';
 
         Insert_ABB(a, clave, e);
+        printf("\nAltura del arbol: %d", Depth_ABB(a));
 
         printf("\n\n¿Agregar más palabras?(Y/N)\n>> ");
         scanf(" %c", &opc);
@@ -125,9 +142,11 @@ void buscarPalabra(arbol_bin_busqueda *a)
     char opc;
     posicion p;
     elemento e;
+    system("cls");
+    printf("\n=============== Buscar Palabra ==============\n");
     do
     {
-        printf("Ingrese la palabra a buscar\n>>");
+        printf("Ingrese la palabra a buscar\n>> ");
         fgets(clave, sizeof(clave), stdin);
         clave[strcspn(clave, "\n")] = '\0';
 
@@ -158,12 +177,14 @@ void modificarDefinicion(arbol_bin_busqueda *a)
     char opc;
     elemento e;
     char clave[101];
+    system("cls");
+    printf("\n=============== Modificar Definición ==============\n");
     do
     {
         printf("Ingrese la palabra a modificar\n>> ");
         fgets(clave, sizeof(clave), stdin);
         clave[strcspn(clave, "\n")] = '\0';
-        printf("Ingrese la nueva definición\n>>");
+        printf("Ingrese la nueva definición\n>> ");
         fgets(e.d, sizeof(e.d), stdin);
         e.d[strcspn(e.d, "\n")] = '\0';
 
@@ -180,13 +201,16 @@ void eliminarPalabra(arbol_bin_busqueda *a)
     char opc;
     elemento e;
     char clave[101];
+    system("cls");
+    printf("\n=============== Eliminar Palabra ==============\n");
     do
     {
-        printf("Ingrese la palabra a eliminar\n>>");
+        printf("Ingrese la palabra a eliminar\n>> ");
         fgets(clave, sizeof(clave), stdin);
         clave[strcspn(clave, "\n")] = '\0';
 
         Delete_ABB(a, clave);
+        printf("\nAltura del arbol: %d", Depth_ABB(a));
 
         printf("\n\n¿Realizar otra eliminación?(Y/N)\n>> ");
         scanf(" %c", &opc);
@@ -195,12 +219,26 @@ void eliminarPalabra(arbol_bin_busqueda *a)
     } while (opc == 'Y' || opc == 'y');
 }
 
-void verEstadisticasHash(arbol_bin_busqueda *a)
+void EstadisticasABB(arbol_bin_busqueda *a)
 {
+    posicion p;
+    char *pal;
+    system("cls");
+    printf("\n=============== Estadísticas ==============\n");
+
+    p = DeepestNode_ABB(a);
+    pal = GetKey_ABB(a, p);
+
+    printf("\nCantidad de palabras en el árbol: %d", NodeCount_ABB(a));
+    printf("\nAltura del árbol: %d", Depth_ABB(a));
+    printf("\nPalabra más profunda: %s", pal);
+    printf("\nOrden máximo de busqueda: (Search(a,\"%s\"))", pal);
+    Search_ABB(a, pal);
+
+    printf("\n\n");
+    system("pause");
 }
-void EstadisticasGenerales(arbol_bin_busqueda *a, elemento e)
-{
-}
+
 void AjustarTexto(char *texto, int max_ancho)
 {
     int len = strlen(texto);
@@ -234,13 +272,13 @@ void AjustarTexto(char *texto, int max_ancho)
 void menuExportarArchivo()
 {
 
-    printf("\n================== MENU ==================");
+    printf("\n================== MENU ==================\n");
     printf("\n 1) Recorrido PreOrden");
     printf("\n 2) Recorrido InOrden(Orden alfabetico)");
     printf("\n 3) Recorrido PosOrden");
 
     printf("\n\n 0) Cancelar");
-    printf("\n==========================================");
+    printf("\n==========================================\n");
 }
 void exportarArchivo(arbol_bin_busqueda *a)
 {
@@ -248,7 +286,8 @@ void exportarArchivo(arbol_bin_busqueda *a)
     char nomArchivo[256];
     int opc = -1;
 
-    printf("\n=============== Exportar Archivo ==============");
+    system("cls");
+    printf("\n=============== Exportar Archivo ==============\n");
     printf("\n\nIngrese el nombre del archivo: (default: %s)\n>> ", ARCHIVO_DEFAULT);
     fgets(nomArchivo, sizeof(nomArchivo), stdin);
     nomArchivo[strcspn(nomArchivo, "\n")] = '\0';
@@ -269,6 +308,8 @@ void exportarArchivo(arbol_bin_busqueda *a)
     }
 
     crearArchivo(a, nomArchivo, opc);
+    printf("\n\n");
+    system("pause");
     return;
 }
 void cargarArchivo(arbol_bin_busqueda *a)
@@ -278,6 +319,8 @@ void cargarArchivo(arbol_bin_busqueda *a)
     elemento e;
     int c, cont = 0, total = 0;
 
+    system("cls");
+    printf("\n=============== Cargar Archivo ==============\n");
     do
     {
         total = 0;
@@ -322,6 +365,7 @@ void cargarArchivo(arbol_bin_busqueda *a)
         printf("\nPalabras agregadas: %d", total);
         if (cont)
             printf("\n[WARNING] Se encontraron %d lineas con formato incorrecto.", cont);
+        printf("\nAltura del arbol: %d", Depth_ABB(a));
 
         printf("\n\n¿Desea cargar otro archivo?(Y/N)\n>> ");
         scanf("%c", &opc);
@@ -333,7 +377,7 @@ void fRecorridoPreOrden(arbol_bin_busqueda *A, FILE *f)
 {
     if (*A != NULL)
     {
-        fprintf(f, "%s:%s\n", (*A)->clave, (*A)->e.d);
+        fprintf(f, "%s: %s\n", (*A)->clave, (*A)->e.d);
         fRecorridoPreOrden(&((*A)->left), f);
         fRecorridoPreOrden(&((*A)->right), f);
     }
@@ -344,7 +388,7 @@ void fRecorridoInOrden(arbol_bin_busqueda *A, FILE *f)
     if (*A != NULL)
     {
         fRecorridoInOrden(&((*A)->left), f);
-        fprintf(f, "%s:%s\n", (*A)->clave, (*A)->e.d);
+        fprintf(f, "%s: %s\n", (*A)->clave, (*A)->e.d);
         fRecorridoInOrden(&((*A)->right), f);
     }
     return;
@@ -355,7 +399,7 @@ void fRecorridoPostOrden(arbol_bin_busqueda *A, FILE *f)
     {
         fRecorridoPostOrden(&((*A)->left), f);
         fRecorridoPostOrden(&((*A)->right), f);
-        fprintf(f, "%s:%s\n", (*A)->clave, (*A)->e.d);
+        fprintf(f, "%s: %s\n", (*A)->clave, (*A)->e.d);
     }
     return;
 }
@@ -384,5 +428,7 @@ void crearArchivo(arbol_bin_busqueda *a, char *nArchivo, int opc)
     }
 
     fclose(archivo);
+    printf("\nArchivo exportado exitosamente");
+
     return;
 }

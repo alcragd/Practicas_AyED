@@ -50,18 +50,34 @@ booleano Empty_ABB(arbol_bin_busqueda *A)
     return FALSE;
 }
 
+// Función recursiva interna
+posicion Search_ABB_recursiva(arbol_bin_busqueda *A, char *clave, int *contador)
+{
+    if (*A == NULL)
+    {
+        printf("\nSearch(A,c): Valor no encontrado");
+        return NULL;
+    }
+
+    int comp = strcmp(clave, (*A)->clave);
+    (*contador)++;
+
+    if (comp < 0)
+        return Search_ABB_recursiva(&((*A)->left), clave, contador);
+    else if (comp > 0)
+        return Search_ABB_recursiva(&((*A)->right), clave, contador);
+    else
+    {
+        printf("\nSearch(A,c): Valor encontrado");
+        printf("\nNumero de comparaciones: %d", *contador);
+        return *A;
+    }
+}
+
 posicion Search_ABB(arbol_bin_busqueda *A, char *clave)
 {
-    int comp;
-    if (*A == NULL)
-        return NULL;
-    comp = strcmp(clave, (*A)->clave);
-    if (comp < 0)
-        return Search_ABB(&((*A)->left), clave);
-    else if (comp > 0)
-        return Search_ABB(&((*A)->right), clave);
-    else
-        return *A;
+    int contador = 0;
+    return Search_ABB_recursiva(A, clave, &contador);
 }
 
 elemento ReadNode_ABB(arbol_bin_busqueda *A, posicion p)
@@ -105,60 +121,65 @@ void Modify_ABB(arbol_bin_busqueda *A, char *clave, elemento new)
     posicion p = Search_ABB(A, clave);
     if (p == NULL)
     {
-        printf("No se encontró la clave \"%s\" a modificar.\n", clave);
+        printf("\nNo se encontró la clave \"%s\" a modificar.\n", clave);
     }
     else
     {
         p->e = new;
-        printf("Elemento modificado correctamente para la clave \"%s\".\n", clave);
+        printf("\nElemento modificado correctamente para la clave \"%s\".\n", clave);
     }
     return;
 }
 
 void Delete_ABB(arbol_bin_busqueda *A, char *clave)
 {
+    int contador = 0;
+    Delete_ABB_recursivo(A, clave, &contador, 1);
+}
+
+void Delete_ABB_recursivo(arbol_bin_busqueda *A, char *clave, int *contador, int imprimir)
+{
     if (*A == NULL)
     {
-        printf("No se encontró la clave \"%s\" para eliminar.\n", clave);
+        if (imprimir)
+            printf("\nNo se encontró la clave \"%s\" para eliminar.\n", clave);
         return;
     }
 
     int cmp = strcmp(clave, (*A)->clave);
+    (*contador)++;
 
     if (cmp < 0)
-        Delete_ABB(&((*A)->left), clave);
-
+        Delete_ABB_recursivo(&((*A)->left), clave, contador, imprimir);
     else if (cmp > 0)
-        Delete_ABB(&((*A)->right), clave);
-
+        Delete_ABB_recursivo(&((*A)->right), clave, contador, imprimir);
     else
     {
-        // Nodo encontrado
         nodo *temp;
+        if (imprimir)
+        {
+            printf("\nDelete(A,c): Valor encontrado");
+            printf("\nNumero de comparaciones: %d", *contador);
+        }
         if ((*A)->left == NULL && (*A)->right == NULL)
         {
-            // Caso 1: Sin hijos
             free(*A);
             *A = NULL;
         }
         else if ((*A)->left == NULL)
         {
-            // Caso 2a: Solo hijo derecho
             temp = *A;
             *A = (*A)->right;
             free(temp);
         }
         else if ((*A)->right == NULL)
         {
-            // Caso 2b: Solo hijo izquierdo
             temp = *A;
             *A = (*A)->left;
             free(temp);
         }
         else
         {
-            // Caso 3: Dos hijos
-            // Buscar el sucesor inorden (el menor del subárbol derecho)
             nodo *succParent = *A;
             nodo *succ = (*A)->right;
             while (succ->left != NULL)
@@ -166,17 +187,17 @@ void Delete_ABB(arbol_bin_busqueda *A, char *clave)
                 succParent = succ;
                 succ = succ->left;
             }
-            // Copiar datos del sucesor
             strcpy((*A)->clave, succ->clave);
             (*A)->e = succ->e;
-            // Eliminar el sucesor
+            // Eliminar el sucesor sin imprimir
             if (succParent->left == succ)
-                Delete_ABB(&(succParent->left), succ->clave);
+                Delete_ABB_recursivo(&(succParent->left), succ->clave, contador, 0);
             else
-                Delete_ABB(&(succParent->right), succ->clave);
+                Delete_ABB_recursivo(&(succParent->right), succ->clave, contador, 0);
         }
     }
 }
+
 void RecorridoPreOrden(arbol_bin_busqueda *A)
 {
     if (*A != NULL)
@@ -206,4 +227,56 @@ void RecorridoPosOrden(arbol_bin_busqueda *A)
         printf("%s:\n%s\n", (*A)->clave, (*A)->e.d);
     }
     return;
+}
+
+int Depth_ABB(arbol_bin_busqueda *a)
+{
+    int depth_r, depth_l;
+    if (*a == NULL)
+        return 0;
+
+    depth_r = Depth_ABB(&((*a)->right));
+    depth_l = Depth_ABB(&((*a)->left));
+
+    return (depth_r > depth_l ? depth_r : depth_l) + 1;
+}
+
+int NodeCount_ABB(arbol_bin_busqueda *a)
+{
+    if (*a == NULL)
+        return 0;
+    else
+        return (1 + NodeCount_ABB(&(*a)->left) + NodeCount_ABB(&(*a)->right));
+}
+
+posicion DeepestNode_ABB(arbol_bin_busqueda *a)
+{
+    int nivelMax = -1;
+    posicion masProfundo = NULL;
+    DeepestNode_ABB_recursivo(a, 0, &nivelMax, &masProfundo);
+    return masProfundo;
+}
+
+void DeepestNode_ABB_recursivo(arbol_bin_busqueda *a, int nivelActual, int *nivelMax, posicion *masProfundo)
+{
+    if (*a == NULL)
+        return;
+
+    if (nivelActual > *nivelMax)
+    {
+        *nivelMax = nivelActual;
+        *masProfundo = *a;
+    }
+
+    DeepestNode_ABB_recursivo(&((*a)->left), nivelActual + 1, nivelMax, masProfundo);
+    DeepestNode_ABB_recursivo(&((*a)->right), nivelActual + 1, nivelMax, masProfundo);
+    return;
+}
+
+char *GetKey_ABB(arbol_bin_busqueda *a, posicion p)
+{
+    if (!NullNode_ABB(a, p))
+        return p->clave;
+    else
+        printf("\nGetKey_ABB(a,p): Posición invalida");
 }
