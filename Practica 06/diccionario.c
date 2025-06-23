@@ -1,3 +1,62 @@
+/*
+================================================================================
+diccionario.c
+Versión: 1.0
+Fecha: Junio 2025
+Autores: Coyol Moreno Angel Zoe | Ramirez Hernandez Christian Isaac | Ramos Mendoza Miguel Angel
+
+Descripción:
+------------
+Este programa implementa un diccionario interactivo usando un Árbol Binario de
+Búsqueda (ABB) para almacenar palabras y sus definiciones. Permite cargar
+definiciones desde un archivo, agregar, buscar, modificar y eliminar palabras,
+así como exportar el diccionario en diferentes recorridos.
+
+Funcionalidades:
+- Cargar definiciones desde un archivo de texto.
+- Agregar nuevas palabras y definiciones.
+- Buscar palabras y mostrar su definición.
+- Modificar la definición de una palabra existente.
+- Eliminar palabras del diccionario.
+- Mostrar recorridos PreOrden, InOrden y PosOrden del ABB.
+- Mostrar estadísticas del árbol (altura, cantidad de palabras, etc.).
+- Exportar el diccionario a un archivo en diferentes recorridos.
+
+Compilación:
+------------
+gcc -o diccionario.exe diccionario.c ./TADArbol_Diccionario/TADArbolBinDiccionario.c
+
+Uso:
+----
+./diccionario.exe
+
+El programa muestra un menú interactivo con las siguientes opciones:
+  1) Cargar un archivo de definiciones
+  2) Agregar una palabra y su definición
+  3) Buscar una palabra y ver su definición
+  4) Modificar una definición
+  5) Eliminar una palabra
+  6) Recorrido PreOrden
+  7) Recorrido InOrden
+  8) Recorrido PosOrden
+  9) Estadísticas del ABB
+ 10) Exportar definiciones
+  0) Salir
+
+Salida:
+-------
+- Interfaz de texto en consola para gestionar el diccionario.
+- Estadísticas y recorridos del árbol.
+- Exportación de definiciones a archivos de texto.
+
+Observaciones:
+--------------
+- El archivo de definiciones debe tener el formato: palabra: definición
+- El programa utiliza UTF-8 para soportar caracteres especiales.
+- Requiere la implementación del TAD ABB en la carpeta TADArbol_Diccionario.
+================================================================================
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -92,6 +151,24 @@ int main()
         }
     }
 }
+
+/*
+================================================================================
+void imprimirMenu()
+Descripción:
+------------
+Muestra el menú principal de opciones en la consola para interactuar con el
+diccionario.
+
+Parámetros:
+-----------
+Ninguno.
+
+Salida:
+-------
+Imprime el menú en la consola.
+================================================================================
+*/
 void imprimirMenu()
 {
     printf("\n=============== DICCIONARIO ==============\n");
@@ -109,6 +186,23 @@ void imprimirMenu()
     printf("\n\n 0) Salir");
     printf("\n==========================================\n");
 }
+
+/*
+================================================================================
+void agregarPalabra(arbol_bin_busqueda *a)
+Descripción:
+------------
+Permite al usuario agregar una nueva palabra y su definición al diccionario.
+
+Parámetros:
+-----------
+a : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Inserta la nueva palabra y definición en el ABB.
+================================================================================
+*/
 void agregarPalabra(arbol_bin_busqueda *a)
 {
     elemento e;
@@ -136,6 +230,22 @@ void agregarPalabra(arbol_bin_busqueda *a)
     } while (opc == 'Y' || opc == 'y');
 }
 
+/*
+================================================================================
+void buscarPalabra(arbol_bin_busqueda *a)
+Descripción:
+------------
+Permite buscar una palabra en el diccionario y muestra su definición si existe.
+
+Parámetros:
+-----------
+a : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Imprime la definición de la palabra buscada o un mensaje si no existe.
+================================================================================
+*/
 void buscarPalabra(arbol_bin_busqueda *a)
 {
     char clave[101];
@@ -172,6 +282,23 @@ void buscarPalabra(arbol_bin_busqueda *a)
             ;
     } while (opc == 'Y' || opc == 'y');
 }
+
+/*
+================================================================================
+void modificarDefinicion(arbol_bin_busqueda *a)
+Descripción:
+------------
+Permite modificar la definición de una palabra existente en el diccionario.
+
+Parámetros:
+-----------
+a : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Actualiza la definición de la palabra en el ABB.
+================================================================================
+*/
 void modificarDefinicion(arbol_bin_busqueda *a)
 {
     char opc;
@@ -196,6 +323,23 @@ void modificarDefinicion(arbol_bin_busqueda *a)
             ;
     } while (opc == 'Y' || opc == 'y');
 }
+
+/*
+================================================================================
+void eliminarPalabra(arbol_bin_busqueda *a)
+Descripción:
+------------
+Elimina una palabra y su definición del diccionario.
+
+Parámetros:
+-----------
+a : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Elimina la palabra del ABB.
+================================================================================
+*/
 void eliminarPalabra(arbol_bin_busqueda *a)
 {
     char opc;
@@ -219,6 +363,23 @@ void eliminarPalabra(arbol_bin_busqueda *a)
     } while (opc == 'Y' || opc == 'y');
 }
 
+/*
+================================================================================
+void EstadisticasABB(arbol_bin_busqueda *a)
+Descripción:
+------------
+Muestra estadísticas del árbol binario de búsqueda, como cantidad de palabras,
+altura y palabra más profunda.
+
+Parámetros:
+-----------
+a : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Imprime estadísticas del ABB en la consola.
+================================================================================
+*/
 void EstadisticasABB(arbol_bin_busqueda *a)
 {
     posicion p;
@@ -239,6 +400,24 @@ void EstadisticasABB(arbol_bin_busqueda *a)
     system("pause");
 }
 
+/*
+================================================================================
+void AjustarTexto(char *texto, int max_ancho)
+Descripción:
+------------
+Ajusta e imprime un texto largo en varias líneas, respetando un ancho máximo
+por línea para mejor visualización en consola.
+
+Parámetros:
+-----------
+texto     : Texto a ajustar.
+max_ancho : Ancho máximo por línea.
+
+Salida:
+-------
+Imprime el texto ajustado en la consola.
+================================================================================
+*/
 void AjustarTexto(char *texto, int max_ancho)
 {
     int len = strlen(texto);
@@ -269,6 +448,23 @@ void AjustarTexto(char *texto, int max_ancho)
             inicio++; // Saltar espacios
     }
 }
+
+/*
+================================================================================
+void menuExportarArchivo()
+Descripción:
+------------
+Muestra el submenú para elegir el tipo de recorrido al exportar el diccionario.
+
+Parámetros:
+-----------
+Ninguno.
+
+Salida:
+-------
+Imprime el submenú en la consola.
+================================================================================
+*/
 void menuExportarArchivo()
 {
 
@@ -280,6 +476,24 @@ void menuExportarArchivo()
     printf("\n\n 0) Cancelar");
     printf("\n==========================================\n");
 }
+
+/*
+================================================================================
+void exportarArchivo(arbol_bin_busqueda *a)
+Descripción:
+------------
+Permite exportar el diccionario a un archivo de texto en el recorrido elegido
+por el usuario (PreOrden, InOrden o PosOrden).
+
+Parámetros:
+-----------
+a : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Crea un archivo de texto con las definiciones exportadas.
+================================================================================
+*/
 void exportarArchivo(arbol_bin_busqueda *a)
 {
     FILE *archivo;
@@ -312,6 +526,24 @@ void exportarArchivo(arbol_bin_busqueda *a)
     system("pause");
     return;
 }
+
+/*
+================================================================================
+void cargarArchivo(arbol_bin_busqueda *a)
+Descripción:
+------------
+Carga definiciones de palabras desde un archivo de texto con formato
+"palabra: definición" y las inserta en el ABB.
+
+Parámetros:
+-----------
+a : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Actualiza el ABB con las palabras y definiciones del archivo.
+================================================================================
+*/
 void cargarArchivo(arbol_bin_busqueda *a)
 {
     FILE *archivo;
@@ -373,6 +605,23 @@ void cargarArchivo(arbol_bin_busqueda *a)
     } while (opc == 'Y' || opc == 'y');
 }
 
+/*
+================================================================================
+void fRecorridoPreOrden(arbol_bin_busqueda *A, FILE *f)
+Descripción:
+------------
+Exporta el diccionario en recorrido PreOrden al archivo especificado.
+
+Parámetros:
+-----------
+A : Puntero al árbol binario de búsqueda.
+f : Archivo de salida.
+
+Salida:
+-------
+Escribe las palabras y definiciones en el archivo en PreOrden.
+================================================================================
+*/
 void fRecorridoPreOrden(arbol_bin_busqueda *A, FILE *f)
 {
     if (*A != NULL)
@@ -383,6 +632,24 @@ void fRecorridoPreOrden(arbol_bin_busqueda *A, FILE *f)
     }
     return;
 }
+
+/*
+================================================================================
+void fRecorridoInOrden(arbol_bin_busqueda *A, FILE *f)
+Descripción:
+------------
+Exporta el diccionario en recorrido InOrden (alfabético) al archivo especificado.
+
+Parámetros:
+-----------
+A : Puntero al árbol binario de búsqueda.
+f : Archivo de salida.
+
+Salida:
+-------
+Escribe las palabras y definiciones en el archivo en InOrden.
+================================================================================
+*/
 void fRecorridoInOrden(arbol_bin_busqueda *A, FILE *f)
 {
     if (*A != NULL)
@@ -393,6 +660,24 @@ void fRecorridoInOrden(arbol_bin_busqueda *A, FILE *f)
     }
     return;
 }
+
+/*
+================================================================================
+void fRecorridoPostOrden(arbol_bin_busqueda *A, FILE *f)
+Descripción:
+------------
+Exporta el diccionario en recorrido PosOrden al archivo especificado.
+
+Parámetros:
+-----------
+A : Puntero al árbol binario de búsqueda.
+f : Archivo de salida.
+
+Salida:
+-------
+Escribe las palabras y definiciones en el archivo en PosOrden.
+================================================================================
+*/
 void fRecorridoPostOrden(arbol_bin_busqueda *A, FILE *f)
 {
     if (*A != NULL)
@@ -404,6 +689,25 @@ void fRecorridoPostOrden(arbol_bin_busqueda *A, FILE *f)
     return;
 }
 
+/*
+================================================================================
+void crearArchivo(arbol_bin_busqueda *a, char *nArchivo, int opc)
+Descripción:
+------------
+Crea y escribe el archivo de exportación del diccionario según el recorrido
+elegido por el usuario.
+
+Parámetros:
+-----------
+a       : Puntero al árbol binario de búsqueda.
+nArchivo: Nombre del archivo de salida.
+opc     : Opción de recorrido (1=PreOrden, 2=InOrden, 3=PosOrden).
+
+Salida:
+-------
+Archivo de texto con las definiciones exportadas.
+================================================================================
+*/
 void crearArchivo(arbol_bin_busqueda *a, char *nArchivo, int opc)
 {
     FILE *archivo;

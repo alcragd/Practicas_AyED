@@ -1,13 +1,95 @@
+/*
+================================================================================
+TADArbolBinDiccionario.c
+Versión: 1.0
+Fecha: Junio 2025
+Autores: Coyol Moreno Angel Zoe | Ramirez Hernandez Christian Isaac
+
+Descripción:
+------------
+Este archivo implementa un Árbol Binario de Búsqueda (ABB) para gestionar un
+diccionario de palabras y definiciones. Proporciona funciones para inicializar,
+insertar, buscar, modificar, eliminar y recorrer el árbol, así como obtener
+estadísticas como altura, cantidad de nodos y el nodo más profundo.
+
+El sistema permite:
+- Insertar, eliminar, buscar y modificar elementos por clave.
+- Recorrer el árbol en PreOrden, InOrden y PosOrden.
+- Obtener estadísticas como altura, cantidad de nodos y palabra más profunda.
+- Liberar la memoria utilizada por el árbol.
+
+Compilación:
+------------
+gcc -o diccionario.exe diccionario.c ./TADArbol_Diccionario/TADArbolBinDiccionario.c
+
+Uso:
+----
+Incluye "TADArbolBinDiccionario.h" en tu archivo fuente y utiliza las funciones
+proporcionadas para gestionar un árbol binario de búsqueda de elementos.
+
+Observaciones:
+--------------
+- El ABB almacena claves (palabras) y sus definiciones.
+- Todas las funciones asumen que el árbol ha sido correctamente inicializado.
+- Es importante liberar la memoria con Destroy_ABB al finalizar el uso del árbol
+  para evitar fugas de memoria.
+================================================================================
+*/
+
 #include "TADArbolBinDiccionario.h"
 #include <string.h>
 #include <stdlib.h>
 
+/*
+================================================================================
+void Initialize_ABB(arbol_bin_busqueda *A)
+
+Descripción:
+------------
+Inicializa un árbol binario de búsqueda, dejándolo vacío y listo para usarse.
+
+Parámetros:
+-----------
+A : Puntero al árbol binario de búsqueda a inicializar.
+
+Salida:
+-------
+El árbol queda vacío y preparado para operaciones.
+
+Observaciones:
+--------------
+- Debe llamarse antes de cualquier operación sobre el árbol.
+================================================================================
+*/
 void Initialize_ABB(arbol_bin_busqueda *A)
 {
     *A = NULL;
     return;
 }
 
+/*
+================================================================================
+void Insert_ABB(arbol_bin_busqueda *A, char *clave, elemento e)
+
+Descripción:
+------------
+Inserta un elemento en el árbol binario de búsqueda según la clave dada.
+
+Parámetros:
+-----------
+A     : Puntero al árbol binario de búsqueda.
+clave : Clave (palabra) del elemento.
+e     : Elemento a insertar (definición).
+
+Salida:
+-------
+El elemento es agregado al árbol en la posición correspondiente.
+
+Observaciones:
+--------------
+- No permite claves duplicadas.
+================================================================================
+*/
 void Insert_ABB(arbol_bin_busqueda *A, char *clave, elemento e)
 {
     nodo *newNode;
@@ -43,6 +125,23 @@ void Insert_ABB(arbol_bin_busqueda *A, char *clave, elemento e)
     return;
 }
 
+/*
+================================================================================
+booleano Empty_ABB(arbol_bin_busqueda *A)
+
+Descripción:
+------------
+Verifica si el árbol binario de búsqueda está vacío.
+
+Parámetros:
+-----------
+A : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+TRUE si el árbol está vacío, FALSE en caso contrario.
+================================================================================
+*/
 booleano Empty_ABB(arbol_bin_busqueda *A)
 {
     if (*A == NULL)
@@ -50,7 +149,53 @@ booleano Empty_ABB(arbol_bin_busqueda *A)
     return FALSE;
 }
 
-// Función recursiva interna
+/*
+================================================================================
+posicion Search_ABB(arbol_bin_busqueda *A, char *clave)
+
+Descripción:
+------------
+Busca un nodo en el árbol binario de búsqueda usando la clave dada.
+
+Parámetros:
+-----------
+A     : Puntero al árbol binario de búsqueda.
+clave : Clave (palabra) a buscar.
+
+Salida:
+-------
+Devuelve la posición del nodo encontrado o NULL si no existe.
+
+Observaciones:
+--------------
+- Imprime el número de comparaciones realizadas.
+================================================================================
+*/
+posicion Search_ABB(arbol_bin_busqueda *A, char *clave)
+{
+    int contador = 0;
+    return Search_ABB_recursiva(A, clave, &contador);
+}
+
+/*
+================================================================================
+posicion Search_ABB_recursiva(arbol_bin_busqueda *A, char *clave, int *contador)
+
+Descripción:
+------------
+Función recursiva interna para buscar un nodo por clave y contar comparaciones.
+
+Parámetros:
+-----------
+A        : Puntero al árbol binario de búsqueda.
+clave    : Clave (palabra) a buscar.
+contador : Puntero al contador de comparaciones.
+
+Salida:
+-------
+Devuelve la posición del nodo encontrado o NULL si no existe.
+================================================================================
+*/
 posicion Search_ABB_recursiva(arbol_bin_busqueda *A, char *clave, int *contador)
 {
     if (*A == NULL)
@@ -74,12 +219,28 @@ posicion Search_ABB_recursiva(arbol_bin_busqueda *A, char *clave, int *contador)
     }
 }
 
-posicion Search_ABB(arbol_bin_busqueda *A, char *clave)
-{
-    int contador = 0;
-    return Search_ABB_recursiva(A, clave, &contador);
-}
+/*
+================================================================================
+elemento ReadNode_ABB(arbol_bin_busqueda *A, posicion p)
 
+Descripción:
+------------
+Devuelve el elemento almacenado en la posición dada del árbol.
+
+Parámetros:
+-----------
+A : Puntero al árbol binario de búsqueda.
+p : Posición del nodo.
+
+Salida:
+-------
+Elemento almacenado en el nodo.
+
+Observaciones:
+--------------
+- Termina el programa si la posición es inválida.
+================================================================================
+*/
 elemento ReadNode_ABB(arbol_bin_busqueda *A, posicion p)
 {
     if (!NullNode_ABB(A, p))
@@ -91,6 +252,24 @@ elemento ReadNode_ABB(arbol_bin_busqueda *A, posicion p)
     }
 }
 
+/*
+================================================================================
+booleano NullNode_ABB(arbol_bin_busqueda *A, posicion p)
+
+Descripción:
+------------
+Verifica si una posición es nula o inválida en el árbol.
+
+Parámetros:
+-----------
+A : Puntero al árbol binario de búsqueda.
+p : Posición a verificar.
+
+Salida:
+-------
+TRUE si la posición es nula o inválida, FALSE en caso contrario.
+================================================================================
+*/
 booleano NullNode_ABB(arbol_bin_busqueda *A, posicion p)
 {
     booleano b = TRUE;
@@ -106,6 +285,27 @@ booleano NullNode_ABB(arbol_bin_busqueda *A, posicion p)
     return b;
 }
 
+/*
+================================================================================
+void Destroy_ABB(arbol_bin_busqueda *A)
+
+Descripción:
+------------
+Libera toda la memoria utilizada por el árbol binario de búsqueda.
+
+Parámetros:
+-----------
+A : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Toda la memoria asociada es liberada.
+
+Observaciones:
+--------------
+- Debe llamarse al final del uso del árbol para evitar fugas de memoria.
+================================================================================
+*/
 void Destroy_ABB(arbol_bin_busqueda *A)
 {
     if (*A == NULL)
@@ -116,6 +316,25 @@ void Destroy_ABB(arbol_bin_busqueda *A)
     *A = NULL;
 }
 
+/*
+================================================================================
+void Modify_ABB(arbol_bin_busqueda *A, char *clave, elemento new)
+
+Descripción:
+------------
+Modifica el elemento asociado a una clave existente en el árbol.
+
+Parámetros:
+-----------
+A    : Puntero al árbol binario de búsqueda.
+clave: Clave (palabra) a modificar.
+new  : Nuevo elemento (definición).
+
+Salida:
+-------
+Actualiza el elemento si la clave existe.
+================================================================================
+*/
 void Modify_ABB(arbol_bin_busqueda *A, char *clave, elemento new)
 {
     posicion p = Search_ABB(A, clave);
@@ -131,12 +350,50 @@ void Modify_ABB(arbol_bin_busqueda *A, char *clave, elemento new)
     return;
 }
 
+/*
+================================================================================
+void Delete_ABB(arbol_bin_busqueda *A, char *clave)
+
+Descripción:
+------------
+Elimina un nodo del árbol binario de búsqueda según la clave dada.
+
+Parámetros:
+-----------
+A    : Puntero al árbol binario de búsqueda.
+clave: Clave (palabra) a eliminar.
+
+Salida:
+-------
+El nodo es eliminado si existe.
+================================================================================
+*/
 void Delete_ABB(arbol_bin_busqueda *A, char *clave)
 {
     int contador = 0;
     Delete_ABB_recursivo(A, clave, &contador, 1);
 }
 
+/*
+================================================================================
+void Delete_ABB_recursivo(arbol_bin_busqueda *A, char *clave, int *contador, int imprimir)
+
+Descripción:
+------------
+Función recursiva interna para eliminar un nodo por clave y contar comparaciones.
+
+Parámetros:
+-----------
+A        : Puntero al árbol binario de búsqueda.
+clave    : Clave (palabra) a eliminar.
+contador : Puntero al contador de comparaciones.
+imprimir : Si es 1, imprime mensajes; si es 0, no imprime.
+
+Salida:
+-------
+El nodo es eliminado si existe.
+================================================================================
+*/
 void Delete_ABB_recursivo(arbol_bin_busqueda *A, char *clave, int *contador, int imprimir)
 {
     if (*A == NULL)
@@ -198,6 +455,23 @@ void Delete_ABB_recursivo(arbol_bin_busqueda *A, char *clave, int *contador, int
     }
 }
 
+/*
+================================================================================
+void RecorridoPreOrden(arbol_bin_busqueda *A)
+
+Descripción:
+------------
+Imprime el recorrido PreOrden del árbol binario de búsqueda.
+
+Parámetros:
+-----------
+A : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Imprime las claves y definiciones en PreOrden.
+================================================================================
+*/
 void RecorridoPreOrden(arbol_bin_busqueda *A)
 {
     if (*A != NULL)
@@ -208,6 +482,24 @@ void RecorridoPreOrden(arbol_bin_busqueda *A)
     }
     return;
 }
+
+/*
+================================================================================
+void RecorridoInOrden(arbol_bin_busqueda *A)
+
+Descripción:
+------------
+Imprime el recorrido InOrden (alfabético) del árbol binario de búsqueda.
+
+Parámetros:
+-----------
+A : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Imprime las claves y definiciones en InOrden.
+================================================================================
+*/
 void RecorridoInOrden(arbol_bin_busqueda *A)
 {
     if (*A != NULL)
@@ -218,6 +510,24 @@ void RecorridoInOrden(arbol_bin_busqueda *A)
     }
     return;
 }
+
+/*
+================================================================================
+void RecorridoPosOrden(arbol_bin_busqueda *A)
+
+Descripción:
+------------
+Imprime el recorrido PosOrden del árbol binario de búsqueda.
+
+Parámetros:
+-----------
+A : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Imprime las claves y definiciones en PosOrden.
+================================================================================
+*/
 void RecorridoPosOrden(arbol_bin_busqueda *A)
 {
     if (*A != NULL)
@@ -229,6 +539,23 @@ void RecorridoPosOrden(arbol_bin_busqueda *A)
     return;
 }
 
+/*
+================================================================================
+int Depth_ABB(arbol_bin_busqueda *a)
+
+Descripción:
+------------
+Calcula la altura (profundidad máxima) del árbol binario de búsqueda.
+
+Parámetros:
+-----------
+a : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Altura del árbol.
+================================================================================
+*/
 int Depth_ABB(arbol_bin_busqueda *a)
 {
     int depth_r, depth_l;
@@ -241,6 +568,23 @@ int Depth_ABB(arbol_bin_busqueda *a)
     return (depth_r > depth_l ? depth_r : depth_l) + 1;
 }
 
+/*
+================================================================================
+int NodeCount_ABB(arbol_bin_busqueda *a)
+
+Descripción:
+------------
+Cuenta el número total de nodos en el árbol binario de búsqueda.
+
+Parámetros:
+-----------
+a : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Cantidad de nodos en el árbol.
+================================================================================
+*/
 int NodeCount_ABB(arbol_bin_busqueda *a)
 {
     if (*a == NULL)
@@ -249,6 +593,23 @@ int NodeCount_ABB(arbol_bin_busqueda *a)
         return (1 + NodeCount_ABB(&(*a)->left) + NodeCount_ABB(&(*a)->right));
 }
 
+/*
+================================================================================
+posicion DeepestNode_ABB(arbol_bin_busqueda *a)
+
+Descripción:
+------------
+Obtiene la posición del nodo más profundo en el árbol binario de búsqueda.
+
+Parámetros:
+-----------
+a : Puntero al árbol binario de búsqueda.
+
+Salida:
+-------
+Posición del nodo más profundo.
+================================================================================
+*/
 posicion DeepestNode_ABB(arbol_bin_busqueda *a)
 {
     int nivelMax = -1;
@@ -257,6 +618,26 @@ posicion DeepestNode_ABB(arbol_bin_busqueda *a)
     return masProfundo;
 }
 
+/*
+================================================================================
+void DeepestNode_ABB_recursivo(arbol_bin_busqueda *a, int nivelActual, int *nivelMax, posicion *masProfundo)
+
+Descripción:
+------------
+Función recursiva interna para encontrar el nodo más profundo del árbol.
+
+Parámetros:
+-----------
+a           : Puntero al árbol binario de búsqueda.
+nivelActual : Nivel actual en la recursión.
+nivelMax    : Puntero al nivel máximo encontrado.
+masProfundo : Puntero a la posición del nodo más profundo.
+
+Salida:
+-------
+Actualiza masProfundo con el nodo más profundo.
+================================================================================
+*/
 void DeepestNode_ABB_recursivo(arbol_bin_busqueda *a, int nivelActual, int *nivelMax, posicion *masProfundo)
 {
     if (*a == NULL)
@@ -273,6 +654,28 @@ void DeepestNode_ABB_recursivo(arbol_bin_busqueda *a, int nivelActual, int *nive
     return;
 }
 
+/*
+================================================================================
+char *GetKey_ABB(arbol_bin_busqueda *a, posicion p)
+
+Descripción:
+------------
+Devuelve la clave (palabra) almacenada en la posición dada del árbol.
+
+Parámetros:
+-----------
+a : Puntero al árbol binario de búsqueda.
+p : Posición del nodo.
+
+Salida:
+-------
+Clave almacenada en el nodo.
+
+Observaciones:
+--------------
+- Imprime un mensaje si la posición es inválida.
+================================================================================
+*/
 char *GetKey_ABB(arbol_bin_busqueda *a, posicion p)
 {
     if (!NullNode_ABB(a, p))
