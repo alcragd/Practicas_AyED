@@ -395,7 +395,7 @@ void cargarArchivo(tablaHash *t)
 
     do
     {
-        total=0;
+        total = 0;
         printf("\nIngrese la ruta del archivo\n>> ");
         fgets(nombreArchivo, sizeof(nombreArchivo), stdin);
         nombreArchivo[strcspn(nombreArchivo, "\n")] = '\0';
